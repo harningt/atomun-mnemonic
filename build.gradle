@@ -34,6 +34,11 @@ project.afterEvaluate {
     project.bintray.pkg.version.gpg.sign = false
 }
 
+release {
+    // Adds SNAPSHOT strategy to allowed list to be used by Travis-CI
+    versionStrategy org.ajoberstar.gradle.git.release.opinion.Strategies.SNAPSHOT
+}
+
 repositories {
     jcenter()
     mavenCentral()

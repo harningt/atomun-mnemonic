@@ -1,5 +1,22 @@
 language: java
+
+env:
+    global:
+        - secure: "TeIaZdRm25YSK3S+xowuir8NLUGHuSF16Uib9i22tPpcTs6d2GJqWtLtHknG6pHqDBB3OCuJdimI1CtWlRZSxqZrmneuHbPuUUqpOkW4GexrAIVNK6D+JvHGapm94mHxOiF6fXRBIvlVa3LSN9phvZXSzBap7x88ljL9GpmU7zE="
+        - secure: "cA1wkHgbiqg6iFKfl7DTMWKdiUy5R1eMJolD5pu/6ryEqpQ/6YC+u/y3It4HMeNKvv0ru98I7O0CefA2yPLyiArUz0w352kn8NrzzLi/jDMCs8jIo4Ig9kXv9BfFuGjAuctPde38W97xitpSVSBYT9NWtTnmgRVNcOVwqv6aNp0="
+
 install: ""
-script: TERM=dumb ./gradlew clean check
+before_script:
+    - mkdir -p ~/.gradle
+    - echo $KEYDATA1 > ~/.gradle/gradle.properties
+    - echo $KEYDATA2 >> ~/.gradle/gradle.properties
+
+script:
+    - TERM=dumb ./gradlew clean check
+after_success: >
+    test ${TRAVIS_SECURE_ENV_VARS} == true &&
+    test ${TRAVIS_BRANCH} = develop &&
+    test ${TRAVIS_PULL_REQUEST} = false &&
+    ./gradlew -P release.stage=SNAPSHOT bintrayUpload || false
 jdk:
     - openjdk7
