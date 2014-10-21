@@ -1,0 +1,34 @@
+box: harningt/ubuntu14.04-jdk78@0.0.1
+build:
+    steps:
+        - script:
+            name: run gradle build and build test components
+            code: |
+                ./gradlew --full-stacktrace -q --project-cache-dir=$WERCKER_CACHE_DIR assemble testClasses
+        - script:
+            name: run gradle test scripts
+            code: |
+                ./gradlew --full-stacktrace --project-cache-dir=$WERCKER_CACHE_DIR check
+        - script:
+            name: run test coverage
+            code: |
+                ./gradlew --full-stacktrace -q --project-cache-dir=$WERCKER_CACHE_DIR jacocoTestReport
+
+    after-steps:
+        - add-to-known_hosts:
+            hostname: ionic.eharning.us
+        # Use the build results
+        - script:
+            name: inspect build result
+            code: |
+                # Ignore failure
+                cp -rv */build/reports $WERCKER_REPORT_ARTIFACTS_DIR || true
+        - add-ssh-key:
+            keyname: REMOTE_SYNC
+        - script:
+            name: archive build output
+            code: |
+                mkdir -p /tmp/archive/$WERCKER_GIT_BRANCH
+                tar -cjvf /tmp/archive/$WERCKER_GIT_BRANCH/$WERCKER_GIT_COMMIT.tar.bz2 *
+                scp -r /tmp/archive/* remotebuild@ionic.eharning.us:upload/wercker/atomun-mnemonic/
+                rm -rf /tmp/archive
