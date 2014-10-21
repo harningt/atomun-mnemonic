@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'maven-publish'
+    id 'com.jfrog.bintray' version '0.6'
+    id 'org.ajoberstar.defaults' version '0.4.0'
+}
+
+group = 'us.eharning.atomun'
+description = 'Utility library implementing mnemonic <-> bytes conversions.'
+sourceCompatibility = 1.7
+
+defaults {
+    id = 'harningt'
+
+    bintrayRepo = 'atomun'
+    bintrayLabels = ['bitcoin', 'electrum', 'bip-0039']
+
+    developers = [
+            [id: 'harningt', name: 'Thomas Harning Jr', email: 'harningt@gmail.com']
+    ]
+
+    // used by license plugin
+    copyrightYears = '2014'
+}
+
+configurations {
+    // use local groovy
+    all*.exclude group: 'org.codehaus.groovy'
+}
+
+project.afterEvaluate {
+    // Disable signing because this requires serverside key
+    project.bintray.pkg.version.gpg.sign = false
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+}
+
+dependencies {
+    compile group: 'com.google.guava', name: 'guava', version: '17.+'
+
+    testCompile localGroovy()
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.3-SNAPSHOT'
+}
+
+
+wrapper {
+    gradleVersion = '2.1'
+}
