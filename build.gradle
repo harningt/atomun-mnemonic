@@ -87,7 +87,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.google.guava', name: 'guava', version: '17.+'
+    compile group: 'com.google.guava', name: 'guava', version: '18.0'
 
     testCompile localGroovy()
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.3-SNAPSHOT'
