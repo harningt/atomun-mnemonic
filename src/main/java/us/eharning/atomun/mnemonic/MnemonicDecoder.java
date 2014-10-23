@@ -30,6 +30,7 @@ public final class MnemonicDecoder {
     private static final ImmutableMap<MnemonicAlgorithm, MnemonicDecoderSystem> constructorMap;
     static {
         constructorMap = ImmutableMap.of(
+            MnemonicAlgorithm.LegacyElectrum, (MnemonicDecoderSystem)new LegacyElectrumMnemonicDecoderSystem()
         );
     }
 

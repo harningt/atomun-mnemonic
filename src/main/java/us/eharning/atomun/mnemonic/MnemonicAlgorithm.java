@@ -19,4 +19,5 @@ package us.eharning.atomun.mnemonic;
  * Enumeration of possible mnemonic algorithms.
  */
 public enum MnemonicAlgorithm {
+    LegacyElectrum
 }

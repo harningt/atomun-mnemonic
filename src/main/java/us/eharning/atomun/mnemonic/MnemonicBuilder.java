@@ -30,6 +30,7 @@ public final class MnemonicBuilder {
     private static final ImmutableMap<MnemonicAlgorithm, Supplier<MnemonicBuilderSpi>> constructorMap;
     static {
         constructorMap = ImmutableMap.of(
+            MnemonicAlgorithm.LegacyElectrum, LegacyElectrumMnemonicBuilderSpi.SUPPLIER
         );
     }
 
