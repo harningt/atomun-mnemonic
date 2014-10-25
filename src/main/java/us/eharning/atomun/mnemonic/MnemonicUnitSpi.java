@@ -24,6 +24,7 @@ abstract class MnemonicUnitSpi {
 
     /**
      * Construct the implementation wrapping a given mnemonic sequence.
+     *
      * @param mnemonicSequence space-delimited sequence of mnemonic words.
      */
     protected MnemonicUnitSpi(CharSequence mnemonicSequence) {
@@ -32,14 +33,17 @@ abstract class MnemonicUnitSpi {
 
     /**
      * Get the entropy if possible.
+     *
      * @return a copy of the entropy byte array or null if inaccessible.
      */
     public abstract byte[] getEntropy();
 
     /**
-     * Set a custom property specialized for the given algorithm.
-     * @param extensionType kind of decoder extension to obtain.
+     * Get a custom decoder extension to obtain custom values.
+     *
      * By default this rejects as it is not expected to be implemented lower down.
+     *
+     * @param extensionType kind of decoder extension to obtain.
      */
     public <T> T getExtension(Class<T> extensionType) {
         return null;
@@ -47,6 +51,7 @@ abstract class MnemonicUnitSpi {
 
     /**
      * Get the associated mnemonic string.
+     *
      * @return space-delimited sequence of mnemonic words.
      */
     public CharSequence getMnemonicSequence() {
@@ -55,14 +60,17 @@ abstract class MnemonicUnitSpi {
 
     /**
      * Get a seed from this mnemonic without supplying a password.
-     * @return a decoded seed.
+     *
+     * @return a derived seed.
      */
     public abstract byte[] getSeed();
 
     /**
      * Get a seed from this mnemonic.
+     *
      * @param password password to supply for decoding.
-     * @return a decoded seed.
+     *                 
+     * @return a derived seed.
      */
     public abstract byte[] getSeed(CharSequence password);
 }

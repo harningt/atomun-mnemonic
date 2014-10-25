@@ -22,10 +22,12 @@ abstract class MnemonicDecoderSystem {
     /**
      * Decodes a given mnemonic into a unit.
      * The word list is to be automatically detected and it is expected that only one matches.
+     *
      * @param mnemonicSequence space-delimited sequence of mnemonic words.
-     * @param wordListIdentifier optional word list identifier
-     * @return mnemonic unit
-     * @throws java.lang.IllegalArgumentException the sequence cannot match
+     * @param wordListIdentifier optional word list identifier.
+     *
+     * @return mnemonic unit.
+     * @throws java.lang.IllegalArgumentException the sequence cannot match.
      */
     public abstract MnemonicUnit decode(CharSequence mnemonicSequence, String wordListIdentifier);
 }

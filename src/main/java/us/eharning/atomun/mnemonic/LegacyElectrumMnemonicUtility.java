@@ -26,7 +26,6 @@ import com.google.common.io.Resources;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Static utility to handle encoding/decoding details of the legacy Electrum mnemonic format.
@@ -77,6 +76,7 @@ class LegacyElectrumMnemonicUtility {
 
     /**
      * Encode a sequence of bytes to a space-delimited series of mnemonic words.
+     *
      * @param entropy value to encode.
      * @return space-delimited sequence of mnemonic words.
      */
@@ -105,7 +105,9 @@ class LegacyElectrumMnemonicUtility {
 
     /**
      * Decode a space-delimited sequence of mnemonic words.
+     *
      * @param mnemonicSequence space-delimited sequence of mnemonic words to toEntropy.
+     *
      * @return encoded value.
      */
     static byte[] toEntropy(CharSequence mnemonicSequence) {

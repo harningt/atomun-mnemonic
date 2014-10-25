@@ -24,6 +24,7 @@ public final class MnemonicUnit {
 
     /**
      * Construct a new MnemonicUnit wrapping the given implementation.
+     *
      * @param spi implementation.
      */
     MnemonicUnit(MnemonicUnitSpi spi) {
@@ -32,6 +33,7 @@ public final class MnemonicUnit {
 
     /**
      * Get the entropy if possible.
+     *
      * @return a copy of the entropy byte array or null if inaccessible.
      */
     public byte[] getEntropy() {
@@ -39,9 +41,11 @@ public final class MnemonicUnit {
     }
 
     /**
-     * Set a custom property specialized for the given algorithm.
-     * @param extensionType kind of decoder extension to obtain.
+     * Get a custom decoder extension to obtain custom values.
+     *
      * By default this rejects as it is not expected to be implemented lower down.
+     *
+     * @param extensionType kind of decoder extension to obtain.
      */
     public <T> T getExtension(Class<T> extensionType) {
         return spi.getExtension(extensionType);
@@ -49,6 +53,7 @@ public final class MnemonicUnit {
 
     /**
      * Get the associated mnemonic string.
+     *
      * @return space-delimited sequence of mnemonic words.
      */
     public CharSequence getMnemonic() {
@@ -57,7 +62,8 @@ public final class MnemonicUnit {
 
     /**
      * Get a seed from this mnemonic without supplying a password.
-     * @return a decoded seed.
+     *
+     * @return a derived seed.
      */
     public byte[] getSeed() {
         return spi.getSeed();
@@ -65,8 +71,10 @@ public final class MnemonicUnit {
 
     /**
      * Get a seed from this mnemonic.
+     *
      * @param password password to supply for decoding.
-     * @return a decoded seed.
+     *
+     * @return a derived seed.
      */
     public byte[] getSeed(CharSequence password) {
         return spi.getSeed(password);

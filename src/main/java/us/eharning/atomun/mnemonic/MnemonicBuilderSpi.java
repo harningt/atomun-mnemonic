@@ -22,14 +22,17 @@ package us.eharning.atomun.mnemonic;
 abstract class MnemonicBuilderSpi {
     /**
      * Encode this instance to a space-delimited series of mnemonic words.
+     *
      * @return space-delimited sequence of mnemonic words.
      */
     public abstract String build();
 
     /**
      * Set a custom property specialized for the given algorithm.
-     * @param extensionType kind of builder extension to obtain.
+     *
      * By default this rejects as it is not expected to be implemented lower down.
+     *
+     * @param extensionType kind of builder extension to obtain.
      */
     public <T> T getExtension(Class<T> extensionType) {
         return null;
@@ -37,20 +40,24 @@ abstract class MnemonicBuilderSpi {
 
     /**
      * Set the entropy to generate the mnemonic with.
+     *
      * @param entropy data to encode.
      */
     public abstract void setEntropy(byte[] entropy);
 
     /**
      * Set the length of the desired entropy to generate the mnemonic with.
+     *
      * @param entropyLength number of bytes of entropy to use.
      */
     public abstract void setEntropyLength(int entropyLength);
 
     /**
      * Set the word list to use for encoding the mnemonic.
-     * @param wordListIdentifier name of the word list to use
+     *
      * By default this rejects as it is not expected to be implemented lower down.
+     *
+     * @param wordListIdentifier name of the word list to use.
      */
     public void setWordList(String wordListIdentifier) {
         throw new UnsupportedOperationException("setWordList is not supported");

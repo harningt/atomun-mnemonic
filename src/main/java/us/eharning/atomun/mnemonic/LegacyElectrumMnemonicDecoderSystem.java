@@ -27,7 +27,9 @@ class LegacyElectrumMnemonicDecoderSystem extends MnemonicDecoderSystem {
      *
      * @param mnemonicSequence   space-delimited sequence of mnemonic words.
      * @param wordListIdentifier optional word list identifier
+     *
      * @return mnemonic unit
+     *
      * @throws IllegalArgumentException the sequence cannot match
      */
     @Override
@@ -75,6 +77,7 @@ class LegacyElectrumMnemonicDecoderSystem extends MnemonicDecoderSystem {
          * Get a seed from this mnemonic.
          *
          * @param password password to supply for decoding.
+         *
          * @return a decoded seed.
          */
         @Override

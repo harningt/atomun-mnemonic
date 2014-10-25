@@ -41,6 +41,7 @@ public final class MnemonicBuilder {
 
     /**
      * Construct a MnemonicBuilder around the given implementation.
+     *
      * @param mnemonicBuilderSpi implementation to wrap.
      */
     private MnemonicBuilder(MnemonicBuilderSpi mnemonicBuilderSpi) {
@@ -49,7 +50,9 @@ public final class MnemonicBuilder {
 
     /**
      * Construct a new MnemonicBuilder for the named algorithm.
+     *
      * @param algorithm kind of instance to construct.
+     *
      * @return new builder instance.
      */
     public static MnemonicBuilder newBuilder(MnemonicAlgorithm algorithm) {
@@ -62,6 +65,7 @@ public final class MnemonicBuilder {
 
     /**
      * Encode this instance to a space-delimited series of mnemonic words.
+     *
      * @return space-delimited sequence of mnemonic words.
      */
     public String build() {
@@ -70,6 +74,7 @@ public final class MnemonicBuilder {
 
     /**
      * Set a custom property specialized for the given algorithm.
+     *
      * @param extensionType kind of builder extension to obtain.
      */
     public <T> T getExtension(Class<T> extensionType) {
@@ -78,6 +83,7 @@ public final class MnemonicBuilder {
 
     /**
      * Set the entropy to generate the mnemonic with.
+     *
      * @param entropy data to encode.
      */
     public void setEntropy(byte[] entropy) {
@@ -86,6 +92,7 @@ public final class MnemonicBuilder {
 
     /**
      * Set the length of the desired entropy to generate the mnemonic with.
+     *
      * @param entropyLength number of bytes of entropy to use.
      */
     public void setEntropyLength(int entropyLength) {
@@ -94,6 +101,7 @@ public final class MnemonicBuilder {
 
     /**
      * Set the word list to use for encoding the mnemonic.
+     *
      * @param wordListIdentifier name of the word list to use.
      */
     public void setWordList(String wordListIdentifier) {

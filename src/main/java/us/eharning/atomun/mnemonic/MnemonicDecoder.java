@@ -42,7 +42,9 @@ public final class MnemonicDecoder {
 
     /**
      * Decodes a mnemonic, returning an iterable with all of the successful decoding results.
+     *
      * @param mnemonicSequence space-delimited sequence of mnemonic words.
+     *
      * @return sequence of successful decoding results or empty.
      */
     public static Iterable<MnemonicUnit> decodeMnemonic(CharSequence mnemonicSequence) {
@@ -60,8 +62,10 @@ public final class MnemonicDecoder {
 
     /**
      * Decode a mnemonic for a specific algorithm.
+     *
      * @param mnemonicAlgorithm identifier for which algorithm to use.
      * @param mnemonicSequence space-delimited sequence of mnemonic words.
+     *
      * @return successful decoding results.
      * @throws java.lang.IllegalArgumentException on decoding failure.
      */
