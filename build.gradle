@@ -3,10 +3,9 @@ import org.ajoberstar.gradle.git.release.opinion.Strategies
 plugins {
     id 'java'
     id 'groovy'
-    id 'maven-publish'
-    id 'com.jfrog.bintray' version '0.6'
+    id 'maven'
+    id 'signing'
     id 'org.ajoberstar.defaults' version '0.4.0'
-    id 'com.jfrog.artifactory' version '3.0.1'
 }
 
 group = 'us.eharning.atomun'
@@ -15,9 +14,6 @@ sourceCompatibility = 1.7
 
 defaults {
     id = 'harningt'
-
-    bintrayRepo = 'atomun'
-    bintrayLabels = ['bitcoin', 'electrum', 'bip-0039']
 
     developers = [
             [id: 'harningt', name: 'Thomas Harning Jr', email: 'harningt@gmail.com']
@@ -32,52 +28,9 @@ configurations {
     all*.exclude group: 'org.codehaus.groovy'
 }
 
-project.afterEvaluate {
-    // Disable signing because this requires serverside key
-    project.bintray.pkg.version.gpg.sign = false
-}
-
 release {
     // Adds SNAPSHOT strategy to allowed list to be used by Travis-CI
     versionStrategy Strategies.SNAPSHOT
-}
-
-def isSnapshot = hasProperty('release.stage') && getProperty('release.stage') == 'SNAPSHOT'
-def repo = isSnapshot ? 'oss-snapshot-local' : 'oss-release-local'
-def artifactory_password = hasProperty("artifactory_password") ? getProperty("artifactory_password") : null
-artifactory {
-    contextUrl = "https://oss.jfrog.org/artifactory"
-    if (null != artifactory_password) {
-        publish {
-            defaults {
-                publications('main')
-            }
-            repository {
-                repoKey = repo
-                username = "harningt"
-                password = artifactory_password
-                maven = true
-            }
-        }
-    }
-    resolve {
-        repository {
-            repoKey = 'libs-release'
-            username = "harningt"
-            if (null != artifactory_password) {
-                password = artifactory_password
-            }
-            maven = true
-        }
-        repository {
-            repoKey = 'libs-snapshot'
-            username = "harningt"
-            if (null != artifactory_password) {
-                password = artifactory_password
-            }
-            maven = true
-        }
-    }
 }
 
 repositories {
@@ -92,6 +45,75 @@ dependencies {
     testCompile localGroovy()
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.3-SNAPSHOT'
 }
+
+/* Begin signing + upload logic */
+def isRelease = hasProperty('release.stage') && getProperty('release.stage') == 'final'
+def isSigning = isRelease
+def isSigningAllowed = hasProperty('sign') && getProperty('sign') == 'TRUE'
+
+def repo = !isRelease ? 'oss-snapshot-local' : 'oss-release-local'
+def artifactory_password = hasProperty("artifactory_password") ? getProperty("artifactory_password") : null
+if (null != artifactory_password) {
+    signing {
+        required { isSigning && isSigningAllowed }
+    }
+    if (isSigning && isSigningAllowed) {
+        signing {
+            sign configurations.archives
+        }
+    }
+}
+
+task uploadDist(type: Upload) {
+    configuration = configurations.archives
+    repositories {
+        mavenDeployer {
+            def creds = [
+                userName: 'harningt',
+                password: artifactory_password
+            ]
+            /* SETUP TARGET */
+            if (!isRelease) {
+                repository(url: 'https://oss.jfrog.org/artifactory/oss-snapshot-local/') {
+                    authentication(creds)
+                }
+            } else {
+                repository(url: 'https://oss.jfrog.org/artifactory/oss-release-local/') {
+                    authentication(creds)
+                }
+            }
+            pom.project {
+                name name
+                description description
+                url defaults.siteUrl
+                inceptionYear '2014'
+                licenses {
+                    license {
+                        name 'Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'harningt'
+                        name 'Thomas Harning Jr'
+                        email 'harningt@gmail.com'
+                    }
+                }
+            }
+            if (isSigning) {
+                beforeDeployment { MavenDeployment deployment ->
+                    if (isSigning && !isSigningAllowed) {
+                        throw new Error("Signing is expected but not allowed. Set '-P sign=TRUE' to continue")
+                    }
+                    signing.signPom(deployment)
+                }
+            }
+        }
+    }
+}
+/* End signing + upload logic */
 
 wrapper {
     gradleVersion = '2.1'
