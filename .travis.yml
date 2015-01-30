@@ -6,6 +6,6 @@ install: ''
 script:
     - TERM=dumb ./gradlew clean check
 after_success: |
-    test ${TRAVIS_SECURE_ENV_VARS} == true && test ${TRAVIS_BRANCH} = develop && test ${TRAVIS_PULL_REQUEST} = false && ./gradlew -P release.stage=SNAPSHOT uploadDist || false
+    test ${TRAVIS_SECURE_ENV_VARS} == true && test ${TRAVIS_BRANCH} = develop && test ${TRAVIS_PULL_REQUEST} = false && ./gradlew -P release.stage=SNAPSHOT uploadArchives || false
 jdk:
     - openjdk7
