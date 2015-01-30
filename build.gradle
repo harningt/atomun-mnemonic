@@ -4,7 +4,6 @@ plugins {
     id 'java'
     id 'groovy'
     id 'maven'
-    id 'signing'
     id 'org.ajoberstar.release-opinion' version '0.13.0'
     id 'org.ajoberstar.defaults' version '0.5.0'
 }
@@ -46,73 +45,7 @@ dependencies {
     testCompile localGroovy()
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.3-SNAPSHOT'
 }
-
-/* Begin signing + upload logic */
-
-/* All non-snapshots must be signed */
-def isRelease = !version.toString().endsWith("SNAPSHOT")
-def isSigning = isRelease
-def isSigningAllowed = hasProperty('sign') && getProperty('sign') == 'TRUE'
-
-def repo = !isRelease ? 'oss-snapshot-local' : 'oss-release-local'
-def artifactory_password = hasProperty("artifactory_password") ? getProperty("artifactory_password") : null
-if (null != artifactory_password) {
-    signing {
-        required { isSigning && isSigningAllowed }
-        if (isSigning && isSigningAllowed) {
-            sign configurations.archives
-        }
-    }
-}
-
-uploadArchives {
-    configuration = configurations.archives
-    repositories {
-        mavenDeployer {
-            def creds = [
-                userName: 'harningt',
-                password: artifactory_password
-            ]
-            /* SETUP TARGET */
-            if (!isRelease) {
-                repository(url: 'https://oss.jfrog.org/artifactory/oss-snapshot-local/') {
-                    authentication(creds)
-                }
-            } else {
-                repository(url: 'https://oss.jfrog.org/artifactory/oss-release-local/') {
-                    authentication(creds)
-                }
-            }
-            pom.project {
-                name name
-                description description
-                url defaults.siteUrl
-                inceptionYear '2014'
-                licenses {
-                    license {
-                        name 'Apache License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution 'repo'
-                    }
-                }
-                developers {
-                    developer {
-                        id 'harningt'
-                        name 'Thomas Harning Jr'
-                        email 'harningt@gmail.com'
-                    }
-                }
-            }
-            beforeDeployment { MavenDeployment deployment ->
-                if (isSigning && !isSigningAllowed) {
-                    throw new Error("Signing is expected but not allowed. Set '-P sign=TRUE' to continue")
-                }
-                signing.signPom(deployment)
-            }
-        }
-    }
-}
-/* End signing + upload logic */
+apply from: "$rootDir/gradle/maven-publish.gradle"
 
 wrapper {
     gradleVersion = '2.1'
