@@ -1,0 +1,6 @@
+language: java
+jdk:
+    - openjdk7
+install: ""
+script:
+    - TERM=dumb ./gradlew clean check

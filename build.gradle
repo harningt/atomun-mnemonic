@@ -1,9 +1,11 @@
+import org.ajoberstar.gradle.git.release.opinion.Strategies
+
 plugins {
     id 'java'
     id 'groovy'
-    id 'maven-publish'
-    id 'com.jfrog.bintray' version '0.6'
-    id 'org.ajoberstar.defaults' version '0.4.0'
+    id 'maven'
+    id 'org.ajoberstar.release-opinion' version '0.13.0'
+    id 'org.ajoberstar.defaults' version '0.5.0'
 }
 
 group = 'us.eharning.atomun'
@@ -13,15 +15,12 @@ sourceCompatibility = 1.7
 defaults {
     id = 'harningt'
 
-    bintrayRepo = 'atomun'
-    bintrayLabels = ['bitcoin', 'electrum', 'bip-0039']
-
     developers = [
             [id: 'harningt', name: 'Thomas Harning Jr', email: 'harningt@gmail.com']
     ]
 
     // used by license plugin
-    copyrightYears = '2014'
+    copyrightYears = '2014, 2015'
 }
 
 configurations {
@@ -29,9 +28,9 @@ configurations {
     all*.exclude group: 'org.codehaus.groovy'
 }
 
-project.afterEvaluate {
-    // Disable signing because this requires serverside key
-    project.bintray.pkg.version.gpg.sign = false
+release {
+    // Adds SNAPSHOT strategy to allowed list to be used by Travis-CI
+    versionStrategy Strategies.SNAPSHOT
 }
 
 repositories {
@@ -41,12 +40,12 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.google.guava', name: 'guava', version: '17.+'
+    compile group: 'com.google.guava', name: 'guava', version: '18.0'
 
     testCompile localGroovy()
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.3-SNAPSHOT'
 }
-
+apply from: "$rootDir/gradle/maven-publish.gradle"
 
 wrapper {
     gradleVersion = '2.1'

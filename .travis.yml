@@ -1,5 +1,11 @@
 language: java
-install: ""
-script: TERM=dumb ./gradlew clean check
+before_install:
+    - mkdir -p ~/.gradle
+    - openssl aes-256-cbc -K $encrypted_c48085a6192b_key -iv $encrypted_c48085a6192b_iv -in gradle/gradle.properties.travis-enc -out ~/.gradle/gradle.properties -d
+install: ''
+script:
+    - TERM=dumb ./gradlew clean check
+after_success: |
+    test ${TRAVIS_SECURE_ENV_VARS} == true && test ${TRAVIS_BRANCH} = develop && test ${TRAVIS_PULL_REQUEST} = false && ./gradlew -P release.stage=SNAPSHOT uploadArchives || false
 jdk:
     - openjdk7
