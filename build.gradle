@@ -20,7 +20,7 @@ defaults {
     ]
 
     // used by license plugin
-    copyrightYears = '2014'
+    copyrightYears = '2014, 2015'
 }
 
 configurations {
