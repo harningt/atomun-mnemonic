@@ -47,7 +47,9 @@ dependencies {
 }
 
 /* Begin signing + upload logic */
-def isRelease = hasProperty('release.stage') && getProperty('release.stage') == 'final'
+
+/* All non-snapshots must be signed */
+def isRelease = !version.toString().endsWith("SNAPSHOT")
 def isSigning = isRelease
 def isSigningAllowed = hasProperty('sign') && getProperty('sign') == 'TRUE'
 
@@ -56,9 +58,7 @@ def artifactory_password = hasProperty("artifactory_password") ? getProperty("ar
 if (null != artifactory_password) {
     signing {
         required { isSigning && isSigningAllowed }
-    }
-    if (isSigning && isSigningAllowed) {
-        signing {
+        if (isSigning && isSigningAllowed) {
             sign configurations.archives
         }
     }
@@ -102,13 +102,11 @@ task uploadDist(type: Upload) {
                     }
                 }
             }
-            if (isSigning) {
-                beforeDeployment { MavenDeployment deployment ->
-                    if (isSigning && !isSigningAllowed) {
-                        throw new Error("Signing is expected but not allowed. Set '-P sign=TRUE' to continue")
-                    }
-                    signing.signPom(deployment)
+            beforeDeployment { MavenDeployment deployment ->
+                if (isSigning && !isSigningAllowed) {
+                    throw new Error("Signing is expected but not allowed. Set '-P sign=TRUE' to continue")
                 }
+                signing.signPom(deployment)
             }
         }
     }
