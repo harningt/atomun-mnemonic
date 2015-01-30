@@ -64,7 +64,7 @@ if (null != artifactory_password) {
     }
 }
 
-task uploadDist(type: Upload) {
+uploadArchives {
     configuration = configurations.archives
     repositories {
         mavenDeployer {
