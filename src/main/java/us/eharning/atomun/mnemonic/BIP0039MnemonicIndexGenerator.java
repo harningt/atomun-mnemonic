@@ -16,16 +16,15 @@
 package us.eharning.atomun.mnemonic;
 
 /**
- * Enumeration of possible mnemonic algorithms.
- *
- * @since 0.0.1
+ * Utility class for BIP0039 wrapping different types of index generators.
  */
-public enum MnemonicAlgorithm {
+abstract class BIP0039MnemonicIndexGenerator {
     /**
-     * Legacy Electrum algorithm.
+     * Take the input entropy and output an array of word indices.
      *
-     * @since 0.0.1
+     * @param entropy generated entropy to process.
+     *
+     * @return array of integer indices into dictionary.
      */
-    LegacyElectrum,
-    BIP0039
+    public abstract int[] generateIndices(byte[] entropy);
 }
