@@ -17,8 +17,6 @@ package us.eharning.atomun.mnemonic;
 
 import com.google.common.base.Supplier;
 
-import java.text.Normalizer;
-
 /**
  * Service provider for the BIP0039 mnemonic specification.
  *
@@ -55,10 +53,7 @@ class BIP0039MnemonicBuilderSpi extends BasicMnemonicBuilderSpi {
             }
             mnemonicSentence.append(word);
         }
-        /* Specification declares that mnemonics are normalized to NFKD */
-        String result = mnemonicSentence.toString();
-        result = Normalizer.normalize(result, Normalizer.Form.NFKD);
-        return result;
+        return mnemonicSentence.toString();
     }
 
     /**

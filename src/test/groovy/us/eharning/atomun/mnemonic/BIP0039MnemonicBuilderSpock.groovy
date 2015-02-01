@@ -64,7 +64,8 @@ class BIP0039MnemonicBuilderSpock extends Specification {
             builder.setWordList(wordList)
             builder.setEntropy(entropy)
         then:
-            mnemonic == builder.build()
+            /* Normalize output to ensure it properly matches normalized test case */
+            mnemonic == Normalizer.normalize(builder.build(), Normalizer.Form.NFKD)
         where:
             [wordList, entropy, mnemonic, _] << getEncodingCombinations()
     }
@@ -76,12 +77,12 @@ class BIP0039MnemonicBuilderSpock extends Specification {
             builder.setWordList("japanese")
             builder.setEntropy(entropy)
         then:
-            mnemonic == builder.build()
+            /* Normalize output to ensure it properly matches normalized test case */
+            mnemonic == Normalizer.normalize(builder.build(), Normalizer.Form.NFKD)
         where:
             testCase << JP_VECTORS
             entropy = testCase.entropy.decodeHex()
-            /* Specification declares that mnemonics are normalized to NFKD.
-             * Inputs must be normalized properly due to user keyboard/etc. */
+            /* To make a sane validation, data must be normalized before comparing. */
             mnemonic = Normalizer.normalize(testCase.mnemonic, Normalizer.Form.NFKD)
     }
     def "null extension return"() {
