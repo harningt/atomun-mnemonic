@@ -37,15 +37,19 @@ public class MnemonicSample {
             /* Generate a mnemonic with the remaining parameters as the default. */
             String mnemonic = builder.build();
 
-            /* Decode the mnemonic into a stateful unit to operate on. */
-            MnemonicUnit unit = MnemonicDecoder.decodeMnemonic(algorithm, mnemonic);
-
-            /* Extract a seed out of the mnemonic unit. */
-            byte[] seed = unit.getSeed();
-
             System.out.println(algorithm);
             System.out.println("\t" + mnemonic);
-            System.out.println("\t" + BaseEncoding.base16().encode(seed));
+            try {
+                /* Decode the mnemonic into a stateful unit to operate on. */
+                MnemonicUnit unit = MnemonicDecoder.decodeMnemonic(algorithm, mnemonic);
+
+                /* Extract a seed out of the mnemonic unit. */
+                byte[] seed = unit.getSeed();
+
+                System.out.println("\t" + BaseEncoding.base16().encode(seed));
+            } catch (UnsupportedOperationException e) {
+                System.out.println("\tSeed handling failed");
+            }
         }
     }
 }
