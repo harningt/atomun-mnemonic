@@ -61,6 +61,11 @@ This library implements the "Legacy Electrum" algorithm from Electrum, prior to
 the newer BIP0039-derived algorithm in use. It uses a dictionary of 1625 words
 to create a mnemonic strictly derived from the indices in the sorted dictionary.
 
+## BIP0039
+
+Based on the draft [BIP](BIP0039Spec) with English and Japanese dictionaries
+along with the relevant unit tests for each.
+
 ## Dependencies
 ### Build
 
@@ -79,6 +84,12 @@ to create a mnemonic strictly derived from the indices in the sorted dictionary.
 Thanks to the Electrum team for preparing the [original implementation][LegacyElectrumImplementation]
 that I used the algorithm and dictionary from.
 
+Thanks to the Trezor team for preparing the baseline (python implementation of BIP0039)[PythonBIP0039]
+and maintaining test cases.
+
+Thanks to the BitcoinJ team for preparing an implementation of (BIP0039)[BitcoinJBIP0039]
+that I used for inspiration.
+
 ## Other Builds
 
 | Wercker | Shippable |
@@ -88,3 +99,6 @@ that I used the algorithm and dictionary from.
 [Apache2.0]: http://www.apache.org/licenses/LICENSE-2.0
 [SemVer2.0]: http://semver.org/spec/v2.0.0.html
 [LegacyElectrumImplementation]: https://github.com/spesmilo/electrum/blob/4dcdcbc068d0d42ac7edc27c7d618b53cb6f706d/lib/old_mnemonic.py
+[BIP0039Spec]: https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki
+[PythonBIP0039]: https://github.com/trezor/python-mnemonic
+[BitcoinJBIP0039]: https://code.google.com/p/bitcoinj/source/browse/core/src/main/java/com/google/bitcoin/crypto/MnemonicCode.java

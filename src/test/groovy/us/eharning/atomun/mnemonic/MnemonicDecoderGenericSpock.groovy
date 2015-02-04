@@ -26,7 +26,7 @@ import spock.lang.Specification
 class MnemonicDecoderGenericSpock extends Specification {
     def "requesting an unlisted algorithm results in failure"() {
         when:
-            MnemonicDecoder.decodeMnemonic(null, "TEST")
+            MnemonicDecoder.decodeMnemonic((MnemonicAlgorithm)null, "TEST")
         then:
             thrown(UnsupportedOperationException)
     }
