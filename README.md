@@ -23,6 +23,13 @@ The repository is managed using the Gitflow workflow. Note that any published
 feature/* branches are subject to history modification, so beware working
 off of those.
 
+Non-annotated tags will be added in the form vMAJOR.MINOR.MICRO-dev to denote the
+start of a new feature. This will guide the next release to be versioned as
+vMAJOR.MINOR.MICRO. Without this, the next expected version would be a MICRO-change.
+
+Signed and annotated tags will be added in the form vMAJOR.MINOR.MICRO to denote
+releases.
+
 ## Maven Artifacts
 
 Maven Group ID: us.eharning.atomun
@@ -52,6 +59,14 @@ get published to Travis-CI, nor Bintray.
     uid                  Thomas Harning Jr (CODE SIGNING KEY) <harningt@gmail.com>
 
 See also <http://www.eharning.us/gpg/>
+
+## Tag Signing
+
+Tags will be signed by the following privately held hardware-based GPG key.
+
+    pub   3072R/B1DBAD54 2011-04-19
+          Key fingerprint = 2F0A FF2E A8A0 1485 C95B  8650 F0A4 C0F7 B1DB AD54
+    uid                  Thomas Harning Jr <harningt@gmail.com>
 
 # Algorithms
 
