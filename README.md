@@ -53,6 +53,14 @@ get published to Travis-CI, nor Bintray.
 
 See also <http://www.eharning.us/gpg/>
 
+# Algorithms
+
+## Legacy Electrum
+
+This library implements the "Legacy Electrum" algorithm from Electrum, prior to
+the newer BIP0039-derived algorithm in use. It uses a dictionary of 1625 words
+to create a mnemonic strictly derived from the indices in the sorted dictionary.
+
 ## Dependencies
 ### Build
 
@@ -66,6 +74,11 @@ See also <http://www.eharning.us/gpg/>
 
  * Spock Framework
 
+# Acknowledgements
+
+Thanks to the Electrum team for preparing the [original implementation][LegacyElectrumImplementation]
+that I used the algorithm and dictionary from.
+
 ## Other Builds
 
 | Wercker | Shippable |
@@ -74,3 +87,4 @@ See also <http://www.eharning.us/gpg/>
 
 [Apache2.0]: http://www.apache.org/licenses/LICENSE-2.0
 [SemVer2.0]: http://semver.org/spec/v2.0.0.html
+[LegacyElectrumImplementation]: https://github.com/spesmilo/electrum/blob/4dcdcbc068d0d42ac7edc27c7d618b53cb6f706d/lib/old_mnemonic.py
