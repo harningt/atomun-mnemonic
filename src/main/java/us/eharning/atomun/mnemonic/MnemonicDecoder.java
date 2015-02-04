@@ -30,7 +30,8 @@ public final class MnemonicDecoder {
     private static final ImmutableMap<MnemonicAlgorithm, MnemonicDecoderSystem> constructorMap;
     static {
         constructorMap = ImmutableMap.of(
-            MnemonicAlgorithm.LegacyElectrum, (MnemonicDecoderSystem)new LegacyElectrumMnemonicDecoderSystem()
+            MnemonicAlgorithm.LegacyElectrum, new LegacyElectrumMnemonicDecoderSystem(),
+            MnemonicAlgorithm.BIP0039, new BIP0039MnemonicDecoderSystem()
         );
     }
 
@@ -50,13 +51,26 @@ public final class MnemonicDecoder {
      * @since 0.0.1
      */
     public static Iterable<MnemonicUnit> decodeMnemonic(CharSequence mnemonicSequence) {
+        return decodeMnemonic(mnemonicSequence, null);
+    }
+
+    /**
+     * Decodes a mnemonic, returning an iterable with all of the successful decoding results.
+     *
+     * @param mnemonicSequence space-delimited sequence of mnemonic words.
+     * @param wordListIdentifier identifier for the word list to use.
+     *
+     * @return sequence of successful decoding results or empty.
+     *
+     * @since 0.1.0
+     */
+    public static Iterable<MnemonicUnit> decodeMnemonic(CharSequence mnemonicSequence, String wordListIdentifier) {
         ImmutableList.Builder<MnemonicUnit> unitListBuilder = ImmutableList.builder();
         for (MnemonicDecoderSystem system: constructorMap.values()) {
             try {
-                MnemonicUnit unit = system.decode(mnemonicSequence, null);
+                MnemonicUnit unit = system.decode(mnemonicSequence, wordListIdentifier);
                 unitListBuilder.add(unit);
-            } catch (IllegalArgumentException ignored) {
-                /* On failure, ignore the error and continue on */
+            } catch (UnsupportedOperationException | IllegalArgumentException ignored) {
             }
         }
         return unitListBuilder.build();

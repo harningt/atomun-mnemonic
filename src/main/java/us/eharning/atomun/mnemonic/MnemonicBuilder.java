@@ -84,6 +84,8 @@ public final class MnemonicBuilder {
      *
      * @param extensionType kind of builder extension to obtain.
      *
+     * @return typed extension if found, else null.
+     *
      * @since 0.0.1
      */
     public <T> T getExtension(Class<T> extensionType) {
@@ -95,10 +97,13 @@ public final class MnemonicBuilder {
      *
      * @param entropy data to encode.
      *
+     * @return this to allow chaining.
+     *
      * @since 0.0.1
      */
-    public void setEntropy(byte[] entropy) {
+    public MnemonicBuilder setEntropy(byte[] entropy) {
         spi.setEntropy(entropy);
+        return this;
     }
 
     /**
@@ -106,10 +111,13 @@ public final class MnemonicBuilder {
      *
      * @param entropyLength number of bytes of entropy to use.
      *
+     * @return this to allow chaining.
+     *
      * @since 0.0.1
      */
-    public void setEntropyLength(int entropyLength) {
+    public MnemonicBuilder setEntropyLength(int entropyLength) {
         spi.setEntropyLength(entropyLength);
+        return this;
     }
 
     /**
@@ -117,9 +125,12 @@ public final class MnemonicBuilder {
      *
      * @param wordListIdentifier name of the word list to use.
      *
+     * @return this to allow chaining.
+     *
      * @since 0.0.1
      */
-    public void setWordList(String wordListIdentifier) {
+    public MnemonicBuilder setWordList(String wordListIdentifier) {
         spi.setWordList(wordListIdentifier);
+        return this;
     }
 }

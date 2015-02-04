@@ -19,8 +19,6 @@ import com.google.common.base.Supplier;
 
 /**
  * Service provider for the BIP0039 mnemonic specification.
- *
- * @since 0.1.0
  */
 class BIP0039MnemonicBuilderSpi extends BasicMnemonicBuilderSpi {
     public static final Supplier<MnemonicBuilderSpi> SUPPLIER = new Supplier<MnemonicBuilderSpi>() {

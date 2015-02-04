@@ -25,11 +25,10 @@ import java.text.Normalizer
  */
 class BIP0039MnemonicBuilderSpock extends Specification {
     static final MnemonicAlgorithm ALG = MnemonicAlgorithm.BIP0039
-    static final String OFFICIAL_PASSWORD = "Trezor"
-    static final OFFICIAL_VECTORS
+    static final TREZOR_OFFICIAL_VECTORS
     static final JP_VECTORS
     static {
-        OFFICIAL_VECTORS = new JsonSlurper().parseURL(BIP0039MnemonicBuilderSpock.class.classLoader.getResource("us/eharning/atomun/mnemonic/BIP0039_TREZOR_VECTORS.json"), null)
+        TREZOR_OFFICIAL_VECTORS = new JsonSlurper().parseURL(BIP0039MnemonicBuilderSpock.class.classLoader.getResource("us/eharning/atomun/mnemonic/BIP0039_TREZOR_VECTORS.json"), null)
         JP_VECTORS = new JsonSlurper().parseURL(BIP0039MnemonicBuilderSpock.class.classLoader.getResource("us/eharning/atomun/mnemonic/BIP0039-test_JP.json"), null)
     }
 
@@ -48,7 +47,7 @@ class BIP0039MnemonicBuilderSpock extends Specification {
     Iterable<Object[]> getEncodingCombinations() {
         /* Returns out items of: wordList, entropy, wordList, seed */
         List<Object[]> combinations = new ArrayList<>()
-        OFFICIAL_VECTORS.each{
+        TREZOR_OFFICIAL_VECTORS.each{
             String wordList = it.key
             it.value.each{ test ->
                 Object[] item = [ wordList, test[0].decodeHex(), Normalizer.normalize(test[1], Normalizer.Form.NFKD), test[2].decodeHex()]

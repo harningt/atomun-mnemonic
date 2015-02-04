@@ -22,6 +22,8 @@ import java.util.Set;
 
 /**
  * Collection of tested mnemonic index generator implementations to use.
+ *
+ * Thanks to the BitcoinJ project for inspiration of the boolean-array based encoder.
  */
 class BIP0039MnemonicIndexGenerators {
     final static BIP0039MnemonicIndexGenerator OPTIMAL_GENERATOR = new JoinedBooleanGenerator();
@@ -29,6 +31,9 @@ class BIP0039MnemonicIndexGenerators {
             new JoinedBooleanGenerator()
     );
 
+    /**
+     * Generator based on treating an array of booleans as joined entropy+checksum storage.
+     */
     private final static class JoinedBooleanGenerator extends BIP0039MnemonicIndexGenerator {
 
         /**

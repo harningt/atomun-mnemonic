@@ -27,5 +27,10 @@ public enum MnemonicAlgorithm {
      * @since 0.0.1
      */
     LegacyElectrum,
+    /**
+     * Identifier for BIP-0039 specified mnemonic algorithm.
+     *
+     * @since 0.1.0
+     */
     BIP0039
 }
