@@ -32,22 +32,16 @@ import java.util.ArrayList;
  */
 class LegacyElectrumMnemonicUtility {
     private static final Splitter WORD_SPLITTER = Splitter.on(CharMatcher.WHITESPACE).trimResults().omitEmptyStrings();
-    private static final ImmutableList<String> INTEGER_TO_DICTIONARY;
-    private static final ImmutableMap<String, Integer> DICTIONARY_TO_INTEGER;
+    private static final BidirectionalDictionary DICTIONARY;
     private static final int N;
 
     static {
         try {
-            INTEGER_TO_DICTIONARY = resourceToLines(LegacyElectrumMnemonicUtility.class.getResource("legacy_electrum_dictionary.txt"));
+            DICTIONARY = new BidirectionalDictionary(LegacyElectrumMnemonicUtility.class.getResource("legacy_electrum_dictionary.txt"));
         } catch (IOException e) {
             throw new Error("Failed to read legacy_electrum_dictionary.txt for initialization", e);
         }
-        ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
-        for (int i = 0; i < INTEGER_TO_DICTIONARY.size(); i++) {
-            builder.put(INTEGER_TO_DICTIONARY.get(i), i);
-        }
-        DICTIONARY_TO_INTEGER = builder.build();
-        N = INTEGER_TO_DICTIONARY.size();
+        N = DICTIONARY.getSize();
     }
 
     /* Simple modular math hack to deal with signed/unsigned integer issues
@@ -91,9 +85,9 @@ class LegacyElectrumMnemonicUtility {
                 int w1 = (int)(x % N);
                 int w2 = (int)(x / N + w1) % N;
                 int w3 = (int)(x / N / N + w2) % N;
-                encoded.add(INTEGER_TO_DICTIONARY.get(w1));
-                encoded.add(INTEGER_TO_DICTIONARY.get(w2));
-                encoded.add(INTEGER_TO_DICTIONARY.get(w3));
+                encoded.add(DICTIONARY.doForward(w1));
+                encoded.add(DICTIONARY.doForward(w2));
+                encoded.add(DICTIONARY.doForward(w3));
             }
         } catch (EOFException ignored) {
             /* End of stream */
@@ -120,9 +114,9 @@ class LegacyElectrumMnemonicUtility {
             String word1 = mnemonicWords[i].toLowerCase();
             String word2 = mnemonicWords[i + 1].toLowerCase();
             String word3 = mnemonicWords[i + 2].toLowerCase();
-            Integer w1 = DICTIONARY_TO_INTEGER.get(word1);
-            Integer w2 = DICTIONARY_TO_INTEGER.get(word2);
-            Integer w3 = DICTIONARY_TO_INTEGER.get(word3);
+            Integer w1 = DICTIONARY.doBackward(word1);
+            Integer w2 = DICTIONARY.doBackward(word2);
+            Integer w3 = DICTIONARY.doBackward(word3);
             if (null == w1 || null == w2 || null == w3) {
                 throw new IllegalArgumentException("Unknown mnemonic word used");
             }

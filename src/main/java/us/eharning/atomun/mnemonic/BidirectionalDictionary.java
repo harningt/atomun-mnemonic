@@ -91,4 +91,12 @@ class BidirectionalDictionary extends Converter<Integer, String> {
         Preconditions.checkArgument(null != result, "Unknown dictionary word");
         return result;
     }
+
+    /**
+     * Obtains the size of the dictionary.
+     * @return size of the dictionary.
+     */
+    public int getSize() {
+        return INTEGER_TO_DICTIONARY.size();
+    }
 }
