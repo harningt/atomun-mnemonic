@@ -46,6 +46,8 @@ public final class MnemonicDecoder {
      * @param mnemonicSequence space-delimited sequence of mnemonic words.
      *
      * @return sequence of successful decoding results or empty.
+     *
+     * @since 0.0.1
      */
     public static Iterable<MnemonicUnit> decodeMnemonic(CharSequence mnemonicSequence) {
         ImmutableList.Builder<MnemonicUnit> unitListBuilder = ImmutableList.builder();
@@ -68,6 +70,8 @@ public final class MnemonicDecoder {
      *
      * @return successful decoding results.
      * @throws java.lang.IllegalArgumentException on decoding failure.
+     *
+     * @since 0.0.1
      */
     public static MnemonicUnit decodeMnemonic(MnemonicAlgorithm mnemonicAlgorithm, CharSequence mnemonicSequence) {
         return decodeMnemonic(mnemonicAlgorithm, mnemonicSequence, null);
@@ -75,11 +79,15 @@ public final class MnemonicDecoder {
 
     /**
      * Decode a mnemonic for a specific algorithm and word list.
+     *
      * @param mnemonicAlgorithm identifier for which algorithm to use.
      * @param mnemonicSequence space-delimited sequence of mnemonic words.
      * @param wordListIdentifier identifier for the word list to use.
+     *
      * @return successful decoding results.
      * @throws java.lang.IllegalArgumentException on decoding failure.
+     *
+     * @since 0.0.1
      */
     public static MnemonicUnit decodeMnemonic(MnemonicAlgorithm mnemonicAlgorithm, CharSequence mnemonicSequence, String wordListIdentifier) {
         MnemonicDecoderSystem system = constructorMap.get(mnemonicAlgorithm);

@@ -20,6 +20,8 @@ import com.google.common.collect.ImmutableMap;
 
 /**
  * Builder API to generate mnemonic sequences.
+ *
+ * @since 0.0.1
  */
 public final class MnemonicBuilder {
     /**
@@ -54,6 +56,8 @@ public final class MnemonicBuilder {
      * @param algorithm kind of instance to construct.
      *
      * @return new builder instance.
+     *
+     * @since 0.0.1
      */
     public static MnemonicBuilder newBuilder(MnemonicAlgorithm algorithm) {
         Supplier<MnemonicBuilderSpi> supplier = constructorMap.get(algorithm);
@@ -67,6 +71,8 @@ public final class MnemonicBuilder {
      * Encode this instance to a space-delimited series of mnemonic words.
      *
      * @return space-delimited sequence of mnemonic words.
+     *
+     * @since 0.0.1
      */
     public String build() {
         return spi.build();
@@ -76,6 +82,8 @@ public final class MnemonicBuilder {
      * Set a custom property specialized for the given algorithm.
      *
      * @param extensionType kind of builder extension to obtain.
+     *
+     * @since 0.0.1
      */
     public <T> T getExtension(Class<T> extensionType) {
         return spi.getExtension(extensionType);
@@ -85,6 +93,8 @@ public final class MnemonicBuilder {
      * Set the entropy to generate the mnemonic with.
      *
      * @param entropy data to encode.
+     *
+     * @since 0.0.1
      */
     public void setEntropy(byte[] entropy) {
         spi.setEntropy(entropy);
@@ -94,6 +104,8 @@ public final class MnemonicBuilder {
      * Set the length of the desired entropy to generate the mnemonic with.
      *
      * @param entropyLength number of bytes of entropy to use.
+     *
+     * @since 0.0.1
      */
     public void setEntropyLength(int entropyLength) {
         spi.setEntropyLength(entropyLength);
@@ -103,6 +115,8 @@ public final class MnemonicBuilder {
      * Set the word list to use for encoding the mnemonic.
      *
      * @param wordListIdentifier name of the word list to use.
+     *
+     * @since 0.0.1
      */
     public void setWordList(String wordListIdentifier) {
         spi.setWordList(wordListIdentifier);

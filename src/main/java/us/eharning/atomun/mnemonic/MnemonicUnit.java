@@ -18,6 +18,8 @@ package us.eharning.atomun.mnemonic;
 /**
  * Service provider to back the MnemonicDecoder.
  * Primarily to present a consistent API.
+ *
+ * @since 0.0.1
  */
 public final class MnemonicUnit {
     private final MnemonicUnitSpi spi;
@@ -35,6 +37,8 @@ public final class MnemonicUnit {
      * Get the entropy if possible.
      *
      * @return a copy of the entropy byte array or null if inaccessible.
+     *
+     * @since 0.0.1
      */
     public byte[] getEntropy() {
         return spi.getEntropy();
@@ -46,6 +50,10 @@ public final class MnemonicUnit {
      * By default this rejects as it is not expected to be implemented lower down.
      *
      * @param extensionType kind of decoder extension to obtain.
+     *
+     * @return typed extension if available, else null.
+     *
+     * @since 0.0.1
      */
     public <T> T getExtension(Class<T> extensionType) {
         return spi.getExtension(extensionType);
@@ -55,6 +63,8 @@ public final class MnemonicUnit {
      * Get the associated mnemonic string.
      *
      * @return space-delimited sequence of mnemonic words.
+     *
+     * @since 0.0.1
      */
     public CharSequence getMnemonic() {
         return spi.getMnemonicSequence();
@@ -64,6 +74,8 @@ public final class MnemonicUnit {
      * Get a seed from this mnemonic without supplying a password.
      *
      * @return a derived seed.
+     *
+     * @since 0.0.1
      */
     public byte[] getSeed() {
         return spi.getSeed();
@@ -75,6 +87,8 @@ public final class MnemonicUnit {
      * @param password password to supply for decoding.
      *
      * @return a derived seed.
+     *
+     * @since 0.0.1
      */
     public byte[] getSeed(CharSequence password) {
         return spi.getSeed(password);
