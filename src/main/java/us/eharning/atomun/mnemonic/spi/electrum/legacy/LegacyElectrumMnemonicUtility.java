@@ -15,12 +15,15 @@
  */
 package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
-import com.google.common.base.*;
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Converter;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -47,6 +50,24 @@ class LegacyElectrumMnemonicUtility {
         return value < 0 ? mod + value : value % mod;
     }
 
+    private static void putInteger(byte[] buffer, int currentIndex, int value)
+    {
+        buffer[currentIndex] = (byte)((value >> 24) & 0xFF);
+        buffer[currentIndex + 1] = (byte)((value >> 16) & 0xFF);
+        buffer[currentIndex + 2] = (byte)((value >> 8) & 0xFF);
+        buffer[currentIndex + 3] = (byte)(value & 0xFF);
+    }
+
+    private static int getInteger(byte[] buffer, int currentIndex)
+    {
+        int value =
+                (buffer[currentIndex] & 0xFF) << 24
+                | (buffer[currentIndex + 1] & 0xFF) << 16
+                | (buffer[currentIndex + 2] & 0xFF) << 8
+                | buffer[currentIndex + 3] & 0xFF;
+        return value;
+    }
+
     /**
      * Encode a sequence of bytes to a space-delimited series of mnemonic words.
      *
@@ -54,24 +75,18 @@ class LegacyElectrumMnemonicUtility {
      * @return space-delimited sequence of mnemonic words.
      */
     static String toMnemonic(byte[] entropy) {
+        int entropyIndex = 0;
         ArrayList<String> encoded = Lists.newArrayList();
         encoded.ensureCapacity(entropy.length / 8 * 3);
-        DataInput input = new DataInputStream(new ByteArrayInputStream(entropy));
-        try {
-            //noinspection InfiniteLoopStatement
-            while (true) {
-                long x = input.readInt() & 0xFFFFFFFFL;
-                int w1 = (int)(x % N);
-                int w2 = (int)(x / N + w1) % N;
-                int w3 = (int)(x / N / N + w2) % N;
-                encoded.add(DICTIONARY.convert(w1));
-                encoded.add(DICTIONARY.convert(w2));
-                encoded.add(DICTIONARY.convert(w3));
-            }
-        } catch (EOFException ignored) {
-            /* End of stream */
-        } catch (IOException e) {
-            throw Throwables.propagate(e);
+        while (entropyIndex < entropy.length) {
+            long x = getInteger(entropy, entropyIndex) & 0xFFFFFFFFL;
+            entropyIndex += 4;
+            int w1 = (int)(x % N);
+            int w2 = (int)(x / N + w1) % N;
+            int w3 = (int)(x / N / N + w2) % N;
+            encoded.add(DICTIONARY.convert(w1));
+            encoded.add(DICTIONARY.convert(w2));
+            encoded.add(DICTIONARY.convert(w3));
         }
         return Joiner.on(' ').join(encoded);
     }
@@ -85,7 +100,8 @@ class LegacyElectrumMnemonicUtility {
      */
     static byte[] toEntropy(CharSequence mnemonicSequence) {
         String[] mnemonicWords = Iterables.toArray(WORD_SPLITTER.split(mnemonicSequence), String.class);
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] entropy = new  byte[mnemonicWords.length * 4 / 3];
+        int entropyIndex = 0;
         Converter<String, Integer> REVERSE_DICTIONARY = DICTIONARY.reverse();
         if (mnemonicWords.length % 3 != 0) {
             throw new IllegalArgumentException("Mnemonic sequence is not a multiple of 3");
@@ -102,11 +118,9 @@ class LegacyElectrumMnemonicUtility {
             }
             int x = w1 + N * mn_mod(w2 - w1, N) + N * N * mn_mod(w3 - w2, N);
             /* Convert to 4 bytes */
-            output.write((x >> 24) & 0xFF);
-            output.write((x >> 16) & 0xFF);
-            output.write((x >> 8) & 0xFF);
-            output.write(x & 0xFF);
+            putInteger(entropy, entropyIndex, x);
+            entropyIndex += 4;
         }
-        return output.toByteArray();
+        return entropy;
     }
 }
