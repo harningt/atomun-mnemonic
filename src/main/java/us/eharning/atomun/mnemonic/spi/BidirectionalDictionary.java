@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package us.eharning.atomun.mnemonic;
+package us.eharning.atomun.mnemonic.spi;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Converter;
@@ -25,14 +25,26 @@ import com.google.common.io.Resources;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Utility class representing a bidirectional map between integer and string.
+ *
+ * @since 0.1.0
  */
-class BidirectionalDictionary extends Converter<Integer, String> {
+public class BidirectionalDictionary extends Converter<Integer, String> {
     private final ImmutableList<String> INTEGER_TO_DICTIONARY;
     private final ImmutableMap<String, Integer> DICTIONARY_TO_INTEGER;
+    private final String wordListIdentifier;
 
+    /**
+     * Utility method to convert a resource URL into a list of lines.
+     *
+     * @param resource location to generate the line list from.
+     *
+     * @return list of lines.
+     * @throws IOException on I/O error reading from the resource.
+     */
     private static ImmutableList<String> resourceToLines(URL resource) throws IOException {
         LineProcessor<ImmutableList<String>> lineProcess = new LineProcessor<ImmutableList<String>>() {
             final ImmutableList.Builder<String> result = ImmutableList.builder();
@@ -50,13 +62,36 @@ class BidirectionalDictionary extends Converter<Integer, String> {
         return Resources.readLines(resource, Charsets.UTF_8, lineProcess);
     }
 
-    public BidirectionalDictionary(URL dictionaryLocation) throws IOException {
-        INTEGER_TO_DICTIONARY = resourceToLines(dictionaryLocation);
+    /**
+     * Construct an instance by loading words from a list.
+     *
+     * @param wordList list of words to generate the dictionary from.
+     * @param wordListIdentifier associated word list identifier.
+     *
+     * @since 0.1.0
+     */
+    public BidirectionalDictionary(List<String> wordList, String wordListIdentifier) {
+        this.wordListIdentifier = wordListIdentifier;
+        INTEGER_TO_DICTIONARY = ImmutableList.copyOf(wordList);
         ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
         for (int i = 0; i < INTEGER_TO_DICTIONARY.size(); i++) {
             builder.put(INTEGER_TO_DICTIONARY.get(i), i);
         }
         DICTIONARY_TO_INTEGER = builder.build();
+    }
+
+    /**
+     * Construct an instance by reading a resource as UTF-8 and line-splitting.
+     *
+     * @param dictionaryLocation resource location to generate the dictionary from.
+     * @param wordListIdentifier associated word list identifier.
+     *
+     * @throws IOException on an I/O error reading the resource.
+     *
+     * @since 0.1.0
+     */
+    public BidirectionalDictionary(URL dictionaryLocation, String wordListIdentifier) throws IOException {
+        this(resourceToLines(dictionaryLocation), wordListIdentifier);
     }
 
     /**
@@ -93,8 +128,22 @@ class BidirectionalDictionary extends Converter<Integer, String> {
     }
 
     /**
+     * Obtains the wordListIdentifier of the dictionary.
+     *
+     * @return wordListIdentifier.
+     *
+     * @since 0.1.0
+     */
+    public String getWordListIdentifier() {
+        return wordListIdentifier;
+    }
+
+    /**
      * Obtains the size of the dictionary.
+     *
      * @return size of the dictionary.
+     *
+     * @since 0.1.0
      */
     public int getSize() {
         return INTEGER_TO_DICTIONARY.size();

@@ -16,24 +16,19 @@
 package us.eharning.atomun.mnemonic;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
+import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
 
 /**
  * Builder API to decode mnemonic sequences.
+ *
+ * @since 0.0.1
  */
 public final class MnemonicDecoder {
-    /**
-     * Mapping of algorithms to implementation instance suppliers.
-     *
-     * May be replaced with a mutable map if custom implementations allowed.
-     */
-    private static final ImmutableMap<MnemonicAlgorithm, MnemonicDecoderSystem> constructorMap;
-    static {
-        constructorMap = ImmutableMap.of(
-            MnemonicAlgorithm.LegacyElectrum, new LegacyElectrumMnemonicDecoderSystem(),
-            MnemonicAlgorithm.BIP0039, new BIP0039MnemonicDecoderSystem()
-        );
-    }
+    private static final ImmutableList<MnemonicServiceProvider> SERVICE_PROVIDERS = ImmutableList.of(
+            new LegacyElectrumMnemonicService(),
+            new BIP0039MnemonicService()
+    );
 
     /**
      * Deny construction of this static utility class.
@@ -66,11 +61,17 @@ public final class MnemonicDecoder {
      */
     public static Iterable<MnemonicUnit> decodeMnemonic(CharSequence mnemonicSequence, String wordListIdentifier) {
         ImmutableList.Builder<MnemonicUnit> unitListBuilder = ImmutableList.builder();
-        for (MnemonicDecoderSystem system: constructorMap.values()) {
-            try {
-                MnemonicUnit unit = system.decode(mnemonicSequence, wordListIdentifier);
-                unitListBuilder.add(unit);
-            } catch (UnsupportedOperationException | IllegalArgumentException ignored) {
+        for (MnemonicServiceProvider serviceProvider: SERVICE_PROVIDERS) {
+            for (MnemonicAlgorithm algorithm: MnemonicAlgorithm.values()) {
+                MnemonicDecoderSpi system = serviceProvider.getMnemonicDecoder(algorithm);
+                if (null == system) {
+                    continue;
+                }
+                try {
+                    MnemonicUnit unit = system.decode(mnemonicSequence, wordListIdentifier);
+                    unitListBuilder.add(unit);
+                } catch (UnsupportedOperationException | IllegalArgumentException ignored) {
+                }
             }
         }
         return unitListBuilder.build();
@@ -104,10 +105,13 @@ public final class MnemonicDecoder {
      * @since 0.0.1
      */
     public static MnemonicUnit decodeMnemonic(MnemonicAlgorithm mnemonicAlgorithm, CharSequence mnemonicSequence, String wordListIdentifier) {
-        MnemonicDecoderSystem system = constructorMap.get(mnemonicAlgorithm);
-        if (null == system) {
-            throw new UnsupportedOperationException("Unsupported algorithm " + mnemonicAlgorithm);
+        for (MnemonicServiceProvider serviceProvider: SERVICE_PROVIDERS) {
+            MnemonicDecoderSpi system = serviceProvider.getMnemonicDecoder(mnemonicAlgorithm);
+            if (null == system) {
+                continue;
+            }
+            return system.decode(mnemonicSequence, wordListIdentifier);
         }
-        return system.decode(mnemonicSequence, wordListIdentifier);
+        throw new UnsupportedOperationException("Unsupported algorithm " + mnemonicAlgorithm);
     }
 }

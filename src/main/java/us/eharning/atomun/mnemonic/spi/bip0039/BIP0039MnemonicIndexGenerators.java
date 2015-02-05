@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package us.eharning.atomun.mnemonic;
+package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;

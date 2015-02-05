@@ -15,6 +15,8 @@
  */
 package us.eharning.atomun.mnemonic;
 
+import com.google.common.collect.ClassToInstanceMap;
+
 /**
  * Service provider to back the MnemonicDecoder.
  * Primarily to present a consistent API.
@@ -23,14 +25,26 @@ package us.eharning.atomun.mnemonic;
  */
 public final class MnemonicUnit {
     private final MnemonicUnitSpi spi;
+    private final CharSequence mnemonicSequence;
+    private final byte[] entropy;
+    private final byte[] seed;
+    private final ClassToInstanceMap<Object> extensions;
 
     /**
      * Construct a new MnemonicUnit wrapping the given implementation.
      *
-     * @param spi implementation.
+     * @param spi implementation details.
+     * @param mnemonicSequence represented sequence.
+     * @param entropy derived entropy or null if on-demand.
+     * @param seed derived seed or null if on-demand
+     * @param extensions implementation extensions or null if on-demand/non-existent.
      */
-    MnemonicUnit(MnemonicUnitSpi spi) {
+    MnemonicUnit(MnemonicUnitSpi spi, CharSequence mnemonicSequence, byte[] entropy, byte[] seed, ClassToInstanceMap<Object> extensions) {
         this.spi = spi;
+        this.mnemonicSequence = mnemonicSequence;
+        this.entropy = entropy;
+        this.seed = seed;
+        this.extensions = extensions;
     }
 
     /**
@@ -41,7 +55,10 @@ public final class MnemonicUnit {
      * @since 0.0.1
      */
     public byte[] getEntropy() {
-        return spi.getEntropy();
+        if (null != entropy) {
+            return entropy;
+        }
+        return spi.getEntropy(mnemonicSequence);
     }
 
     /**
@@ -56,7 +73,10 @@ public final class MnemonicUnit {
      * @since 0.0.1
      */
     public <T> T getExtension(Class<T> extensionType) {
-        return spi.getExtension(extensionType);
+        if (null != extensions) {
+            return extensions.getInstance(extensionType);
+        }
+        return spi.getExtension(mnemonicSequence, extensionType);
     }
 
     /**
@@ -67,7 +87,7 @@ public final class MnemonicUnit {
      * @since 0.0.1
      */
     public CharSequence getMnemonic() {
-        return spi.getMnemonicSequence();
+        return mnemonicSequence;
     }
 
     /**
@@ -78,7 +98,10 @@ public final class MnemonicUnit {
      * @since 0.0.1
      */
     public byte[] getSeed() {
-        return spi.getSeed();
+        if (null != seed) {
+            return seed;
+        }
+        return spi.getSeed(mnemonicSequence, null);
     }
 
     /**
@@ -91,6 +114,9 @@ public final class MnemonicUnit {
      * @since 0.0.1
      */
     public byte[] getSeed(CharSequence password) {
-        return spi.getSeed(password);
+        if (null == password || password.length() == 0) {
+            return getSeed();
+        }
+        return spi.getSeed(mnemonicSequence, password);
     }
 }

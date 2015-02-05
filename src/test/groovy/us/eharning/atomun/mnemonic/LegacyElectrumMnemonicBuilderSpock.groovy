@@ -49,19 +49,19 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         where:
             [ mnemonic, hex ] << pairs
     }
-    def "check encoding fails when no state set"() {
+    def "check encoding succeeds with safe defaults when no state set"() {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
         when:
             builder.build()
         then:
-            thrown(IllegalStateException)
+            noExceptionThrown()
     }
     def "check encoding fails when attempted entropyLength set fails"() {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            try { builder.setEntropyLength(1) } catch(e) {}
+            try { builder.setEntropyLength(1) } catch(ignored) {}
             builder.build()
         then:
             thrown(IllegalStateException)
@@ -70,7 +70,7 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            try { builder.setEntropyLength(new byte[1]) } catch(e) {}
+            try { builder.setEntropy(new byte[1]) } catch(ignored) {}
             builder.build()
         then:
             thrown(IllegalStateException)
@@ -123,22 +123,22 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
             _ | 4 * 9
             _ | 4 * 100
     }
-    def "check that settings entropy after entropy length fails"() {
+    def "check that settings entropy after entropy length passes"() {
         given:
             def builder =MnemonicBuilder.newBuilder(ALG)
         when:
             builder.setEntropyLength(4)
             builder.setEntropy(new byte[4])
         then:
-            thrown(IllegalStateException)
+            noExceptionThrown()
     }
-    def "check that settings entropy length after entropy fails"() {
+    def "check that settings entropy length after entropy passes"() {
         given:
-            def builder =MnemonicBuilder.newBuilder(ALG)
+            def builder = MnemonicBuilder.newBuilder(ALG)
         when:
             builder.setEntropy(new byte[4])
             builder.setEntropyLength(4)
         then:
-            thrown(IllegalStateException)
+            noExceptionThrown()
     }
 }
