@@ -15,6 +15,7 @@
  */
 package us.eharning.atomun.mnemonic
 
+import com.google.common.base.Charsets
 import com.google.common.collect.Iterables
 import groovy.json.JsonSlurper
 import spock.lang.Specification
@@ -29,9 +30,13 @@ class BIP0039MnemonicDecoderSpock extends Specification {
     static final String TREZOR_OFFICIAL_PASSWORD = "TREZOR"
     static final TREZOR_OFFICIAL_VECTORS
     static final JP_VECTORS
+    private static Object parseResource(String resourceName) {
+        InputStream input = BIP0039MnemonicBuilderSpock.class.classLoader.getResourceAsStream(resourceName)
+        return new JsonSlurper().parse(new InputStreamReader(input, Charsets.UTF_8));
+    }
     static {
-        TREZOR_OFFICIAL_VECTORS = new JsonSlurper().parseURL(BIP0039MnemonicBuilderSpock.class.classLoader.getResource("us/eharning/atomun/mnemonic/BIP0039_TREZOR_VECTORS.json"), null)
-        JP_VECTORS = new JsonSlurper().parseURL(BIP0039MnemonicBuilderSpock.class.classLoader.getResource("us/eharning/atomun/mnemonic/BIP0039-test_JP.json"), null)
+        TREZOR_OFFICIAL_VECTORS = parseResource("us/eharning/atomun/mnemonic/BIP0039_TREZOR_VECTORS.json")
+        JP_VECTORS = parseResource("us/eharning/atomun/mnemonic/BIP0039-test_JP.json")
     }
 
     Iterable<Object[]> getEncodingCombinations() {
