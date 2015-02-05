@@ -17,8 +17,10 @@ package us.eharning.atomun.mnemonic;
 
 /**
  * High level decoder system that operates on mnemonic strings and can process them.
+ *
+ * @since 0.1.0
  */
-abstract class MnemonicDecoderSystem {
+public abstract class MnemonicDecoderSpi {
     /**
      * Decodes a given mnemonic into a unit.
      * The word list is to be automatically detected and it is expected that only one matches.
@@ -28,6 +30,8 @@ abstract class MnemonicDecoderSystem {
      *
      * @return mnemonic unit.
      * @throws java.lang.IllegalArgumentException the sequence cannot match.
+     *
+     * @since 0.1.0
      */
     public abstract MnemonicUnit decode(CharSequence mnemonicSequence, String wordListIdentifier);
 }

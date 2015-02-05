@@ -21,7 +21,7 @@ import spock.lang.Specification
 
 
 /**
- * Created by harningt on 10/25/14.
+ * Generic decoding handler test.
  */
 class MnemonicDecoderGenericSpock extends Specification {
     def "requesting an unlisted algorithm results in failure"() {

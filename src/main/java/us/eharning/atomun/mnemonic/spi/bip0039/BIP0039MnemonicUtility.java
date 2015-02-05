@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package us.eharning.atomun.mnemonic;
+package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 
 import java.io.IOException;
 import java.net.URL;
@@ -52,12 +53,12 @@ class BIP0039MnemonicUtility {
     static BidirectionalDictionary getDictionary(String wordListIdentifier) {
         BidirectionalDictionary dictionary = dictionaries.get(wordListIdentifier);
         if (null == dictionary) {
-            URL dictionaryLocation = BIP0039MnemonicUtility.class.getResource("bip0039-" + wordListIdentifier + ".txt");
+            URL dictionaryLocation = BIP0039MnemonicUtility.class.getResource(wordListIdentifier + ".txt");
             if (dictionaryLocation == null) {
                 throw new IllegalArgumentException("Unknown wordListIdentifier requested");
             }
             try {
-                dictionary = new BidirectionalDictionary(dictionaryLocation);
+                dictionary = new BidirectionalDictionary(dictionaryLocation, wordListIdentifier);
             } catch (IOException e) {
                 throw new IllegalArgumentException("Inaccessible wordListIdentifier requested");
             }
