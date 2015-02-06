@@ -13,43 +13,62 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package us.eharning.atomun.mnemonic
+package us.eharning.atomun.mnemonic.spi.bip0039
 
 import spock.lang.Specification
+import us.eharning.atomun.mnemonic.MnemonicAlgorithm
+import us.eharning.atomun.mnemonic.MnemonicBuilder
+
+import java.text.Normalizer
 
 /**
  * Test sequence for the legacy Electrum mnemonic builder
  */
-class LegacyElectrumMnemonicBuilderSpock extends Specification {
-    static final MnemonicAlgorithm ALG = MnemonicAlgorithm.LegacyElectrum
-    static String[][] pairs = [
-            ["pleasure patience practice", "01234567"],
-            ["pleasure patience practice offer jeans sister", "0123456789012345"],
-            ["speak lunch group spring ring branch sign reflect cage slowly only carefully", "eeb15bed5a8ee524e254c5eab327c49c"],
-            ["happen made spring knock heart middle suppose fish bought plain real ignore", "88c811176129b2882fc4737728195b87"],
-            ["class group aside accept eat howl harm world ignorance brain count dude", "f9379762a6da83b4e40e31b682a6dd8d"]
-    ]
+class BIP0039MnemonicBuilderSpock extends Specification {
+    static final MnemonicAlgorithm ALG = MnemonicAlgorithm.BIP0039
 
-    def "check word lists not supported"() {
+    def "check word lists supported"() {
+        given:
+            MnemonicBuilder.newBuilder(ALG).setWordList("english")
+    }
+    def "check unknown word lists throw"() {
+        given:
+            def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            MnemonicBuilder.newBuilder(ALG).setWordList("TEST")
+            builder.setWordList("UNKNOWN")
         then:
-            thrown UnsupportedOperationException
+            thrown(IllegalArgumentException)
+    }
+    def "check standard test vectors"() {
+        given:
+            def builder = MnemonicBuilder.newBuilder(ALG)
+        when:
+            builder.setWordList(testCase.wordList)
+            builder.setEntropy(testCase.entropyBytes)
+        then:
+            /* Normalize output to ensure it properly matches normalized test case */
+            testCase.normalizedMnemonic == Normalizer.normalize(builder.build(), Normalizer.Form.NFKD)
+        where:
+            testCase << BIP0039TestData.TREZOR_OFFICIAL_VECTORS
+    }
+
+    def "check jp test vectors"() {
+        given:
+            def builder = MnemonicBuilder.newBuilder(ALG)
+        when:
+            builder.setWordList(testCase.wordList)
+            builder.setEntropy(testCase.entropyBytes)
+        then:
+            /* Normalize output to ensure it properly matches normalized test case */
+            testCase.normalizedMnemonic == Normalizer.normalize(builder.build(), Normalizer.Form.NFKD)
+        where:
+            testCase << BIP0039TestData.JP_VECTORS
     }
     def "null extension return"() {
         expect:
             null == MnemonicBuilder.newBuilder(ALG).getExtension(Object)
     }
-    def "check #encoded encodes to #mnemonic"() {
-        given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
-            builder.setEntropy(hex.decodeHex())
-        expect:
-            mnemonic == builder.build()
-        where:
-            [ mnemonic, hex ] << pairs
-    }
-    def "check encoding succeeds with safe defaults when no state set"() {
+    def "check encoding paases when no state set with safe defaults"() {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
         when:
@@ -112,7 +131,7 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
     }
     def "check encoding passes for valid entropy lengths"() {
         given:
-            def builder =MnemonicBuilder.newBuilder(ALG)
+            def builder = MnemonicBuilder.newBuilder(ALG)
         when:
             builder.setEntropyLength(length)
         then:
@@ -125,7 +144,7 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
     }
     def "check that settings entropy after entropy length passes"() {
         given:
-            def builder =MnemonicBuilder.newBuilder(ALG)
+            def builder = MnemonicBuilder.newBuilder(ALG)
         when:
             builder.setEntropyLength(4)
             builder.setEntropy(new byte[4])
