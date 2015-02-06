@@ -13,87 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package us.eharning.atomun.mnemonic
+package us.eharning.atomun.mnemonic.spi.electrum.legacy
 
-import com.google.common.base.Charsets
-import groovy.json.JsonSlurper
 import spock.lang.Specification
-
-import java.text.Normalizer
+import us.eharning.atomun.mnemonic.MnemonicAlgorithm
+import us.eharning.atomun.mnemonic.MnemonicBuilder
 
 /**
  * Test sequence for the legacy Electrum mnemonic builder
  */
-class BIP0039MnemonicBuilderSpock extends Specification {
-    static final MnemonicAlgorithm ALG = MnemonicAlgorithm.BIP0039
-    static final TREZOR_OFFICIAL_VECTORS
-    static final JP_VECTORS
-    private static Object parseResource(String resourceName) {
-        InputStream input = BIP0039MnemonicBuilderSpock.class.classLoader.getResourceAsStream(resourceName)
-        return new JsonSlurper().parse(new InputStreamReader(input, Charsets.UTF_8));
-    }
-    static {
-        TREZOR_OFFICIAL_VECTORS = parseResource("us/eharning/atomun/mnemonic/BIP0039_TREZOR_VECTORS.json")
-        JP_VECTORS = parseResource("us/eharning/atomun/mnemonic/BIP0039-test_JP.json")
-    }
+class LegacyElectrumMnemonicBuilderSpock extends Specification {
+    static final MnemonicAlgorithm ALG = MnemonicAlgorithm.LegacyElectrum
+    static String[][] pairs = [
+            ["pleasure patience practice", "01234567"],
+            ["pleasure patience practice offer jeans sister", "0123456789012345"],
+            ["speak lunch group spring ring branch sign reflect cage slowly only carefully", "eeb15bed5a8ee524e254c5eab327c49c"],
+            ["happen made spring knock heart middle suppose fish bought plain real ignore", "88c811176129b2882fc4737728195b87"],
+            ["class group aside accept eat howl harm world ignorance brain count dude", "f9379762a6da83b4e40e31b682a6dd8d"]
+    ]
 
-    def "check word lists supported"() {
-        given:
-            MnemonicBuilder.newBuilder(ALG).setWordList("english")
-    }
-    def "check unknown word lists throw"() {
-        given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+    def "check word lists not supported"() {
         when:
-            builder.setWordList("UNKNOWN")
+            MnemonicBuilder.newBuilder(ALG).setWordList("TEST")
         then:
-            thrown(IllegalArgumentException)
-    }
-    Iterable<Object[]> getEncodingCombinations() {
-        /* Returns out items of: wordList, entropy, wordList, seed */
-        List<Object[]> combinations = new ArrayList<>()
-        TREZOR_OFFICIAL_VECTORS.each{
-            String wordList = it.key
-            it.value.each{ test ->
-                Object[] item = [ wordList, test[0].decodeHex(), Normalizer.normalize(test[1], Normalizer.Form.NFKD), test[2].decodeHex()]
-                combinations.add(item)
-            }
-        }
-        return combinations
-    }
-    def "check standard test vectors"() {
-        given:
-        def builder = MnemonicBuilder.newBuilder(ALG)
-        when:
-            builder.setWordList(wordList)
-            builder.setEntropy(entropy)
-        then:
-            /* Normalize output to ensure it properly matches normalized test case */
-            mnemonic == Normalizer.normalize(builder.build(), Normalizer.Form.NFKD)
-        where:
-            [wordList, entropy, mnemonic, _] << getEncodingCombinations()
-    }
-
-    def "check jp test vectors"() {
-        given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
-        when:
-            builder.setWordList("japanese")
-            builder.setEntropy(entropy)
-        then:
-            /* Normalize output to ensure it properly matches normalized test case */
-            mnemonic == Normalizer.normalize(builder.build(), Normalizer.Form.NFKD)
-        where:
-            testCase << JP_VECTORS
-            entropy = testCase.entropy.decodeHex()
-            /* To make a sane validation, data must be normalized before comparing. */
-            mnemonic = Normalizer.normalize(testCase.mnemonic, Normalizer.Form.NFKD)
+            thrown UnsupportedOperationException
     }
     def "null extension return"() {
         expect:
             null == MnemonicBuilder.newBuilder(ALG).getExtension(Object)
     }
-    def "check encoding paases when no state set with safe defaults"() {
+    def "check #encoded encodes to #mnemonic"(String mnemonic, String hex) {
+        given:
+            def builder = MnemonicBuilder.newBuilder(ALG)
+            builder.setEntropy(hex.decodeHex())
+        expect:
+            mnemonic == builder.build()
+        where:
+            [ mnemonic, hex ] << pairs
+    }
+    def "check encoding succeeds with safe defaults when no state set"() {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
         when:
@@ -156,7 +114,7 @@ class BIP0039MnemonicBuilderSpock extends Specification {
     }
     def "check encoding passes for valid entropy lengths"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+            def builder =MnemonicBuilder.newBuilder(ALG)
         when:
             builder.setEntropyLength(length)
         then:
@@ -169,7 +127,7 @@ class BIP0039MnemonicBuilderSpock extends Specification {
     }
     def "check that settings entropy after entropy length passes"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+            def builder =MnemonicBuilder.newBuilder(ALG)
         when:
             builder.setEntropyLength(4)
             builder.setEntropy(new byte[4])
