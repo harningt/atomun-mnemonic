@@ -18,6 +18,8 @@ package us.eharning.atomun.mnemonic.spi.bip0039;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.util.Set;
 
 /**
@@ -27,6 +29,7 @@ import java.util.Set;
  */
 class BIP0039MnemonicIndexGenerators {
     final static BIP0039MnemonicIndexGenerator OPTIMAL_GENERATOR = new JoinedBooleanGenerator();
+    @SuppressWarnings("unused")
     final static Set<BIP0039MnemonicIndexGenerator> GENERATORS = ImmutableSet.<BIP0039MnemonicIndexGenerator>of(
             new JoinedBooleanGenerator()
     );
@@ -34,6 +37,7 @@ class BIP0039MnemonicIndexGenerators {
     /**
      * Generator based on treating an array of booleans as joined entropy+checksum storage.
      */
+    @Immutable
     private final static class JoinedBooleanGenerator extends BIP0039MnemonicIndexGenerator {
 
         /**
@@ -45,7 +49,8 @@ class BIP0039MnemonicIndexGenerators {
          * @param checksum  data
          * @return array of booleans representing each bit
          */
-        private static boolean[] bytesToBits(int totalBits, byte[] entropy, byte[] checksum) {
+        @Nonnull
+        private static boolean[] bytesToBits(int totalBits, @Nonnull byte[] entropy, @Nonnull byte[] checksum) {
             Preconditions.checkNotNull(entropy);
             Preconditions.checkNotNull(checksum);
             Preconditions.checkArgument(totalBits > 0 && totalBits <= (entropy.length * 8 + checksum.length * 8));
@@ -76,8 +81,9 @@ class BIP0039MnemonicIndexGenerators {
          * @param entropy generated entropy to process.
          * @return array of integer indices into dictionary.
          */
+        @Nonnull
         @Override
-        public int[] generateIndices(byte[] entropy) {
+        public int[] generateIndices(@Nonnull byte[] entropy) {
             Preconditions.checkNotNull(entropy);
             byte[] checksum = BIP0039MnemonicUtility.sha256digest(entropy);
 

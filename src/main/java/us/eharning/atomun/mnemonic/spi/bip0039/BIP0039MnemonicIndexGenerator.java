@@ -15,6 +15,8 @@
  */
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
+import javax.annotation.Nonnull;
+
 /**
  * Utility class for BIP0039 wrapping different types of index generators.
  */
@@ -26,5 +28,6 @@ abstract class BIP0039MnemonicIndexGenerator {
      *
      * @return array of integer indices into dictionary.
      */
-    public abstract int[] generateIndices(byte[] entropy);
+    @Nonnull
+    public abstract int[] generateIndices(@Nonnull byte[] entropy);
 }

@@ -15,6 +15,9 @@
  */
 package us.eharning.atomun.mnemonic;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * High level decoder system that operates on mnemonic strings and can process them.
  *
@@ -33,5 +36,6 @@ public abstract class MnemonicDecoderSpi {
      *
      * @since 0.1.0
      */
-    public abstract MnemonicUnit decode(CharSequence mnemonicSequence, String wordListIdentifier);
+    @Nonnull
+    public abstract MnemonicUnit decode(@Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier);
 }

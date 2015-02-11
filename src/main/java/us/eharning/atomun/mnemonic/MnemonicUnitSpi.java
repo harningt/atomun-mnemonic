@@ -18,12 +18,18 @@ package us.eharning.atomun.mnemonic;
 import com.google.common.base.Verify;
 import com.google.common.collect.ClassToInstanceMap;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Service provider to back the MnemonicDecoder.
  * Primarily to present a consistent API.
  *
  * @since 0.1.0
  */
+@Immutable
 public abstract class MnemonicUnitSpi {
     /**
      * Utility method to return a wrapped instance of this SPI.
@@ -32,7 +38,8 @@ public abstract class MnemonicUnitSpi {
      *
      * @since 0.1.0
      */
-    protected MnemonicUnit build(CharSequence mnemonicSequence, byte[] entropy, byte[] seed, ClassToInstanceMap<Object> extentions) {
+    @Nonnull
+    protected MnemonicUnit build(@Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nullable ClassToInstanceMap<Object> extentions) {
         Verify.verifyNotNull(mnemonicSequence);
         return new MnemonicUnit(this, mnemonicSequence, entropy, seed, extentions);
     }
@@ -46,7 +53,8 @@ public abstract class MnemonicUnitSpi {
      *
      * @since 0.1.0
      */
-    public abstract byte[] getEntropy(CharSequence mnemonicSequence);
+    @CheckForNull
+    public abstract byte[] getEntropy(@Nonnull CharSequence mnemonicSequence);
 
     /**
      * Get a custom decoder extension to obtain custom values.
@@ -60,7 +68,8 @@ public abstract class MnemonicUnitSpi {
      *
      * @since 0.1.0
      */
-    public <T> T getExtension(CharSequence mnemonicSequence, Class<T> extensionType) {
+    @CheckForNull
+    public <T> T getExtension(@Nonnull CharSequence mnemonicSequence, @Nonnull Class<T> extensionType) {
         return null;
     }
 
@@ -75,5 +84,6 @@ public abstract class MnemonicUnitSpi {
      *
      * @since 0.1.0
      */
-    public abstract byte[] getSeed(CharSequence mnemonicSequence, CharSequence password);
+    @Nonnull
+    public abstract byte[] getSeed(@Nonnull CharSequence mnemonicSequence, @Nullable CharSequence password);
 }

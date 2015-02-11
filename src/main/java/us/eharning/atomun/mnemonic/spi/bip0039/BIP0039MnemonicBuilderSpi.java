@@ -17,9 +17,13 @@ package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import us.eharning.atomun.mnemonic.spi.*;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Service provider for the BIP0039 mnemonic specification.
  */
+@Immutable
 class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
     private static final EntropyBuilderParameter DEFAULT_ENTROPY_PARAMETER = EntropyBuilderParameter.getRandom(128 / 8);
     private static final WordListBuilderParameter DEFAULT_WORDLIST_PARAMETER = WordListBuilderParameter.getWordList("english");
@@ -36,6 +40,7 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
         }
     }
 
+    @Nonnull
     @Override
     public String generateMnemonic(BuilderParameter... parameters) {
         byte[] entropy = null;

@@ -15,23 +15,29 @@
  */
 package us.eharning.atomun.mnemonic.spi;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Builder parameter representing word list identifier fill-in.
  *
  * @since 0.1.0
  */
+@Immutable
 public class WordListBuilderParameter implements BuilderParameter {
     private final String wordListIdentifier;
 
-    private WordListBuilderParameter(String wordListIdentifier) {
+    private WordListBuilderParameter(@Nonnull String wordListIdentifier) {
         this.wordListIdentifier = wordListIdentifier;
     }
 
+    @Nonnull
     public String getWordListIdentifier() {
         return wordListIdentifier;
     }
 
-    public static WordListBuilderParameter getWordList(String wordListIdentifier) {
+    @Nonnull
+    public static WordListBuilderParameter getWordList(@Nonnull String wordListIdentifier) {
         return new WordListBuilderParameter(wordListIdentifier);
     }
 }

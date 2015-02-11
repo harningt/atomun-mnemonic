@@ -15,6 +15,8 @@
  */
 package us.eharning.atomun.mnemonic.spi;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
@@ -23,16 +25,20 @@ import java.util.Arrays;
  *
  * @since 0.1.0
  */
+@Immutable
 public abstract class EntropyBuilderParameter implements BuilderParameter {
+    @Nonnull
     public abstract byte[] getEntropy();
 
     public abstract int getEntropyLength();
 
+    @Nonnull
     public static EntropyBuilderParameter getRandom(int size) {
         return new RandomEntropyBuilderParameter(size);
     }
 
-    public static EntropyBuilderParameter getStatic(byte[] entropy) {
+    @Nonnull
+    public static EntropyBuilderParameter getStatic(@Nonnull byte[] entropy) {
         return new StaticEntropyBuilderParameter(entropy);
     }
 
@@ -44,6 +50,7 @@ public abstract class EntropyBuilderParameter implements BuilderParameter {
             this.size = size;
         }
 
+        @Nonnull
         public byte[] getEntropy() {
             byte[] entropy = new byte[size];
             RNG.nextBytes(entropy);
@@ -59,10 +66,11 @@ public abstract class EntropyBuilderParameter implements BuilderParameter {
     private static class StaticEntropyBuilderParameter extends EntropyBuilderParameter {
         private final byte[] entropy;
 
-        private StaticEntropyBuilderParameter(byte[] entropy) {
+        private StaticEntropyBuilderParameter(@Nonnull byte[] entropy) {
             this.entropy = Arrays.copyOf(entropy, entropy.length);
         }
 
+        @Nonnull
         @Override
         public byte[] getEntropy() {
             return entropy;

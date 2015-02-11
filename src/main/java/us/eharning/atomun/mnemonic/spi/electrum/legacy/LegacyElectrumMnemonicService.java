@@ -15,26 +15,35 @@
  */
 package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
-import us.eharning.atomun.mnemonic.*;
+import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.MnemonicDecoderSpi;
+import us.eharning.atomun.mnemonic.MnemonicServiceProvider;
 import us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Registration class to perform the necessary default service provider registrations.
  */
+@Immutable
 public class LegacyElectrumMnemonicService extends MnemonicServiceProvider {
     private static final MnemonicBuilderSpi BUILDER_SPI = new LegacyElectrumMnemonicBuilderSpi();
     private static final MnemonicDecoderSpi DECODER_SPI = new LegacyElectrumMnemonicDecoderSpi();
 
+    @CheckForNull
     @Override
-    public MnemonicBuilderSpi getMnemonicBuilder(MnemonicAlgorithm algorithm) {
+    public MnemonicBuilderSpi getMnemonicBuilder(@Nonnull MnemonicAlgorithm algorithm) {
         if (algorithm != MnemonicAlgorithm.LegacyElectrum) {
             return null;
         }
         return BUILDER_SPI;
     }
 
+    @CheckForNull
     @Override
-    public MnemonicDecoderSpi getMnemonicDecoder(MnemonicAlgorithm algorithm) {
+    public MnemonicDecoderSpi getMnemonicDecoder(@Nonnull MnemonicAlgorithm algorithm) {
         if (algorithm != MnemonicAlgorithm.LegacyElectrum) {
             return null;
         }

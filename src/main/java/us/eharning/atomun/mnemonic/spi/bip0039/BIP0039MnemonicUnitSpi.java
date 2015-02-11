@@ -22,20 +22,26 @@ import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.MnemonicUnitSpi;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.text.Normalizer;
 import java.util.List;
 
 /**
  * Internal class to implement the BIP0039 mnemonic details.
  */
+@Immutable
 class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
     private final BidirectionalDictionary dictionary;
 
-    public BIP0039MnemonicUnitSpi(BidirectionalDictionary dictionary) {
+    public BIP0039MnemonicUnitSpi(@Nonnull BidirectionalDictionary dictionary) {
         this.dictionary = dictionary;
     }
 
-    private static boolean[] mnemonicToBits(BidirectionalDictionary dictionary, List<String> mnemonicWordList) {
+    @Nonnull
+    private static boolean[] mnemonicToBits(@Nonnull BidirectionalDictionary dictionary, @Nonnull List<String> mnemonicWordList) {
         /* Each word represents 11 bits of entropy (2^11 => 2048 words) */
         int mnemonicSentenceBitCount = mnemonicWordList.size() * 11;
         boolean[] mnemonicSentenceBits = new boolean[mnemonicSentenceBitCount];
@@ -43,6 +49,8 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
         Converter<String, Integer> reverseConverter = dictionary.reverse();
         for (String word: mnemonicWordList) {
             /* Find the word index in the wordList. */
+            /* Warning suppressed due to word guaranteed non-null */
+            //noinspection ConstantConditions
             int index = reverseConverter.convert(word);
 
             /* Set the next 11 bits to the value of the index. */
@@ -54,7 +62,8 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
         return mnemonicSentenceBits;
     }
 
-    private static byte[] extractEntropy(boolean[] mnemonicSentenceBits) {
+    @Nonnull
+    private static byte[] extractEntropy(@Nonnull boolean[] mnemonicSentenceBits) {
         int checksumBitCount = mnemonicSentenceBits.length / 33;
         int entropyBitCount = mnemonicSentenceBits.length - checksumBitCount;
 
@@ -104,8 +113,9 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
      *
      * @return a derived copy of the entropy byte array.
      */
+    @CheckForNull
     @Override
-    public byte[] getEntropy(CharSequence mnemonicSequence) {
+    public byte[] getEntropy(@Nonnull CharSequence mnemonicSequence) {
         List<String> mnemonicWordList = Splitter.onPattern(" |\u3000").splitToList(mnemonicSequence);
         /* Convert the word list into a sequence of booleans representing its bits. */
         boolean[] mnemonicSentenceBits = mnemonicToBits(dictionary, mnemonicWordList);
@@ -129,8 +139,9 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
      *
      * @return a derived seed.
      */
+    @Nonnull
     @Override
-    public byte[] getSeed(CharSequence mnemonicSequence, CharSequence password) {
+    public byte[] getSeed(@Nonnull CharSequence mnemonicSequence, @Nullable CharSequence password) {
         byte[] mnemonicSequenceBytes = Normalizer.normalize(mnemonicSequence, Normalizer.Form.NFKD).getBytes(Charsets.UTF_8);
 
         /* Normalize the password and get the UTF-8 bytes. */
@@ -142,6 +153,13 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
         return BIP0039MnemonicUtility.deriveSeed(passwordBytes, mnemonicSequenceBytes);
     }
 
+    /**
+     * Utility method to generate a MnemonicUnit wrapping the given sequence and entropy. 
+     * @param mnemonicSequence sequence.
+     * @param entropy derived copy of entropy.
+     * @return wrapped instance.
+     */
+    @Nonnull
     public MnemonicUnit build(CharSequence mnemonicSequence, byte[] entropy) {
         return super.build(mnemonicSequence, entropy, null, null);
     }

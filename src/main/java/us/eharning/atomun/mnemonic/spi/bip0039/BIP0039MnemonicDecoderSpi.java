@@ -15,11 +15,16 @@
  */
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
-import com.google.common.base.*;
+import com.google.common.base.Converter;
+import com.google.common.base.Splitter;
 import us.eharning.atomun.mnemonic.MnemonicDecoderSpi;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -29,6 +34,7 @@ import java.util.concurrent.ConcurrentMap;
  *
  * Thanks to the BitcoinJ project for inspiration of the boolean-array based decoder.
  */
+@Immutable
 class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
     private static final ConcurrentMap<String, BIP0039MnemonicUnitSpi> WORD_LIST_SPI = new ConcurrentHashMap<>();
 
@@ -43,8 +49,9 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
      *
      * @throws IllegalArgumentException the sequence cannot match
      */
+    @Nonnull
     @Override
-    public MnemonicUnit decode(CharSequence mnemonicSequence, String wordListIdentifier) {
+    public MnemonicUnit decode(@Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
         List<String> mnemonicWordList = Splitter.onPattern(" |\u3000").splitToList(mnemonicSequence);
         /* Verify word list has an appropriate length */
         if (mnemonicWordList.size() % 3 != 0) {
@@ -74,7 +81,8 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
         return unit.build(mnemonicSequence, entropy);
     }
 
-    private static BidirectionalDictionary detectWordList(List<String> mnemonicWordList) {
+    @CheckForNull
+    private static BidirectionalDictionary detectWordList(@Nonnull List<String> mnemonicWordList) {
     /* Need to autodetect the word list from the sequence. */
         for (BidirectionalDictionary availableDictionary: BIP0039MnemonicUtility.getDictionaries()) {
             /* Check that all the words are in the dictionary and if so, found */
@@ -85,7 +93,7 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
         return null;
     }
 
-    private static boolean verifyDictionary(BidirectionalDictionary dictionary, List<String> mnemonicWordList) {
+    private static boolean verifyDictionary(@Nonnull BidirectionalDictionary dictionary, @Nonnull List<String> mnemonicWordList) {
         Converter<String, Integer> reverseDictionary = dictionary.reverse();
         /* Due to inability for converters to return null as a valid response, need to catch thrown exception */
         try {

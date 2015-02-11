@@ -19,6 +19,9 @@ import com.google.common.collect.ImmutableList;
 import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
 import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Builder API to decode mnemonic sequences.
  *
@@ -45,7 +48,8 @@ public final class MnemonicDecoder {
      *
      * @since 0.0.1
      */
-    public static Iterable<MnemonicUnit> decodeMnemonic(CharSequence mnemonicSequence) {
+    @Nonnull
+    public static Iterable<MnemonicUnit> decodeMnemonic(@Nonnull CharSequence mnemonicSequence) {
         return decodeMnemonic(mnemonicSequence, null);
     }
 
@@ -59,7 +63,8 @@ public final class MnemonicDecoder {
      *
      * @since 0.1.0
      */
-    public static Iterable<MnemonicUnit> decodeMnemonic(CharSequence mnemonicSequence, String wordListIdentifier) {
+    @Nonnull
+    public static Iterable<MnemonicUnit> decodeMnemonic(@Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
         ImmutableList.Builder<MnemonicUnit> unitListBuilder = ImmutableList.builder();
         for (MnemonicServiceProvider serviceProvider: SERVICE_PROVIDERS) {
             for (MnemonicAlgorithm algorithm: MnemonicAlgorithm.values()) {
@@ -88,7 +93,8 @@ public final class MnemonicDecoder {
      *
      * @since 0.0.1
      */
-    public static MnemonicUnit decodeMnemonic(MnemonicAlgorithm mnemonicAlgorithm, CharSequence mnemonicSequence) {
+    @Nonnull
+    public static MnemonicUnit decodeMnemonic(@Nonnull MnemonicAlgorithm mnemonicAlgorithm, @Nonnull CharSequence mnemonicSequence) {
         return decodeMnemonic(mnemonicAlgorithm, mnemonicSequence, null);
     }
 
@@ -104,7 +110,8 @@ public final class MnemonicDecoder {
      *
      * @since 0.0.1
      */
-    public static MnemonicUnit decodeMnemonic(MnemonicAlgorithm mnemonicAlgorithm, CharSequence mnemonicSequence, String wordListIdentifier) {
+    @Nonnull
+    public static MnemonicUnit decodeMnemonic(@Nonnull MnemonicAlgorithm mnemonicAlgorithm, @Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
         for (MnemonicServiceProvider serviceProvider: SERVICE_PROVIDERS) {
             MnemonicDecoderSpi system = serviceProvider.getMnemonicDecoder(mnemonicAlgorithm);
             if (null == system) {
