@@ -15,11 +15,17 @@
  */
 package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
-import us.eharning.atomun.mnemonic.spi.*;
+import us.eharning.atomun.mnemonic.spi.BuilderParameter;
+import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
+import us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Service provider for the legacy Electrum mnemonic format.
  */
+@Immutable
 class LegacyElectrumMnemonicBuilderSpi extends MnemonicBuilderSpi {
     private static final EntropyBuilderParameter DEFAULT_ENTROPY_PARAMETER = EntropyBuilderParameter.getRandom(128 / 8);
 
@@ -36,6 +42,7 @@ class LegacyElectrumMnemonicBuilderSpi extends MnemonicBuilderSpi {
         }
     }
 
+    @Nonnull
     @Override
     public String generateMnemonic(BuilderParameter... parameters) {
         byte[] entropy = null;

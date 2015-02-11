@@ -21,6 +21,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
@@ -50,7 +52,8 @@ class BIP0039MnemonicUtility {
      *
      * @throws java.lang.IllegalArgumentException If the word list cannot be found/loaded.
      */
-    static BidirectionalDictionary getDictionary(String wordListIdentifier) {
+    @Nonnull
+    static BidirectionalDictionary getDictionary(@Nonnull String wordListIdentifier) {
         BidirectionalDictionary dictionary = dictionaries.get(wordListIdentifier);
         if (null == dictionary) {
             URL dictionaryLocation = BIP0039MnemonicUtility.class.getResource(wordListIdentifier + ".txt");
@@ -74,7 +77,8 @@ class BIP0039MnemonicUtility {
      *
      * @throws java.lang.Error if the digest cannot be found (should not happen).
      */
-    static byte[] sha256digest(byte[] data) {
+    @Nonnull
+    static byte[] sha256digest(@Nonnull byte[] data) {
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");
@@ -92,7 +96,8 @@ class BIP0039MnemonicUtility {
      *
      * @throws java.lang.Error if the Mac cannot be found (should not happen).
      */
-    static byte[] deriveSeed(byte[] passwordBytes, byte[] mnemonicSequenceBytes) {
+    @Nonnull
+    static byte[] deriveSeed(@Nonnull byte[] passwordBytes, @Nonnull byte[] mnemonicSequenceBytes) {
         try {
             return PBKDF2.pbkdf2(PBKDF_MAC, mnemonicSequenceBytes, passwordBytes, PBKDF_ROUNDS, PBKDF_SEED_OUTPUT);
         } catch (GeneralSecurityException e) {
@@ -105,8 +110,10 @@ class BIP0039MnemonicUtility {
      *
      * @return iterable that contains known dictionaries.
      */
+    @Nonnull
     static Iterable<BidirectionalDictionary> getDictionaries() {
         Iterable<BidirectionalDictionary> dictionaryIterable = Iterables.transform(KNOWN_DICTIONARIES, new Function<String, BidirectionalDictionary>() {
+            @Nullable
             @Override
             public BidirectionalDictionary apply(String input) {
                 try {

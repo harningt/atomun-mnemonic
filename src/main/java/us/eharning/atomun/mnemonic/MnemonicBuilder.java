@@ -23,11 +23,16 @@ import us.eharning.atomun.mnemonic.spi.WordListBuilderParameter;
 import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
 import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
+
 /**
  * Builder API to generate mnemonic sequences.
  *
  * @since 0.0.1
  */
+@NotThreadSafe
 public final class MnemonicBuilder {
     private static final ImmutableList<MnemonicServiceProvider> SERVICE_PROVIDERS = ImmutableList.of(
             new LegacyElectrumMnemonicService(),
@@ -51,7 +56,7 @@ public final class MnemonicBuilder {
      *
      * @param spi implementation provider.
      */
-    private MnemonicBuilder(MnemonicBuilderSpi spi) {
+    private MnemonicBuilder(@Nonnull MnemonicBuilderSpi spi) {
         this.newSpi = spi;
         this.parameters = new BuilderParameter[2];
     }
@@ -65,7 +70,8 @@ public final class MnemonicBuilder {
      *
      * @since 0.0.1
      */
-    public static MnemonicBuilder newBuilder(MnemonicAlgorithm algorithm) {
+    @Nonnull
+    public static MnemonicBuilder newBuilder(@Nonnull MnemonicAlgorithm algorithm) {
         for (MnemonicServiceProvider provider: SERVICE_PROVIDERS) {
             MnemonicBuilderSpi spi = provider.getMnemonicBuilder(algorithm);
             if (null != spi) {
@@ -82,6 +88,7 @@ public final class MnemonicBuilder {
      *
      * @since 0.0.1
      */
+    @Nonnull
     public String build() {
         try {
             newSpi.validate(parameters);
@@ -100,7 +107,9 @@ public final class MnemonicBuilder {
      *
      * @since 0.0.1
      */
-    public <T> T getExtension(Class<T> extensionType) {
+    @SuppressWarnings({"UnusedParameters", "SameReturnValue"})
+    @CheckForNull
+    public <T> T getExtension(@Nonnull Class<T> extensionType) {
         /* newSpi does not support */
         return null;
     }
@@ -114,7 +123,8 @@ public final class MnemonicBuilder {
      *
      * @since 0.0.1
      */
-    public MnemonicBuilder setEntropy(byte[] entropy) {
+    @Nonnull
+    public MnemonicBuilder setEntropy(@Nonnull byte[] entropy) {
         parameters[0] = EntropyBuilderParameter.getStatic(entropy);
         newSpi.validate(parameters);
         return this;
@@ -129,6 +139,7 @@ public final class MnemonicBuilder {
      *
      * @since 0.0.1
      */
+    @Nonnull
     public MnemonicBuilder setEntropyLength(int entropyLength) {
         parameters[0] = EntropyBuilderParameter.getRandom(entropyLength);
         newSpi.validate(parameters);
@@ -144,7 +155,8 @@ public final class MnemonicBuilder {
      *
      * @since 0.0.1
      */
-    public MnemonicBuilder setWordList(String wordListIdentifier) {
+    @Nonnull
+    public MnemonicBuilder setWordList(@Nonnull String wordListIdentifier) {
         parameters[1] = WordListBuilderParameter.getWordList(wordListIdentifier);
         newSpi.validate(parameters);
         return this;

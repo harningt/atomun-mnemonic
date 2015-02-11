@@ -17,12 +17,18 @@ package us.eharning.atomun.mnemonic;
 
 import com.google.common.collect.ClassToInstanceMap;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Service provider to back the MnemonicDecoder.
  * Primarily to present a consistent API.
  *
  * @since 0.0.1
  */
+@Immutable
 public final class MnemonicUnit {
     private final MnemonicUnitSpi spi;
     private final CharSequence mnemonicSequence;
@@ -39,7 +45,7 @@ public final class MnemonicUnit {
      * @param seed derived seed or null if on-demand
      * @param extensions implementation extensions or null if on-demand/non-existent.
      */
-    MnemonicUnit(MnemonicUnitSpi spi, CharSequence mnemonicSequence, byte[] entropy, byte[] seed, ClassToInstanceMap<Object> extensions) {
+    MnemonicUnit(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nullable ClassToInstanceMap<Object> extensions) {
         this.spi = spi;
         this.mnemonicSequence = mnemonicSequence;
         this.entropy = entropy;
@@ -54,6 +60,7 @@ public final class MnemonicUnit {
      *
      * @since 0.0.1
      */
+    @CheckForNull
     public byte[] getEntropy() {
         if (null != entropy) {
             return entropy;
@@ -72,7 +79,8 @@ public final class MnemonicUnit {
      *
      * @since 0.0.1
      */
-    public <T> T getExtension(Class<T> extensionType) {
+    @CheckForNull
+    public <T> T getExtension(@Nonnull Class<T> extensionType) {
         if (null != extensions) {
             return extensions.getInstance(extensionType);
         }
@@ -86,6 +94,7 @@ public final class MnemonicUnit {
      *
      * @since 0.0.1
      */
+    @Nonnull
     public CharSequence getMnemonic() {
         return mnemonicSequence;
     }
@@ -97,6 +106,7 @@ public final class MnemonicUnit {
      *
      * @since 0.0.1
      */
+    @Nonnull
     public byte[] getSeed() {
         if (null != seed) {
             return seed;
@@ -113,7 +123,8 @@ public final class MnemonicUnit {
      *
      * @since 0.0.1
      */
-    public byte[] getSeed(CharSequence password) {
+    @Nonnull
+    public byte[] getSeed(@Nullable CharSequence password) {
         if (null == password || password.length() == 0) {
             return getSeed();
         }

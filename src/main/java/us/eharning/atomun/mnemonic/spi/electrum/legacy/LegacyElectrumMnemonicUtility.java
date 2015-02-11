@@ -23,6 +23,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -50,7 +51,7 @@ class LegacyElectrumMnemonicUtility {
         return value < 0 ? mod + value : value % mod;
     }
 
-    private static void putInteger(byte[] buffer, int currentIndex, int value)
+    private static void putInteger(@Nonnull byte[] buffer, int currentIndex, int value)
     {
         buffer[currentIndex] = (byte)((value >> 24) & 0xFF);
         buffer[currentIndex + 1] = (byte)((value >> 16) & 0xFF);
@@ -58,7 +59,7 @@ class LegacyElectrumMnemonicUtility {
         buffer[currentIndex + 3] = (byte)(value & 0xFF);
     }
 
-    private static int getInteger(byte[] buffer, int currentIndex)
+    private static int getInteger(@Nonnull byte[] buffer, int currentIndex)
     {
         int value =
                 (buffer[currentIndex] & 0xFF) << 24
@@ -74,7 +75,8 @@ class LegacyElectrumMnemonicUtility {
      * @param entropy value to encode.
      * @return space-delimited sequence of mnemonic words.
      */
-    static String toMnemonic(byte[] entropy) {
+    @Nonnull
+    static String toMnemonic(@Nonnull byte[] entropy) {
         int entropyIndex = 0;
         ArrayList<String> encoded = Lists.newArrayList();
         encoded.ensureCapacity(entropy.length / 8 * 3);
@@ -98,7 +100,8 @@ class LegacyElectrumMnemonicUtility {
      *
      * @return encoded value.
      */
-    static byte[] toEntropy(CharSequence mnemonicSequence) {
+    @Nonnull
+    static byte[] toEntropy(@Nonnull CharSequence mnemonicSequence) {
         String[] mnemonicWords = Iterables.toArray(WORD_SPLITTER.split(mnemonicSequence), String.class);
         byte[] entropy = new  byte[mnemonicWords.length * 4 / 3];
         int entropyIndex = 0;

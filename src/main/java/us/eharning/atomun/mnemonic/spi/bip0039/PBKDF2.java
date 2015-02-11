@@ -15,6 +15,7 @@
  */
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.GeneralSecurityException;
@@ -24,6 +25,7 @@ import static java.lang.System.arraycopy;
 /**
  * Internal implementation of PBKDF2 layered atop standard primitives for more flexibility.
  */
+@ParametersAreNonnullByDefault
 final class PBKDF2 {
     /**
      * Implementation of PBKDF2 (RFC2898).

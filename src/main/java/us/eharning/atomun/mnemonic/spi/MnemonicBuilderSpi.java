@@ -15,12 +15,16 @@
  */
 package us.eharning.atomun.mnemonic.spi;
 
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Mnemonic build SPI concentrating on being a static instance that
  * offers up sanity-checks and enhanced APIs as necessary.
  *
  * @since 0.1.0
  */
+@Immutable
 public abstract class MnemonicBuilderSpi {
     /**
      * Generate the mnemonic sequence given the input parameters.
@@ -31,6 +35,7 @@ public abstract class MnemonicBuilderSpi {
      *
      * @since 0.1.0
      */
+    @Nonnull
     public abstract String generateMnemonic(BuilderParameter... parameters);
 
     /**

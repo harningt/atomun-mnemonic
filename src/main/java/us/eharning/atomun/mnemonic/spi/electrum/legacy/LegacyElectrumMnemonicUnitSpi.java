@@ -18,9 +18,14 @@ package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.MnemonicUnitSpi;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Internal class to implement the legacy Electrum mnemonic details.
  */
+@Immutable
 class LegacyElectrumMnemonicUnitSpi extends MnemonicUnitSpi {
     public MnemonicUnit build(CharSequence mnemonicSequence, byte[] entropy) {
         /* Entropy is the seed for this */
@@ -34,8 +39,9 @@ class LegacyElectrumMnemonicUnitSpi extends MnemonicUnitSpi {
      *
      * @return a derived copy of the entropy byte array.
      */
+    @Nonnull
     @Override
-    public byte[] getEntropy(CharSequence mnemonicSequence) {
+    public byte[] getEntropy(@Nonnull CharSequence mnemonicSequence) {
         return LegacyElectrumMnemonicUtility.toEntropy(mnemonicSequence);
     }
 
@@ -47,8 +53,9 @@ class LegacyElectrumMnemonicUnitSpi extends MnemonicUnitSpi {
      *
      * @return a derived seed.
      */
+    @Nonnull
     @Override
-    public byte[] getSeed(CharSequence mnemonicSequence, CharSequence password) {
+    public byte[] getSeed(@Nonnull CharSequence mnemonicSequence, @Nullable CharSequence password) {
         if (password != null && password.length() != 0) {
             throw new UnsupportedOperationException("password usage is not supported");
         }

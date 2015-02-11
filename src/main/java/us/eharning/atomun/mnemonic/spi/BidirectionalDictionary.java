@@ -23,6 +23,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.io.LineProcessor;
 import com.google.common.io.Resources;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -32,6 +35,7 @@ import java.util.List;
  *
  * @since 0.1.0
  */
+@Immutable
 public class BidirectionalDictionary extends Converter<Integer, String> {
     private final ImmutableList<String> INTEGER_TO_DICTIONARY;
     private final ImmutableMap<String, Integer> DICTIONARY_TO_INTEGER;
@@ -45,11 +49,12 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
      * @return list of lines.
      * @throws IOException on I/O error reading from the resource.
      */
-    private static ImmutableList<String> resourceToLines(URL resource) throws IOException {
+    @Nonnull
+    private static ImmutableList<String> resourceToLines(@Nonnull URL resource) throws IOException {
         LineProcessor<ImmutableList<String>> lineProcess = new LineProcessor<ImmutableList<String>>() {
             final ImmutableList.Builder<String> result = ImmutableList.builder();
             @Override
-            public boolean processLine(String line) throws IOException {
+            public boolean processLine(@Nonnull String line) throws IOException {
                 result.add(line);
                 return true;
             }
@@ -70,7 +75,7 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
      *
      * @since 0.1.0
      */
-    public BidirectionalDictionary(List<String> wordList, String wordListIdentifier) {
+    public BidirectionalDictionary(@Nonnull List<String> wordList, @Nonnull String wordListIdentifier) {
         this.wordListIdentifier = wordListIdentifier;
         INTEGER_TO_DICTIONARY = ImmutableList.copyOf(wordList);
         ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
@@ -90,7 +95,7 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
      *
      * @since 0.1.0
      */
-    public BidirectionalDictionary(URL dictionaryLocation, String wordListIdentifier) throws IOException {
+    public BidirectionalDictionary(@Nonnull URL dictionaryLocation, @Nonnull String wordListIdentifier) throws IOException {
         this(resourceToLines(dictionaryLocation), wordListIdentifier);
     }
 
@@ -101,10 +106,12 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
      * @param integer the instance to convert; will never be null
      * @return the converted instance; <b>must not</b> be null
      */
+    @Nonnull
     @Override
-    protected String doForward(Integer integer) {
+    protected String doForward(@Nonnull Integer integer) {
         String result = INTEGER_TO_DICTIONARY.get(integer);
         Preconditions.checkArgument(null != result, "Unknown dictionary index");
+        //noinspection ConstantConditions
         return result;
     }
 
@@ -120,10 +127,12 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
      *                                       then this is not logically a {@code Converter} at all, and should just implement {@link
      *                                       com.google.common.base.Function}.
      */
+    @Nonnull
     @Override
-    protected Integer doBackward(String s) {
+    protected Integer doBackward(@Nonnull String s) {
         Integer result = DICTIONARY_TO_INTEGER.get(s);
         Preconditions.checkArgument(null != result, "Unknown dictionary word");
+        //noinspection ConstantConditions
         return result;
     }
 
@@ -134,6 +143,7 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
      *
      * @since 0.1.0
      */
+    @Nonnull
     public String getWordListIdentifier() {
         return wordListIdentifier;
     }

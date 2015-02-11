@@ -18,9 +18,14 @@ package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 import us.eharning.atomun.mnemonic.MnemonicDecoderSpi;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Decoder system for the legacy Electrum mnemonic system.
  */
+@Immutable
 class LegacyElectrumMnemonicDecoderSpi extends MnemonicDecoderSpi {
     private static final LegacyElectrumMnemonicUnitSpi SPI = new LegacyElectrumMnemonicUnitSpi();
 
@@ -35,8 +40,9 @@ class LegacyElectrumMnemonicDecoderSpi extends MnemonicDecoderSpi {
      *
      * @throws IllegalArgumentException the sequence cannot match
      */
+    @Nonnull
     @Override
-    public MnemonicUnit decode(CharSequence mnemonicSequence, String wordListIdentifier) {
+    public MnemonicUnit decode(@Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
         if (null != wordListIdentifier && !wordListIdentifier.isEmpty()) {
             /* There are no custom word lists for legacy Electrum mnemonic system. */
             throw new UnsupportedOperationException("No custom wordListIdentifiers allowed");
