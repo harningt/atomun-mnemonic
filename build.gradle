@@ -52,8 +52,6 @@ dependencies {
 }
 
 findbugs {
-    /* Not ready for primetime yet */
-    ignoreFailures = true
     sourceSets = [ sourceSets.main ]
 }
 
