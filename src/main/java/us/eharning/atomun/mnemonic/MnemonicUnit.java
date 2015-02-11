@@ -21,6 +21,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Arrays;
 
 /**
  * Service provider to back the MnemonicDecoder.
@@ -63,7 +64,7 @@ public final class MnemonicUnit {
     @CheckForNull
     public byte[] getEntropy() {
         if (null != entropy) {
-            return entropy;
+            return Arrays.copyOf(entropy, entropy.length);
         }
         return spi.getEntropy(mnemonicSequence);
     }
@@ -109,7 +110,7 @@ public final class MnemonicUnit {
     @Nonnull
     public byte[] getSeed() {
         if (null != seed) {
-            return seed;
+            return Arrays.copyOf(seed, seed.length);
         }
         return spi.getSeed(mnemonicSequence, null);
     }

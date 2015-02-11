@@ -37,7 +37,7 @@ class LegacyElectrumMnemonicUtility {
 
     static {
         try {
-            DICTIONARY = new BidirectionalDictionary(LegacyElectrumMnemonicUtility.class.getResource("dictionary.txt"), null);
+            DICTIONARY = new BidirectionalDictionary(LegacyElectrumMnemonicUtility.class.getResource("dictionary.txt"), "english");
         } catch (IOException e) {
             throw new Error("Failed to read dictionary.txt for initialization", e);
         }

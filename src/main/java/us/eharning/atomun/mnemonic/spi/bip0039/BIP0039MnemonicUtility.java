@@ -16,6 +16,7 @@
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Function;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -65,7 +66,8 @@ class BIP0039MnemonicUtility {
             } catch (IOException e) {
                 throw new IllegalArgumentException("Inaccessible wordListIdentifier requested");
             }
-            dictionaries.putIfAbsent(wordListIdentifier, dictionary);
+            /* Use the value found in the map just in case 2 created to prevent multiple copies */
+            dictionary = MoreObjects.firstNonNull(dictionaries.putIfAbsent(wordListIdentifier, dictionary), dictionary);
         }
         return dictionary;
     }
@@ -116,6 +118,9 @@ class BIP0039MnemonicUtility {
             @Nullable
             @Override
             public BidirectionalDictionary apply(String input) {
+                if (null == input) {
+                    return null;
+                }
                 try {
                     return getDictionary(input);
                 } catch (Throwable ignored) {
