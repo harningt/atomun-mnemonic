@@ -64,10 +64,6 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         where:
             testCase << BIP0039TestData.JP_VECTORS
     }
-    def "null extension return"() {
-        expect:
-            null == MnemonicBuilder.newBuilder(ALG).getExtension(Object)
-    }
     def "check encoding paases when no state set with safe defaults"() {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)

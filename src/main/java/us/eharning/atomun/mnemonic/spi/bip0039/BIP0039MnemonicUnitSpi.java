@@ -161,7 +161,7 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
      */
     @Nonnull
     public MnemonicUnit build(CharSequence mnemonicSequence, byte[] entropy) {
-        return super.build(mnemonicSequence, entropy, null, null);
+        return super.build(mnemonicSequence, entropy, null);
     }
 
 }

@@ -99,22 +99,6 @@ public final class MnemonicBuilder {
     }
 
     /**
-     * Set a custom property specialized for the given algorithm.
-     *
-     * @param extensionType kind of builder extension to obtain.
-     *
-     * @return typed extension if found, else null.
-     *
-     * @since 0.0.1
-     */
-    @SuppressWarnings({"UnusedParameters", "SameReturnValue"})
-    @CheckForNull
-    public <T> T getExtension(@Nonnull Class<T> extensionType) {
-        /* newSpi does not support */
-        return null;
-    }
-
-    /**
      * Set the entropy to generate the mnemonic with.
      *
      * @param entropy data to encode.

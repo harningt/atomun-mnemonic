@@ -38,10 +38,6 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         then:
             thrown UnsupportedOperationException
     }
-    def "null extension return"() {
-        expect:
-            null == MnemonicBuilder.newBuilder(ALG).getExtension(Object)
-    }
     def "check #encoded encodes to #mnemonic"(String mnemonic, String hex) {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)

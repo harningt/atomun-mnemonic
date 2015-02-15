@@ -29,7 +29,7 @@ import javax.annotation.concurrent.Immutable;
 class LegacyElectrumMnemonicUnitSpi extends MnemonicUnitSpi {
     public MnemonicUnit build(CharSequence mnemonicSequence, byte[] entropy) {
         /* Entropy is the seed for this */
-        return super.build(mnemonicSequence, entropy, entropy, null);
+        return super.build(mnemonicSequence, entropy, entropy);
     }
 
     /**

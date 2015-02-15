@@ -16,7 +16,6 @@
 package us.eharning.atomun.mnemonic;
 
 import com.google.common.base.Verify;
-import com.google.common.collect.ClassToInstanceMap;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -39,9 +38,9 @@ public abstract class MnemonicUnitSpi {
      * @since 0.1.0
      */
     @Nonnull
-    protected MnemonicUnit build(@Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nullable ClassToInstanceMap<Object> extentions) {
+    protected MnemonicUnit build(@Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed) {
         Verify.verifyNotNull(mnemonicSequence);
-        return new MnemonicUnit(this, mnemonicSequence, entropy, seed, extentions);
+        return new MnemonicUnit(this, mnemonicSequence, entropy, seed);
     }
 
     /**
@@ -55,23 +54,6 @@ public abstract class MnemonicUnitSpi {
      */
     @CheckForNull
     public abstract byte[] getEntropy(@Nonnull CharSequence mnemonicSequence);
-
-    /**
-     * Get a custom decoder extension to obtain custom values.
-     *
-     * By default this rejects as it is not expected to be implemented lower down.
-     *
-     * @param mnemonicSequence sequence to determine the extensions for.
-     * @param extensionType kind of decoder extension to obtain.
-     *
-     * @return typed extension if available, else null.
-     *
-     * @since 0.1.0
-     */
-    @CheckForNull
-    public <T> T getExtension(@Nonnull CharSequence mnemonicSequence, @Nonnull Class<T> extensionType) {
-        return null;
-    }
 
     /**
      * Get a seed from this mnemonic.

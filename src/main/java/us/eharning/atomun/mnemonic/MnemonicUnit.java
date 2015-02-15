@@ -15,8 +15,6 @@
  */
 package us.eharning.atomun.mnemonic;
 
-import com.google.common.collect.ClassToInstanceMap;
-
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,7 +33,6 @@ public final class MnemonicUnit {
     private final CharSequence mnemonicSequence;
     private final byte[] entropy;
     private final byte[] seed;
-    private final ClassToInstanceMap<Object> extensions;
 
     /**
      * Construct a new MnemonicUnit wrapping the given implementation.
@@ -44,14 +41,12 @@ public final class MnemonicUnit {
      * @param mnemonicSequence represented sequence.
      * @param entropy derived entropy or null if on-demand.
      * @param seed derived seed or null if on-demand
-     * @param extensions implementation extensions or null if on-demand/non-existent.
      */
-    MnemonicUnit(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nullable ClassToInstanceMap<Object> extensions) {
+    MnemonicUnit(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed) {
         this.spi = spi;
         this.mnemonicSequence = mnemonicSequence;
         this.entropy = entropy;
         this.seed = seed;
-        this.extensions = extensions;
     }
 
     /**
@@ -67,25 +62,6 @@ public final class MnemonicUnit {
             return Arrays.copyOf(entropy, entropy.length);
         }
         return spi.getEntropy(mnemonicSequence);
-    }
-
-    /**
-     * Get a custom decoder extension to obtain custom values.
-     *
-     * By default this rejects as it is not expected to be implemented lower down.
-     *
-     * @param extensionType kind of decoder extension to obtain.
-     *
-     * @return typed extension if available, else null.
-     *
-     * @since 0.0.1
-     */
-    @CheckForNull
-    public <T> T getExtension(@Nonnull Class<T> extensionType) {
-        if (null != extensions) {
-            return extensions.getInstance(extensionType);
-        }
-        return spi.getExtension(mnemonicSequence, extensionType);
     }
 
     /**
