@@ -37,7 +37,7 @@ public abstract class MnemonicUnitSpi {
      * @param mnemonicSequence represented sequence.
      * @param entropy derived entropy or null if on-demand.
      * @param seed derived seed or null if on-demand.
-     * @param extensions map of property->value dependent on algorithm.
+     * @param extensions map of property-to-value dependent on algorithm.
      *
      * @return wrapped instance.
      *

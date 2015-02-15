@@ -131,7 +131,7 @@ public final class MnemonicBuilder {
     /**
      * Sets extensions for this builder, replacing any prior set extensions.
      *
-     * @param extensions map of extension property->value elements, algorithm-dependent.
+     * @param extensions map of extension property-to-value elements, algorithm-dependent.
      *
      * @return this to allow chaining.
      *

@@ -46,7 +46,7 @@ public final class MnemonicUnit {
      * @param mnemonicSequence represented sequence.
      * @param entropy derived entropy or null if on-demand.
      * @param seed derived seed or null if on-demand.
-     * @param extensions map of property->value dependent on algorithm.
+     * @param extensions map of property-to-value dependent on algorithm.
      */
     MnemonicUnit(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<String, Object> extensions) {
         Verify.verifyNotNull(spi);
@@ -77,7 +77,7 @@ public final class MnemonicUnit {
     /**
      * Get the associated extension values.
      *
-     * @return map of property->value dependent on algorithm.
+     * @return map of property-to-value dependent on algorithm.
      *
      * @since 0.1.0
      */
