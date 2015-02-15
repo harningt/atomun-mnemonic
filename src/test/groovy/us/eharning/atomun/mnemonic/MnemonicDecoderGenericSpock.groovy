@@ -16,9 +16,7 @@
 package us.eharning.atomun.mnemonic
 
 import com.google.common.collect.Iterables
-import com.google.common.collect.Iterators
 import spock.lang.Specification
-
 
 /**
  * Generic decoding handler test.

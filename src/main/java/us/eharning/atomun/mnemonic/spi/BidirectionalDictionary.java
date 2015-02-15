@@ -26,7 +26,6 @@ import com.google.common.io.LineProcessor;
 import com.google.common.io.Resources;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.net.URL;

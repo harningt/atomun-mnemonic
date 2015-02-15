@@ -15,16 +15,12 @@
  */
 package us.eharning.atomun.mnemonic.spi.bip0039
 
-import com.google.common.base.Charsets
 import com.google.common.collect.Iterables
-import groovy.json.JsonSlurper
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
 import us.eharning.atomun.mnemonic.MnemonicDecoder
 import us.eharning.atomun.mnemonic.MnemonicUnit
-
-import java.text.Normalizer
 
 /**
  * Test around the legacy Electrum mnemonic decoder system.
