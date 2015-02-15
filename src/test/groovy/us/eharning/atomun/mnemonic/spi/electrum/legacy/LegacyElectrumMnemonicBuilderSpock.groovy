@@ -108,6 +108,14 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
             _ | 9
             _ | 1022
     }
+    def "check encoding fails for unknown extension properties"() {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        when:
+        builder.setExtensions(["x": 1])
+        then:
+        thrown(UnsupportedOperationException)
+    }
     def "check encoding passes for valid entropy lengths"() {
         given:
             def builder =MnemonicBuilder.newBuilder(ALG)

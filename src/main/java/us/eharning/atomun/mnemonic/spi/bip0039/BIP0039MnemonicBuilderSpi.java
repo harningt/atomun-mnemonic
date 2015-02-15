@@ -51,11 +51,10 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
             }
             if (parameter instanceof EntropyBuilderParameter) {
                 entropy = ((EntropyBuilderParameter)parameter).getEntropy();
-                continue;
-            }
-            if (parameter instanceof WordListBuilderParameter) {
+            } else if (parameter instanceof WordListBuilderParameter) {
                 wordListIdentifier = ((WordListBuilderParameter)parameter).getWordListIdentifier();
-                continue;
+            } else {
+                throw new UnsupportedOperationException("Unsupported parameter type: " + parameter);
             }
         }
         if (null == entropy) {
@@ -86,13 +85,11 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
             }
             if (parameter instanceof EntropyBuilderParameter) {
                 checkEntropyLengthValid(((EntropyBuilderParameter) parameter).getEntropyLength());
-                continue;
-            }
-            if (parameter instanceof WordListBuilderParameter) {
+            } else if (parameter instanceof WordListBuilderParameter) {
                 BIP0039MnemonicUtility.getDictionary(((WordListBuilderParameter)parameter).getWordListIdentifier());
-                continue;
+            } else {
+                throw new UnsupportedOperationException("Unsupported parameter type: " + parameter);
             }
-            throw new UnsupportedOperationException("Unsupported parameter type: " + parameter);
         }
     }
 }

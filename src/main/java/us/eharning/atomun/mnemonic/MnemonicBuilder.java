@@ -16,16 +16,14 @@
 package us.eharning.atomun.mnemonic;
 
 import com.google.common.collect.ImmutableList;
-import us.eharning.atomun.mnemonic.spi.BuilderParameter;
-import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
-import us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi;
-import us.eharning.atomun.mnemonic.spi.WordListBuilderParameter;
+import com.google.common.collect.ImmutableMap;
+import us.eharning.atomun.mnemonic.spi.*;
 import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
 import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
+import java.util.Map;
 
 /**
  * Builder API to generate mnemonic sequences.
@@ -48,8 +46,9 @@ public final class MnemonicBuilder {
      * Current slot dictates:
      *  1 - entropy
      *  2 - wordList
+     *  3 - extensions
      */
-    private final BuilderParameter[] parameters;
+    private final BuilderParameter[] parameters = new BuilderParameter[3];
 
     /**
      * Construct a MnemonicBuilder around the given implementation.
@@ -58,7 +57,6 @@ public final class MnemonicBuilder {
      */
     private MnemonicBuilder(@Nonnull MnemonicBuilderSpi spi) {
         this.newSpi = spi;
-        this.parameters = new BuilderParameter[2];
     }
 
     /**
@@ -126,6 +124,22 @@ public final class MnemonicBuilder {
     @Nonnull
     public MnemonicBuilder setEntropyLength(int entropyLength) {
         parameters[0] = EntropyBuilderParameter.getRandom(entropyLength);
+        newSpi.validate(parameters);
+        return this;
+    }
+
+    /**
+     * Sets extensions for this builder, replacing any prior set extensions.
+     *
+     * @param extensions map of extension property->value elements, algorithm-dependent.
+     *
+     * @return this to allow chaining.
+     *
+     * @since 0.1.0
+     */
+    @Nonnull
+    public MnemonicBuilder setExtensions(Map<String, Object> extensions) {
+        parameters[2] = ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.copyOf(extensions));
         newSpi.validate(parameters);
         return this;
     }
