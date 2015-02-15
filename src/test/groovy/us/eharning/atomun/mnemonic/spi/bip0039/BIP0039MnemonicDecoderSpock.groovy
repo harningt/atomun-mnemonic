@@ -42,7 +42,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
             unit.getSeed("") != testCase.seedBytes
             unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
-            unit.getExtension(Object) == null
+            unit.getExtensions().isEmpty()
             /* Round-trip test */
             /* Replace ideographic space by space always */
             unit.getMnemonic().replace("\u3000", " ") == MnemonicBuilder.newBuilder(ALG).setEntropy(testCase.entropyBytes).setWordList(testCase.wordList).build()
@@ -60,7 +60,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
             unit.getSeed("") != testCase.seedBytes
             unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
-            unit.getExtension(Object) == null
+            unit.getExtensions().isEmpty()
             /* Round-trip test */
             /* Replace ideographic space by space always */
             unit.getMnemonic().replace("\u3000", " ") == MnemonicBuilder.newBuilder(ALG).setEntropy(testCase.entropyBytes).setWordList(testCase.wordList).build()
@@ -79,7 +79,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
             unit.getSeed("") != testCase.seedBytes
             unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
-            unit.getExtension(Object) == null
+            unit.getExtensions().isEmpty()
         where:
             testCase << BIP0039TestData.TREZOR_OFFICIAL_VECTORS
     }
@@ -95,7 +95,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
             unit.getSeed("") != testCase.seedBytes
             unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
-            unit.getExtension(Object) == null
+            unit.getExtensions().isEmpty()
         where:
             testCase << BIP0039TestData.TREZOR_OFFICIAL_VECTORS
     }
@@ -111,7 +111,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
             unit.getSeed("") != testCase.seedBytes
             unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
-            unit.getExtension(Object) == null
+            unit.getExtensions().isEmpty()
         where:
             testCase << BIP0039TestData.JP_VECTORS
     }

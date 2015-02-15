@@ -38,10 +38,6 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         then:
             thrown UnsupportedOperationException
     }
-    def "null extension return"() {
-        expect:
-            null == MnemonicBuilder.newBuilder(ALG).getExtension(Object)
-    }
     def "check #encoded encodes to #mnemonic"(String mnemonic, String hex) {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
@@ -111,6 +107,14 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
             _ | 5
             _ | 9
             _ | 1022
+    }
+    def "check encoding fails for unknown extension properties"() {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        when:
+        builder.setExtensions(["x": 1])
+        then:
+        thrown(UnsupportedOperationException)
     }
     def "check encoding passes for valid entropy lengths"() {
         given:

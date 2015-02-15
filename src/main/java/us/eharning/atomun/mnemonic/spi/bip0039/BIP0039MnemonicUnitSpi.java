@@ -18,6 +18,7 @@ package us.eharning.atomun.mnemonic.spi.bip0039;
 import com.google.common.base.Charsets;
 import com.google.common.base.Converter;
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableMap;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.MnemonicUnitSpi;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
@@ -161,7 +162,7 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
      */
     @Nonnull
     public MnemonicUnit build(CharSequence mnemonicSequence, byte[] entropy) {
-        return super.build(mnemonicSequence, entropy, null, null);
+        return super.build(mnemonicSequence, entropy, null, ImmutableMap.<String, Object>of());
     }
 
 }

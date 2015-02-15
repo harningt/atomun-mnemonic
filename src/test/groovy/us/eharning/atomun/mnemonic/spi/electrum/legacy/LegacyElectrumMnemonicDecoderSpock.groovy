@@ -43,7 +43,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
             unit.getSeed(null) == hex.decodeHex()
             unit.getSeed("") == hex.decodeHex()
             unit.getMnemonic() == mnemonic
-            unit.getExtension(Object) == null
+            unit.getExtensions().isEmpty()
         where:
             [ mnemonic, hex ] << pairs
     }
@@ -58,7 +58,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
             unit.getSeed(null) == hex.decodeHex()
             unit.getSeed("") == hex.decodeHex()
             unit.getMnemonic() == mnemonic
-            unit.getExtension(Object) == null
+            unit.getExtensions().isEmpty()
         where:
             [ mnemonic, hex ] << pairs
     }
@@ -71,7 +71,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
             unit.getSeed(null) == hex.decodeHex()
             unit.getSeed("") == hex.decodeHex()
             unit.getMnemonic() == mnemonic
-            unit.getExtension(Object) == null
+            unit.getExtensions().isEmpty()
         where:
             [ mnemonic, hex ] << pairs
     }
@@ -86,7 +86,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
             unit.getSeed(null) == hex.decodeHex()
             unit.getSeed("") == hex.decodeHex()
             unit.getMnemonic() == mnemonic.toUpperCase()
-            unit.getExtension(Object) == null
+            unit.getExtensions().isEmpty()
         where:
             [ mnemonic, hex ] << pairs
     }

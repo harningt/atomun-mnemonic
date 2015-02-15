@@ -16,7 +16,7 @@
 package us.eharning.atomun.mnemonic;
 
 import com.google.common.base.Verify;
-import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableMap;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -34,14 +34,20 @@ public abstract class MnemonicUnitSpi {
     /**
      * Utility method to return a wrapped instance of this SPI.
      *
+     * @param mnemonicSequence represented sequence.
+     * @param entropy derived entropy or null if on-demand.
+     * @param seed derived seed or null if on-demand.
+     * @param extensions map of property->value dependent on algorithm.
+     *
      * @return wrapped instance.
      *
      * @since 0.1.0
      */
     @Nonnull
-    protected MnemonicUnit build(@Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nullable ClassToInstanceMap<Object> extentions) {
+    protected MnemonicUnit build(@Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<String, Object> extensions) {
         Verify.verifyNotNull(mnemonicSequence);
-        return new MnemonicUnit(this, mnemonicSequence, entropy, seed, extentions);
+        Verify.verifyNotNull(extensions);
+        return new MnemonicUnit(this, mnemonicSequence, entropy, seed, extensions);
     }
 
     /**
@@ -55,23 +61,6 @@ public abstract class MnemonicUnitSpi {
      */
     @CheckForNull
     public abstract byte[] getEntropy(@Nonnull CharSequence mnemonicSequence);
-
-    /**
-     * Get a custom decoder extension to obtain custom values.
-     *
-     * By default this rejects as it is not expected to be implemented lower down.
-     *
-     * @param mnemonicSequence sequence to determine the extensions for.
-     * @param extensionType kind of decoder extension to obtain.
-     *
-     * @return typed extension if available, else null.
-     *
-     * @since 0.1.0
-     */
-    @CheckForNull
-    public <T> T getExtension(@Nonnull CharSequence mnemonicSequence, @Nonnull Class<T> extensionType) {
-        return null;
-    }
 
     /**
      * Get a seed from this mnemonic.
