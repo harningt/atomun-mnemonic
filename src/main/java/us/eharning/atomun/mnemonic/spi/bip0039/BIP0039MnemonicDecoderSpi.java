@@ -81,6 +81,13 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
         return unit.build(mnemonicSequence, entropy);
     }
 
+    /**
+     * Detect the appropriate word list for the given mnemonic sequence.
+     *
+     * @param mnemonicWordList sequence of mnemonic words to match up against a dictionary.
+     *
+     * @return a dictionary instance if found, else null.
+     */
     @CheckForNull
     private static BidirectionalDictionary detectWordList(@Nonnull List<String> mnemonicWordList) {
     /* Need to autodetect the word list from the sequence. */
@@ -93,6 +100,14 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
         return null;
     }
 
+    /**
+     * Verify that the dictionary contains all of the words in the given mnemonic sequence.
+     *
+     * @param dictionary instance to check for the presence of all words.
+     * @param mnemonicWordList sequence of mnemonic words to match up against a dictionary.
+     *
+     * @return true if dictionary contains all words in mnemonicWordList.
+     */
     private static boolean verifyDictionary(@Nonnull BidirectionalDictionary dictionary, @Nonnull List<String> mnemonicWordList) {
         Converter<String, Integer> reverseDictionary = dictionary.reverse();
         /* Due to inability for converters to return null as a valid response, need to catch thrown exception */
@@ -105,5 +120,4 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
         }
         return true;
     }
-
 }

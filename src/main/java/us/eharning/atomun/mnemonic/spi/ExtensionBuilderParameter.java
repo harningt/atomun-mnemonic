@@ -15,6 +15,7 @@
  */
 package us.eharning.atomun.mnemonic.spi;
 
+import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableMap;
 
 import javax.annotation.Nonnull;
@@ -26,19 +27,37 @@ import java.util.Map;
  *
  * @since 0.1.0
  */
+@Beta
 @Immutable
 public class ExtensionBuilderParameter implements BuilderParameter {
     private final ImmutableMap<String, Object> extensions;
 
+    /**
+     * Construct an instance given the provided extension data.
+     *
+     * @param extensions data to configure the builder with.
+     */
     private ExtensionBuilderParameter(@Nonnull ImmutableMap<String, Object> extensions) {
         this.extensions = extensions;
     }
 
+    /**
+     * Obtain the configured extension data.
+     *
+     * @return configured extension data.
+     */
     @Nonnull
     public Map<String, Object> getExtensions() {
         return extensions;
     }
 
+    /**
+     * Create a parameter wrapping the provided extension data.
+     *
+     * @param extensions data to configure the builder with.
+     *
+     * @return wrapped extension parameter data.
+     */
     @Nonnull
     public static ExtensionBuilderParameter getExtensionsParameter(@Nonnull ImmutableMap<String, Object> extensions) {
         return new ExtensionBuilderParameter(extensions);

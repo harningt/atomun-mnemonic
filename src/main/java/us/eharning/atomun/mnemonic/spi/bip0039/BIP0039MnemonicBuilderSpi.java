@@ -40,6 +40,15 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
         }
     }
 
+    /**
+     * Generate the mnemonic sequence given the input parameters.
+     *
+     * @param parameters builder parameters to drive the process.
+     *
+     * @return the generated mnemonic sequence.
+     *
+     * @since 0.1.0
+     */
     @Nonnull
     @Override
     public String generateMnemonic(BuilderParameter... parameters) {
@@ -77,6 +86,15 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
         return mnemonicSentence.toString();
     }
 
+    /**
+     * Validate the builder parameters.
+     *
+     * @param parameters builder parameters to validate.
+     *
+     * @throws RuntimeException varieties in case of invalid input.
+     *
+     * @since 0.1.0
+     */
     @Override
     public void validate(BuilderParameter... parameters) {
         for (BuilderParameter parameter: parameters) {

@@ -37,10 +37,36 @@ import java.util.List;
 class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
     private final BidirectionalDictionary dictionary;
 
+    /**
+     * Construct a BIP0039 decoder SPI instance for the given dictionary.
+     *
+     * @param dictionary instance to match mnemonic words against.
+     */
     public BIP0039MnemonicUnitSpi(@Nonnull BidirectionalDictionary dictionary) {
         this.dictionary = dictionary;
     }
 
+    /**
+     * Utility method to generate a MnemonicUnit wrapping the given sequence and entropy.
+     *
+     * @param mnemonicSequence sequence.
+     * @param entropy derived copy of entropy.
+     *
+     * @return wrapped instance.
+     */
+    @Nonnull
+    public MnemonicUnit build(CharSequence mnemonicSequence, byte[] entropy) {
+        return super.build(mnemonicSequence, entropy, null, ImmutableMap.<String, Object>of());
+    }
+
+    /**
+     * Convert a sequence of mnemonic word into a bit array for validation and usage.
+     *
+     * @param dictionary instance to check for the presence of all words.
+     * @param mnemonicWordList sequence of mnemonic words to map against a dictionary for bit values.
+     *
+     * @return sequence of bits based on word list.
+     */
     @Nonnull
     private static boolean[] mnemonicToBits(@Nonnull BidirectionalDictionary dictionary, @Nonnull List<String> mnemonicWordList) {
         /* Each word represents 11 bits of entropy (2^11 => 2048 words) */
@@ -63,6 +89,13 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
         return mnemonicSentenceBits;
     }
 
+    /**
+     * Extract the entropy portion from the mnemonic sentence bits as a byte array.
+     *
+     * @param mnemonicSentenceBits container of entropy bits.
+     *
+     * @return array of bytes containing the entropy.
+     */
     @Nonnull
     private static byte[] extractEntropy(@Nonnull boolean[] mnemonicSentenceBits) {
         int checksumBitCount = mnemonicSentenceBits.length / 33;
@@ -134,7 +167,6 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
     /**
      * Get a seed from this mnemonic.
      *
-     *
      * @param mnemonicSequence sequence to derive the seed from.
      * @param password password to supply for decoding.
      *
@@ -153,16 +185,4 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
         byte[] passwordBytes = normalizedPassword.getBytes(Charsets.UTF_8);
         return BIP0039MnemonicUtility.deriveSeed(passwordBytes, mnemonicSequenceBytes);
     }
-
-    /**
-     * Utility method to generate a MnemonicUnit wrapping the given sequence and entropy. 
-     * @param mnemonicSequence sequence.
-     * @param entropy derived copy of entropy.
-     * @return wrapped instance.
-     */
-    @Nonnull
-    public MnemonicUnit build(CharSequence mnemonicSequence, byte[] entropy) {
-        return super.build(mnemonicSequence, entropy, null, ImmutableMap.<String, Object>of());
-    }
-
 }

@@ -15,6 +15,8 @@
  */
 package us.eharning.atomun.mnemonic.spi;
 
+import com.google.common.annotations.Beta;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
@@ -24,6 +26,7 @@ import javax.annotation.concurrent.Immutable;
  *
  * @since 0.1.0
  */
+@Beta
 @Immutable
 public abstract class MnemonicBuilderSpi {
     /**

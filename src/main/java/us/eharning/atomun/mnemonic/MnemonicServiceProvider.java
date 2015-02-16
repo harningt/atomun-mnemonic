@@ -26,8 +26,27 @@ import javax.annotation.Nonnull;
  * @since 0.1.0
  */
 public abstract class MnemonicServiceProvider {
+    /**
+     * Obtain a mnemonic builder SPI for the given algorithm.
+     *
+     * @param algorithm mnemonic algorithm to try to retrieve.
+     *
+     * @return SPI instance for the given algorithm, else null.
+     *
+     * @since 0.1.0
+     */
     @CheckForNull
     public abstract MnemonicBuilderSpi getMnemonicBuilder(@Nonnull MnemonicAlgorithm algorithm);
+
+    /**
+     * Obtain a mnemonic decoder SPI for the given algorithm.
+     *
+     * @param algorithm mnemonic algorithm to try to retrieve.
+     *
+     * @return SPI instance for the given algorithm, else null.
+     *
+     * @since 0.1.0
+     */
     @CheckForNull
     public abstract MnemonicDecoderSpi getMnemonicDecoder(@Nonnull MnemonicAlgorithm algorithm);
 }

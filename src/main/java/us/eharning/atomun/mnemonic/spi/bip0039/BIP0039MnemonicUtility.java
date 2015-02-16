@@ -48,7 +48,9 @@ class BIP0039MnemonicUtility {
 
     /**
      * Utility method to obtain a dictionary given the wordListIdentifier.
+     *
      * @param wordListIdentifier name of the word list to retrieve.
+     *
      * @return dictionary for the given word list.
      *
      * @throws java.lang.IllegalArgumentException If the word list cannot be found/loaded.
@@ -74,7 +76,9 @@ class BIP0039MnemonicUtility {
 
     /**
      * Simple utility to calculate the SHA-256 digest.
+     *
      * @param data value to digest.
+     *
      * @return sha256-digest of data.
      *
      * @throws java.lang.Error if the digest cannot be found (should not happen).
@@ -92,8 +96,10 @@ class BIP0039MnemonicUtility {
 
     /**
      * Utility method to derive a seed given the password and processed mnemonic sequence.
+     *
      * @param passwordBytes UTF-8 byte sequence representing the password to use.
      * @param mnemonicSequenceBytes UTF-8 byte sequence representing the mnemonic sequence.
+     *
      * @return 64-byte seed value
      *
      * @throws java.lang.Error if the Mac cannot be found (should not happen).

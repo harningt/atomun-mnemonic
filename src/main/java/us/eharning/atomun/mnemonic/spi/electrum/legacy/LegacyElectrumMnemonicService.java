@@ -26,12 +26,23 @@ import javax.annotation.concurrent.Immutable;
 
 /**
  * Registration class to perform the necessary default service provider registrations.
+ *
+ * @since 0.1.0
  */
 @Immutable
 public class LegacyElectrumMnemonicService extends MnemonicServiceProvider {
     private static final MnemonicBuilderSpi BUILDER_SPI = new LegacyElectrumMnemonicBuilderSpi();
     private static final MnemonicDecoderSpi DECODER_SPI = new LegacyElectrumMnemonicDecoderSpi();
 
+    /**
+     * Obtain a mnemonic builder SPI for the given algorithm.
+     *
+     * @param algorithm mnemonic algorithm to try to retrieve.
+     *
+     * @return SPI instance for the given algorithm, else null.
+     *
+     * @since 0.1.0
+     */
     @CheckForNull
     @Override
     public MnemonicBuilderSpi getMnemonicBuilder(@Nonnull MnemonicAlgorithm algorithm) {
@@ -41,6 +52,15 @@ public class LegacyElectrumMnemonicService extends MnemonicServiceProvider {
         return BUILDER_SPI;
     }
 
+    /**
+     * Obtain a mnemonic decoder SPI for the given algorithm.
+     *
+     * @param algorithm mnemonic algorithm to try to retrieve.
+     *
+     * @return SPI instance for the given algorithm, else null.
+     *
+     * @since 0.1.0
+     */
     @CheckForNull
     @Override
     public MnemonicDecoderSpi getMnemonicDecoder(@Nonnull MnemonicAlgorithm algorithm) {

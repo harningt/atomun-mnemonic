@@ -28,6 +28,14 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 class LegacyElectrumMnemonicUnitSpi extends MnemonicUnitSpi {
+    /**
+     * Utility method to generate a MnemonicUnit wrapping the given sequence and entropy.
+     *
+     * @param mnemonicSequence sequence.
+     * @param entropy derived copy of entropy.
+     *
+     * @return wrapped instance.
+     */
     public MnemonicUnit build(CharSequence mnemonicSequence, byte[] entropy) {
         /* Entropy is the seed for this */
         return super.build(mnemonicSequence, entropy, entropy, ImmutableMap.<String, Object>of());

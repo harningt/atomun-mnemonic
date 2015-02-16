@@ -44,13 +44,25 @@ class LegacyElectrumMnemonicUtility {
         N = DICTIONARY.getSize();
     }
 
-    /* Simple modular math hack to deal with signed/unsigned integer issues
-     * and java
+    /**
+     * Simple modular math hack to deal with signed/unsigned integer issues and java.
+     *
+     * @param value signed integer to apply modulo operator to.
+     * @param mod modulo operator parameter.
+     *
+     * @return value % mod honoring signed/unsigned rules for this usage.
      */
     private static int mn_mod(int value, int mod) {
         return value < 0 ? mod + value : value % mod;
     }
 
+    /**
+     * Utility method to add a 32-bit integer to a byte array.
+     *
+     * @param buffer byte array to write to.
+     * @param currentIndex offset into buffer to write into.
+     * @param value 32-bit integer to write at buffer[currentIndex].
+     */
     private static void putInteger(@Nonnull byte[] buffer, int currentIndex, int value)
     {
         buffer[currentIndex] = (byte)((value >> 24) & 0xFF);
@@ -59,6 +71,14 @@ class LegacyElectrumMnemonicUtility {
         buffer[currentIndex + 3] = (byte)(value & 0xFF);
     }
 
+    /**
+     * Utility method to extract a 32-bit integer from a byte array.
+     *
+     * @param buffer byte array to read from.
+     * @param currentIndex offset into buffer to read from.
+     *
+     * @return 32-bit integer stored at buffer[currentIndex]
+     */
     private static int getInteger(@Nonnull byte[] buffer, int currentIndex)
     {
         int value =
@@ -73,6 +93,7 @@ class LegacyElectrumMnemonicUtility {
      * Encode a sequence of bytes to a space-delimited series of mnemonic words.
      *
      * @param entropy value to encode.
+     *
      * @return space-delimited sequence of mnemonic words.
      */
     @Nonnull

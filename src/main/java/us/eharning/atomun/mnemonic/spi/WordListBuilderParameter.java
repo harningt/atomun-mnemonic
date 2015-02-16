@@ -15,6 +15,8 @@
  */
 package us.eharning.atomun.mnemonic.spi;
 
+import com.google.common.annotations.Beta;
+
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
@@ -23,19 +25,37 @@ import javax.annotation.concurrent.Immutable;
  *
  * @since 0.1.0
  */
+@Beta
 @Immutable
 public class WordListBuilderParameter implements BuilderParameter {
     private final String wordListIdentifier;
 
+    /**
+     * Construct an instance given the provided word list identifier.
+     *
+     * @param wordListIdentifier identifier to configure the builder with.
+     */
     private WordListBuilderParameter(@Nonnull String wordListIdentifier) {
         this.wordListIdentifier = wordListIdentifier;
     }
 
+    /**
+     * Obtain the wordListIdentifier to configure the builder with.
+     *
+     * @return configured word list identifier.
+     */
     @Nonnull
     public String getWordListIdentifier() {
         return wordListIdentifier;
     }
 
+    /**
+     * Obtain a parameter instance given the provided word list identifier.
+     *
+     * @param wordListIdentifier identifier to configure the builder with.
+     *
+     * @return wrapped wordListIdentifier parameter.
+     */
     @Nonnull
     public static WordListBuilderParameter getWordList(@Nonnull String wordListIdentifier) {
         return new WordListBuilderParameter(wordListIdentifier);
