@@ -101,6 +101,12 @@ along with the relevant unit tests for each.
 
  * Spock Framework
 
+### Quality
+
+ * FindBugs
+ * org.ajoberstar gradle defaults
+    * many included things, such as license plugin
+
 # Acknowledgements
 
 Thanks to the Electrum team for preparing the [original implementation][LegacyElectrumImplementation]
