@@ -13,23 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package us.eharning.atomun.mnemonic
+package us.eharning.atomun.mnemonic.spi;
 
-import com.google.common.collect.Iterables
-import spock.lang.Specification
+import com.google.common.annotations.Beta;
 
 /**
- * Generic decoding handler test.
+ * Marker interface for parameters to pass during building to control operation.
+ *
+ * @since 0.1.0
  */
-class MnemonicDecoderGenericSpock extends Specification {
-    def "requesting an unlisted algorithm results in failure"() {
-        when:
-            MnemonicDecoder.decodeMnemonic((MnemonicAlgorithm)null, "TEST")
-        then:
-            thrown(UnsupportedOperationException)
-    }
-    def "requesting a certainly invalid mnemonic results in empty list"() {
-        expect:
-            Iterables.isEmpty(MnemonicDecoder.decodeMnemonic("123FAKE"))
-    }
+@Beta
+public interface BuilderParameter {
 }

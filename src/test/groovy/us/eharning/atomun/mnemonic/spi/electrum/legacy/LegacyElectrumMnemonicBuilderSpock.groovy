@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package us.eharning.atomun.mnemonic
+package us.eharning.atomun.mnemonic.spi.electrum.legacy
 
 import spock.lang.Specification
+import us.eharning.atomun.mnemonic.MnemonicAlgorithm
+import us.eharning.atomun.mnemonic.MnemonicBuilder
 
 /**
  * Test sequence for the legacy Electrum mnemonic builder
@@ -36,11 +38,7 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         then:
             thrown UnsupportedOperationException
     }
-    def "null extension return"() {
-        expect:
-            null == MnemonicBuilder.newBuilder(ALG).getExtension(Object)
-    }
-    def "check #encoded encodes to #mnemonic"() {
+    def "check #encoded encodes to #mnemonic"(String mnemonic, String hex) {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
             builder.setEntropy(hex.decodeHex())
@@ -49,19 +47,19 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         where:
             [ mnemonic, hex ] << pairs
     }
-    def "check encoding fails when no state set"() {
+    def "check encoding succeeds with safe defaults when no state set"() {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
         when:
             builder.build()
         then:
-            thrown(IllegalStateException)
+            noExceptionThrown()
     }
     def "check encoding fails when attempted entropyLength set fails"() {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            try { builder.setEntropyLength(1) } catch(e) {}
+            try { builder.setEntropyLength(1) } catch(ignored) {}
             builder.build()
         then:
             thrown(IllegalStateException)
@@ -70,7 +68,7 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            try { builder.setEntropyLength(new byte[1]) } catch(e) {}
+            try { builder.setEntropy(new byte[1]) } catch(ignored) {}
             builder.build()
         then:
             thrown(IllegalStateException)
@@ -110,6 +108,14 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
             _ | 9
             _ | 1022
     }
+    def "check encoding fails for unknown extension properties"() {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        when:
+        builder.setExtensions(["x": 1])
+        then:
+        thrown(UnsupportedOperationException)
+    }
     def "check encoding passes for valid entropy lengths"() {
         given:
             def builder =MnemonicBuilder.newBuilder(ALG)
@@ -123,22 +129,22 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
             _ | 4 * 9
             _ | 4 * 100
     }
-    def "check that settings entropy after entropy length fails"() {
+    def "check that settings entropy after entropy length passes"() {
         given:
             def builder =MnemonicBuilder.newBuilder(ALG)
         when:
             builder.setEntropyLength(4)
             builder.setEntropy(new byte[4])
         then:
-            thrown(IllegalStateException)
+            noExceptionThrown()
     }
-    def "check that settings entropy length after entropy fails"() {
+    def "check that settings entropy length after entropy passes"() {
         given:
-            def builder =MnemonicBuilder.newBuilder(ALG)
+            def builder = MnemonicBuilder.newBuilder(ALG)
         when:
             builder.setEntropy(new byte[4])
             builder.setEntropyLength(4)
         then:
-            thrown(IllegalStateException)
+            noExceptionThrown()
     }
 }

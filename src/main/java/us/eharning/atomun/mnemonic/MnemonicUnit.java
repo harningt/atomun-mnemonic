@@ -15,58 +15,102 @@
  */
 package us.eharning.atomun.mnemonic;
 
+import com.google.common.base.Verify;
+import com.google.common.collect.ImmutableMap;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import java.util.Arrays;
+import java.util.Map;
+
 /**
  * Service provider to back the MnemonicDecoder.
  * Primarily to present a consistent API.
+ *
+ * @since 0.0.1
  */
+@Immutable
 public final class MnemonicUnit {
     private final MnemonicUnitSpi spi;
+    private final CharSequence mnemonicSequence;
+    private final byte[] entropy;
+    private final byte[] seed;
+    private final ImmutableMap<String, Object> extensions;
 
     /**
      * Construct a new MnemonicUnit wrapping the given implementation.
      *
-     * @param spi implementation.
+     * @param spi implementation details.
+     * @param mnemonicSequence represented sequence.
+     * @param entropy derived entropy or null if on-demand.
+     * @param seed derived seed or null if on-demand.
+     * @param extensions map of property-to-value dependent on algorithm.
      */
-    MnemonicUnit(MnemonicUnitSpi spi) {
+    MnemonicUnit(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<String, Object> extensions) {
+        Verify.verifyNotNull(spi);
+        Verify.verifyNotNull(mnemonicSequence);
+        Verify.verifyNotNull(extensions);
         this.spi = spi;
+        this.mnemonicSequence = mnemonicSequence;
+        this.entropy = entropy;
+        this.seed = seed;
+        this.extensions = extensions;
     }
 
     /**
      * Get the entropy if possible.
      *
      * @return a copy of the entropy byte array or null if inaccessible.
+     *
+     * @since 0.0.1
      */
+    @CheckForNull
     public byte[] getEntropy() {
-        return spi.getEntropy();
+        if (null != entropy) {
+            return Arrays.copyOf(entropy, entropy.length);
+        }
+        return spi.getEntropy(mnemonicSequence);
     }
 
     /**
-     * Get a custom decoder extension to obtain custom values.
+     * Get the associated extension values.
      *
-     * By default this rejects as it is not expected to be implemented lower down.
+     * @return map of property-to-value dependent on algorithm.
      *
-     * @param extensionType kind of decoder extension to obtain.
+     * @since 0.1.0
      */
-    public <T> T getExtension(Class<T> extensionType) {
-        return spi.getExtension(extensionType);
+    @Nonnull
+    public Map<String, Object> getExtensions() {
+        return extensions;
     }
 
     /**
      * Get the associated mnemonic string.
      *
      * @return space-delimited sequence of mnemonic words.
+     *
+     * @since 0.0.1
      */
+    @Nonnull
     public CharSequence getMnemonic() {
-        return spi.getMnemonicSequence();
+        return mnemonicSequence;
     }
 
     /**
      * Get a seed from this mnemonic without supplying a password.
      *
      * @return a derived seed.
+     *
+     * @since 0.0.1
      */
+    @Nonnull
     public byte[] getSeed() {
-        return spi.getSeed();
+        if (null != seed) {
+            return Arrays.copyOf(seed, seed.length);
+        }
+        return spi.getSeed(mnemonicSequence, null);
     }
 
     /**
@@ -75,8 +119,14 @@ public final class MnemonicUnit {
      * @param password password to supply for decoding.
      *
      * @return a derived seed.
+     *
+     * @since 0.0.1
      */
-    public byte[] getSeed(CharSequence password) {
-        return spi.getSeed(password);
+    @Nonnull
+    public byte[] getSeed(@Nullable CharSequence password) {
+        if (null == password || password.length() == 0) {
+            return getSeed();
+        }
+        return spi.getSeed(mnemonicSequence, password);
     }
 }

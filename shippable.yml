@@ -1,6 +1,8 @@
 language: java
+cache: true
 jdk:
     - openjdk7
-install: ""
+install:
+    - TERM=dumb ./gradlew clean assemble
 script:
-    - TERM=dumb ./gradlew clean check
+    - TERM=dumb ./gradlew check

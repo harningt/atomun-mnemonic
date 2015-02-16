@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package us.eharning.atomun.mnemonic
+package us.eharning.atomun.mnemonic.spi.electrum.legacy
 
 import com.google.common.collect.Iterables
 import spock.lang.Specification
+import us.eharning.atomun.mnemonic.MnemonicAlgorithm
+import us.eharning.atomun.mnemonic.MnemonicDecoder
+import us.eharning.atomun.mnemonic.MnemonicUnit
 
 /**
  * Test around the legacy Electrum mnemonic decoder system.
@@ -31,7 +34,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
             ["class group aside accept eat howl harm world ignorance brain count dude", "f9379762a6da83b4e40e31b682a6dd8d"]
     ]
 
-    def "check #mnemonic string decodes to #encoded"() {
+    def "check #mnemonic string decodes to #encoded"(String mnemonic, String hex) {
         given:
             MnemonicUnit unit = MnemonicDecoder.decodeMnemonic(ALG, mnemonic)
         expect:
@@ -40,11 +43,11 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
             unit.getSeed(null) == hex.decodeHex()
             unit.getSeed("") == hex.decodeHex()
             unit.getMnemonic() == mnemonic
-            unit.getExtension(Object) == null
+            unit.getExtensions().isEmpty()
         where:
             [ mnemonic, hex ] << pairs
     }
-    def "generic check #mnemonic string decodes to #encoded with single valid element"() {
+    def "generic check #mnemonic string decodes to #encoded with single valid element"(String mnemonic, String hex) {
         given:
             Iterable<MnemonicUnit> units = MnemonicDecoder.decodeMnemonic(mnemonic)
             MnemonicUnit unit = Iterables.getFirst(units, null)
@@ -55,11 +58,11 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
             unit.getSeed(null) == hex.decodeHex()
             unit.getSeed("") == hex.decodeHex()
             unit.getMnemonic() == mnemonic
-            unit.getExtension(Object) == null
+            unit.getExtensions().isEmpty()
         where:
             [ mnemonic, hex ] << pairs
     }
-    def "check #mnemonic string with non-standard case decodes to #encoded"() {
+    def "check #mnemonic string with non-standard case decodes to #encoded"(String mnemonic, String hex) {
         given:
             MnemonicUnit unit = MnemonicDecoder.decodeMnemonic(ALG, mnemonic)
         expect:
@@ -68,11 +71,11 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
             unit.getSeed(null) == hex.decodeHex()
             unit.getSeed("") == hex.decodeHex()
             unit.getMnemonic() == mnemonic
-            unit.getExtension(Object) == null
+            unit.getExtensions().isEmpty()
         where:
             [ mnemonic, hex ] << pairs
     }
-    def "generic check #mnemonic string with non-standard case decodes to #encoded with single valid element"() {
+    def "generic check #mnemonic string with non-standard case decodes to #encoded with single valid element"(String mnemonic, String hex) {
         given:
             Iterable<MnemonicUnit> units = MnemonicDecoder.decodeMnemonic(mnemonic.toUpperCase())
             MnemonicUnit unit = Iterables.getFirst(units, null)
@@ -83,12 +86,12 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
             unit.getSeed(null) == hex.decodeHex()
             unit.getSeed("") == hex.decodeHex()
             unit.getMnemonic() == mnemonic.toUpperCase()
-            unit.getExtension(Object) == null
+            unit.getExtensions().isEmpty()
         where:
             [ mnemonic, hex ] << pairs
     }
 
-    def "seed generation with password is unsupported"() {
+    def "seed generation with password is unsupported"(String mnemonic) {
         when:
             MnemonicDecoder.decodeMnemonic(ALG, mnemonic).getSeed("TEST")
         then:
@@ -97,7 +100,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
             [ mnemonic, _ ] << pairs
     }
 
-    def "decoding mnemonics with custom word lists is unsupported"() {
+    def "decoding mnemonics with custom word lists is unsupported"(String mnemonic) {
         when:
             MnemonicDecoder.decodeMnemonic(ALG, mnemonic, "CUSTOM")
         then:

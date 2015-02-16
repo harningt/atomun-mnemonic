@@ -15,37 +15,48 @@
  */
 package us.eharning.atomun.mnemonic;
 
-import com.google.common.base.Supplier;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import us.eharning.atomun.mnemonic.spi.*;
+import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
+import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.NotThreadSafe;
+import java.util.Map;
 
 /**
  * Builder API to generate mnemonic sequences.
+ *
+ * @since 0.0.1
  */
+@NotThreadSafe
 public final class MnemonicBuilder {
-    /**
-     * Mapping of algorithms to implementation instance suppliers.
-     *
-     * May be replaced with a mutable map if custom implementations allowed.
-     */
-    private static final ImmutableMap<MnemonicAlgorithm, Supplier<MnemonicBuilderSpi>> constructorMap;
-    static {
-        constructorMap = ImmutableMap.of(
-            MnemonicAlgorithm.LegacyElectrum, LegacyElectrumMnemonicBuilderSpi.SUPPLIER
-        );
-    }
+    private static final ImmutableList<MnemonicServiceProvider> SERVICE_PROVIDERS = ImmutableList.of(
+            new LegacyElectrumMnemonicService(),
+            new BIP0039MnemonicService()
+    );
 
     /**
      * Implementation instance.
      */
-    private final MnemonicBuilderSpi spi;
+    private final MnemonicBuilderSpi newSpi;
+
+    /* Current known number of parameters - internal detail.
+     * Current slot dictates:
+     *  1 - entropy
+     *  2 - wordList
+     *  3 - extensions
+     */
+    private final BuilderParameter[] parameters = new BuilderParameter[3];
 
     /**
      * Construct a MnemonicBuilder around the given implementation.
      *
-     * @param mnemonicBuilderSpi implementation to wrap.
+     * @param spi implementation provider.
      */
-    private MnemonicBuilder(MnemonicBuilderSpi mnemonicBuilderSpi) {
-        this.spi = mnemonicBuilderSpi;
+    private MnemonicBuilder(@Nonnull MnemonicBuilderSpi spi) {
+        this.newSpi = spi;
     }
 
     /**
@@ -54,57 +65,98 @@ public final class MnemonicBuilder {
      * @param algorithm kind of instance to construct.
      *
      * @return new builder instance.
+     *
+     * @since 0.0.1
      */
-    public static MnemonicBuilder newBuilder(MnemonicAlgorithm algorithm) {
-        Supplier<MnemonicBuilderSpi> supplier = constructorMap.get(algorithm);
-        if (null == supplier) {
-            throw new UnsupportedOperationException("Unsupported algorithm: " + algorithm);
+    @Nonnull
+    public static MnemonicBuilder newBuilder(@Nonnull MnemonicAlgorithm algorithm) {
+        for (MnemonicServiceProvider provider: SERVICE_PROVIDERS) {
+            MnemonicBuilderSpi spi = provider.getMnemonicBuilder(algorithm);
+            if (null != spi) {
+                return new MnemonicBuilder(spi);
+            }
         }
-        return new MnemonicBuilder(supplier.get());
+        throw new UnsupportedOperationException("Unsupported algorithm: " + algorithm);
     }
 
     /**
      * Encode this instance to a space-delimited series of mnemonic words.
      *
      * @return space-delimited sequence of mnemonic words.
-     */
-    public String build() {
-        return spi.build();
-    }
-
-    /**
-     * Set a custom property specialized for the given algorithm.
      *
-     * @param extensionType kind of builder extension to obtain.
+     * @since 0.0.1
      */
-    public <T> T getExtension(Class<T> extensionType) {
-        return spi.getExtension(extensionType);
+    @Nonnull
+    public String build() {
+        try {
+            newSpi.validate(parameters);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+        return newSpi.generateMnemonic(parameters);
     }
 
     /**
      * Set the entropy to generate the mnemonic with.
      *
      * @param entropy data to encode.
+     *
+     * @return this to allow chaining.
+     *
+     * @since 0.0.1
      */
-    public void setEntropy(byte[] entropy) {
-        spi.setEntropy(entropy);
+    @Nonnull
+    public MnemonicBuilder setEntropy(@Nonnull byte[] entropy) {
+        parameters[0] = EntropyBuilderParameter.getStatic(entropy);
+        newSpi.validate(parameters);
+        return this;
     }
 
     /**
      * Set the length of the desired entropy to generate the mnemonic with.
      *
      * @param entropyLength number of bytes of entropy to use.
+     *
+     * @return this to allow chaining.
+     *
+     * @since 0.0.1
      */
-    public void setEntropyLength(int entropyLength) {
-        spi.setEntropyLength(entropyLength);
+    @Nonnull
+    public MnemonicBuilder setEntropyLength(int entropyLength) {
+        parameters[0] = EntropyBuilderParameter.getRandom(entropyLength);
+        newSpi.validate(parameters);
+        return this;
+    }
+
+    /**
+     * Sets extensions for this builder, replacing any prior set extensions.
+     *
+     * @param extensions map of extension property-to-value elements, algorithm-dependent.
+     *
+     * @return this to allow chaining.
+     *
+     * @since 0.1.0
+     */
+    @Nonnull
+    public MnemonicBuilder setExtensions(Map<String, Object> extensions) {
+        parameters[2] = ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.copyOf(extensions));
+        newSpi.validate(parameters);
+        return this;
     }
 
     /**
      * Set the word list to use for encoding the mnemonic.
      *
      * @param wordListIdentifier name of the word list to use.
+     *
+     * @return this to allow chaining.
+     *
+     * @since 0.0.1
      */
-    public void setWordList(String wordListIdentifier) {
-        spi.setWordList(wordListIdentifier);
+    @Nonnull
+    public MnemonicBuilder setWordList(@Nonnull String wordListIdentifier) {
+        parameters[1] = WordListBuilderParameter.getWordList(wordListIdentifier);
+        newSpi.validate(parameters);
+        return this;
     }
 }

@@ -16,23 +16,22 @@
 package us.eharning.atomun.mnemonic;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
+import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Builder API to decode mnemonic sequences.
+ *
+ * @since 0.0.1
  */
 public final class MnemonicDecoder {
-    /**
-     * Mapping of algorithms to implementation instance suppliers.
-     *
-     * May be replaced with a mutable map if custom implementations allowed.
-     */
-    private static final ImmutableMap<MnemonicAlgorithm, MnemonicDecoderSystem> constructorMap;
-    static {
-        constructorMap = ImmutableMap.of(
-            MnemonicAlgorithm.LegacyElectrum, (MnemonicDecoderSystem)new LegacyElectrumMnemonicDecoderSystem()
-        );
-    }
+    private static final ImmutableList<MnemonicServiceProvider> SERVICE_PROVIDERS = ImmutableList.of(
+            new LegacyElectrumMnemonicService(),
+            new BIP0039MnemonicService()
+    );
 
     /**
      * Deny construction of this static utility class.
@@ -46,15 +45,38 @@ public final class MnemonicDecoder {
      * @param mnemonicSequence space-delimited sequence of mnemonic words.
      *
      * @return sequence of successful decoding results or empty.
+     *
+     * @since 0.0.1
      */
-    public static Iterable<MnemonicUnit> decodeMnemonic(CharSequence mnemonicSequence) {
+    @Nonnull
+    public static Iterable<MnemonicUnit> decodeMnemonic(@Nonnull CharSequence mnemonicSequence) {
+        return decodeMnemonic(mnemonicSequence, null);
+    }
+
+    /**
+     * Decodes a mnemonic, returning an iterable with all of the successful decoding results.
+     *
+     * @param mnemonicSequence space-delimited sequence of mnemonic words.
+     * @param wordListIdentifier identifier for the word list to use.
+     *
+     * @return sequence of successful decoding results or empty.
+     *
+     * @since 0.1.0
+     */
+    @Nonnull
+    public static Iterable<MnemonicUnit> decodeMnemonic(@Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
         ImmutableList.Builder<MnemonicUnit> unitListBuilder = ImmutableList.builder();
-        for (MnemonicDecoderSystem system: constructorMap.values()) {
-            try {
-                MnemonicUnit unit = system.decode(mnemonicSequence, null);
-                unitListBuilder.add(unit);
-            } catch (IllegalArgumentException ignored) {
-                /* On failure, ignore the error and continue on */
+        for (MnemonicServiceProvider serviceProvider: SERVICE_PROVIDERS) {
+            for (MnemonicAlgorithm algorithm: MnemonicAlgorithm.values()) {
+                MnemonicDecoderSpi system = serviceProvider.getMnemonicDecoder(algorithm);
+                if (null == system) {
+                    continue;
+                }
+                try {
+                    MnemonicUnit unit = system.decode(mnemonicSequence, wordListIdentifier);
+                    unitListBuilder.add(unit);
+                } catch (UnsupportedOperationException | IllegalArgumentException ignored) {
+                }
             }
         }
         return unitListBuilder.build();
@@ -68,24 +90,35 @@ public final class MnemonicDecoder {
      *
      * @return successful decoding results.
      * @throws java.lang.IllegalArgumentException on decoding failure.
+     *
+     * @since 0.0.1
      */
-    public static MnemonicUnit decodeMnemonic(MnemonicAlgorithm mnemonicAlgorithm, CharSequence mnemonicSequence) {
+    @Nonnull
+    public static MnemonicUnit decodeMnemonic(@Nonnull MnemonicAlgorithm mnemonicAlgorithm, @Nonnull CharSequence mnemonicSequence) {
         return decodeMnemonic(mnemonicAlgorithm, mnemonicSequence, null);
     }
 
     /**
      * Decode a mnemonic for a specific algorithm and word list.
+     *
      * @param mnemonicAlgorithm identifier for which algorithm to use.
      * @param mnemonicSequence space-delimited sequence of mnemonic words.
      * @param wordListIdentifier identifier for the word list to use.
+     *
      * @return successful decoding results.
      * @throws java.lang.IllegalArgumentException on decoding failure.
+     *
+     * @since 0.0.1
      */
-    public static MnemonicUnit decodeMnemonic(MnemonicAlgorithm mnemonicAlgorithm, CharSequence mnemonicSequence, String wordListIdentifier) {
-        MnemonicDecoderSystem system = constructorMap.get(mnemonicAlgorithm);
-        if (null == system) {
-            throw new UnsupportedOperationException("Unsupported algorithm " + mnemonicAlgorithm);
+    @Nonnull
+    public static MnemonicUnit decodeMnemonic(@Nonnull MnemonicAlgorithm mnemonicAlgorithm, @Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
+        for (MnemonicServiceProvider serviceProvider: SERVICE_PROVIDERS) {
+            MnemonicDecoderSpi system = serviceProvider.getMnemonicDecoder(mnemonicAlgorithm);
+            if (null == system) {
+                continue;
+            }
+            return system.decode(mnemonicSequence, wordListIdentifier);
         }
-        return system.decode(mnemonicSequence, wordListIdentifier);
+        throw new UnsupportedOperationException("Unsupported algorithm " + mnemonicAlgorithm);
     }
 }

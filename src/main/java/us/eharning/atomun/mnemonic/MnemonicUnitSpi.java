@@ -15,62 +15,64 @@
  */
 package us.eharning.atomun.mnemonic;
 
+import com.google.common.base.Verify;
+import com.google.common.collect.ImmutableMap;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Service provider to back the MnemonicDecoder.
  * Primarily to present a consistent API.
+ *
+ * @since 0.1.0
  */
-abstract class MnemonicUnitSpi {
-    private final CharSequence mnemonicSequence;
-
+@Immutable
+public abstract class MnemonicUnitSpi {
     /**
-     * Construct the implementation wrapping a given mnemonic sequence.
+     * Utility method to return a wrapped instance of this SPI.
      *
-     * @param mnemonicSequence space-delimited sequence of mnemonic words.
+     * @param mnemonicSequence represented sequence.
+     * @param entropy derived entropy or null if on-demand.
+     * @param seed derived seed or null if on-demand.
+     * @param extensions map of property-to-value dependent on algorithm.
+     *
+     * @return wrapped instance.
+     *
+     * @since 0.1.0
      */
-    protected MnemonicUnitSpi(CharSequence mnemonicSequence) {
-        this.mnemonicSequence = mnemonicSequence;
+    @Nonnull
+    protected MnemonicUnit build(@Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<String, Object> extensions) {
+        Verify.verifyNotNull(mnemonicSequence);
+        Verify.verifyNotNull(extensions);
+        return new MnemonicUnit(this, mnemonicSequence, entropy, seed, extensions);
     }
 
     /**
      * Get the entropy if possible.
      *
+     * @param mnemonicSequence sequence to derive the entropy for.
+     *
      * @return a copy of the entropy byte array or null if inaccessible.
-     */
-    public abstract byte[] getEntropy();
-
-    /**
-     * Get a custom decoder extension to obtain custom values.
      *
-     * By default this rejects as it is not expected to be implemented lower down.
-     *
-     * @param extensionType kind of decoder extension to obtain.
+     * @since 0.1.0
      */
-    public <T> T getExtension(Class<T> extensionType) {
-        return null;
-    }
-
-    /**
-     * Get the associated mnemonic string.
-     *
-     * @return space-delimited sequence of mnemonic words.
-     */
-    public CharSequence getMnemonicSequence() {
-        return mnemonicSequence;
-    }
-
-    /**
-     * Get a seed from this mnemonic without supplying a password.
-     *
-     * @return a derived seed.
-     */
-    public abstract byte[] getSeed();
+    @CheckForNull
+    public abstract byte[] getEntropy(@Nonnull CharSequence mnemonicSequence);
 
     /**
      * Get a seed from this mnemonic.
      *
+     *
+     * @param mnemonicSequence sequence to derive the seed from.
      * @param password password to supply for decoding.
-     *                 
+     *
      * @return a derived seed.
+     *
+     * @since 0.1.0
      */
-    public abstract byte[] getSeed(CharSequence password);
+    @Nonnull
+    public abstract byte[] getSeed(@Nonnull CharSequence mnemonicSequence, @Nullable CharSequence password);
 }

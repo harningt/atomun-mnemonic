@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package us.eharning.atomun.mnemonic;
+package us.eharning.atomun.mnemonic.spi.bip0039;
+
+import javax.annotation.Nonnull;
 
 /**
- * High level decoder system that operates on mnemonic strings and can process them.
+ * Utility class for BIP0039 wrapping different types of index generators.
  */
-abstract class MnemonicDecoderSystem {
+abstract class BIP0039MnemonicIndexGenerator {
     /**
-     * Decodes a given mnemonic into a unit.
-     * The word list is to be automatically detected and it is expected that only one matches.
+     * Take the input entropy and output an array of word indices.
      *
-     * @param mnemonicSequence space-delimited sequence of mnemonic words.
-     * @param wordListIdentifier optional word list identifier.
+     * @param entropy generated entropy to process.
      *
-     * @return mnemonic unit.
-     * @throws java.lang.IllegalArgumentException the sequence cannot match.
+     * @return array of integer indices into dictionary.
      */
-    public abstract MnemonicUnit decode(CharSequence mnemonicSequence, String wordListIdentifier);
+    @Nonnull
+    public abstract int[] generateIndices(@Nonnull byte[] entropy);
 }
