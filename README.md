@@ -13,6 +13,13 @@ backup / transfer using word sequences.
 
 This library will follow the guidelines set forth in [Semantic Versioning 2.0][SemVer2.0]
 
+Public APIs not marked with @Beta are considered under the purview of the versioning rules.
+
+@Beta items follow the attached documentation to the annotation, shortly put:
+
+> Do not rely on this to exist in the future as it is not "API-frozen".
+> It may change functionality or be removed in any future release.
+
 ## License
 
 This library is covered under the [Apache 2.0 license][Apache2.0] as indicated in the LICENSE file.
