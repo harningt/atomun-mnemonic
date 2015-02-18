@@ -95,6 +95,29 @@ class BIP0039MnemonicUtility {
     }
 
     /**
+     * Simple utility to calculate the SHA-256 digest.
+     *
+     * @param data value to digest a portion of.
+     * @param dataStart index into data for where to begin digest.
+     * @param dataLength number of bytes to digest.
+     * @param output array to write result into.
+     * @param outputStart index into output to begin writing result.
+     *
+     * @throws java.lang.Error if the digest cannot be found or input is bad (should not happen).
+     */
+    @Nonnull
+    static void sha256digest(@Nonnull byte[] data, int dataStart, int dataLength, @Nonnull byte[] output, int outputStart) {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+            digest.update(data, dataStart, dataLength);
+            digest.digest(output, outputStart, 256 / 8);
+        } catch (GeneralSecurityException e) {
+            throw new Error(e);
+        }
+    }
+
+    /**
      * Utility method to derive a seed given the password and processed mnemonic sequence.
      *
      * @param passwordBytes UTF-8 byte sequence representing the password to use.
