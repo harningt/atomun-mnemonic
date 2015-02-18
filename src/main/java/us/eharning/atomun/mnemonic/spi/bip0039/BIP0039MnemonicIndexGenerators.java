@@ -44,6 +44,7 @@ class BIP0039MnemonicIndexGenerators {
             new BitSetGenerator(),
             new BooleanGenerator(),
             new JoinedBooleanGenerator(),
+            new JoinedDigestBooleanGenerator(),
             new CrinchBitReaderProcessor()
     );
     public static void main(String[] params) {
@@ -331,7 +332,86 @@ class BIP0039MnemonicIndexGenerators {
             return indexValues;
         }
     }
-    
+
+    /**
+     * Generator based on treating an array of booleans as joined entropy+checksum storage,
+     * and storing the original entropy+checksum together.
+     */
+    @Immutable
+    private final static class JoinedDigestBooleanGenerator extends BIP0039MnemonicIndexGenerator {
+
+        /**
+         * Utility method to take the entropy and checksum byte arrays and merge them into a
+         * boolean-based "bit" array.
+         *
+         * @param totalBits number of total bits to convert.
+         * @param data   data
+         *
+         * @return array of booleans representing each bit
+         */
+        @Nonnull
+        private static boolean[] bytesToBits(int totalBits, @Nonnull byte[] data) {
+            Preconditions.checkNotNull(data);
+            Preconditions.checkArgument(totalBits > 0 && totalBits <= data.length * 8);
+            boolean[] bits = new boolean[totalBits];
+            int offset = 0;
+            for (int i = 0; i < data.length; ++i) {
+                for (int j = 0; j < 8; ++j) {
+                    bits[offset] = (data[i] & (1 << (7 - j))) != 0;
+                    offset++;
+                    if (offset >= totalBits) {
+                        return bits;
+                    }
+                }
+            }
+            return bits;
+        }
+
+        /**
+         * Take the input entropy and output an array of word indices.
+         *
+         * @param entropy generated entropy to process.
+         *
+         * @return array of integer indices into dictionary.
+         */
+        @Nonnull
+        @Override
+        public int[] generateIndices(@Nonnull byte[] entropy) {
+            Preconditions.checkNotNull(entropy);
+            byte[] joined = new byte[entropy.length + 256 / 8];
+            System.arraycopy(entropy, 0, joined, 0, entropy.length);
+            BIP0039MnemonicUtility.sha256digest(joined, 0, entropy.length, joined, entropy.length);
+
+            /* Convert the length to bits for purpose of BIP0039 specification match-up */
+            int entropyBitCount = entropy.length * 8;
+            int checksumBitCount = entropyBitCount / 32;
+            int mnemonicSentenceLength = (entropyBitCount + checksumBitCount) / 11;
+
+            boolean[] concatBits = bytesToBits(entropyBitCount + checksumBitCount, joined);
+
+            /* Take each group of 11 bits and convert to an integer
+             * that will be used to index into the word list.
+             */
+
+            int[] indexValues = new int[mnemonicSentenceLength];
+            for (int i = 0; i < mnemonicSentenceLength; ++i) {
+                int index = 0;
+                for (int j = 0; j < 11; ++j) {
+                    index <<= 1;
+                    if (concatBits[(i * 11) + j]) {
+                        index |= 0x1;
+                    }
+                }
+                indexValues[i] = index;
+            }
+            int j = 0;
+            for (int i = 0; i < 8; i++) {
+                j |= (concatBits[i * 11] ? 0x1 : 0x0) << i;
+            }
+            return indexValues;
+        }
+    }
+
     private final static class CrinchBitReaderProcessor extends BIP0039MnemonicIndexGenerator {
         /**
          * Take the input entropy and output an array of word indices.
