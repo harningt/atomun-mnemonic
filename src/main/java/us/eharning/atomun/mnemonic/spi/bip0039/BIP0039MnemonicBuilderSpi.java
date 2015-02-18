@@ -74,7 +74,7 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
             wordListIdentifier = DEFAULT_WORDLIST_PARAMETER.getWordListIdentifier();
         }
         BidirectionalDictionary dictionary = BIP0039MnemonicUtility.getDictionary(wordListIdentifier);
-        int[] indexArray = BIP0039MnemonicIndexGenerators.OPTIMAL_GENERATOR.generateIndices(entropy);
+        int[] indexArray = BIP0039MnemonicIndexGenerator.generateIndices(entropy);
         StringBuilder mnemonicSentence = new StringBuilder();
         for (int i = 0; i < indexArray.length; i++) {
             String word = dictionary.convert(indexArray[i]);
