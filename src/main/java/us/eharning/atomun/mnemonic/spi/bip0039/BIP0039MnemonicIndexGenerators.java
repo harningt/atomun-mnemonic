@@ -17,9 +17,15 @@ package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.io.ByteSource;
+import com.google.common.primitives.UnsignedInteger;
+import com.tomgibara.crinch.bits.BitReader;
+import com.tomgibara.crinch.bits.BitVector;
+import com.tomgibara.crinch.bits.ByteArrayBitReader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -37,7 +43,9 @@ class BIP0039MnemonicIndexGenerators {
             new BigIntegerProcessor(),
             new BitSetGenerator(),
             new BooleanGenerator(),
-            new JoinedBooleanGenerator()
+            new JoinedBooleanGenerator(),
+            new CrinchBitVectorProcessor(),
+            new CrinchBitReaderProcessor()
     );
     public static void main(String[] params) {
         byte[] entropy = BIP0039MnemonicUtility.sha256digest(new byte[0]);
@@ -46,7 +54,7 @@ class BIP0039MnemonicIndexGenerators {
         /* SAN CHECK */
         for (BIP0039MnemonicIndexGenerator generator: generators) {
             int[] result = generator.generateIndices(entropy);
-            System.out.printf("%s: %s\n", generator, Arrays.toString(result));
+            System.out.printf("%s: %s\n", generator.getClass().getSimpleName(), Arrays.toString(result));
         }
         long start, elapsed;
         int COUNT = 1000000;
@@ -65,7 +73,7 @@ class BIP0039MnemonicIndexGenerators {
                 generator.generateIndices(entropy);
             }
             elapsed = System.currentTimeMillis() - start;
-            System.out.println(generator.toString() + " Took " + elapsed);
+            System.out.println(generator.getClass().getSimpleName() + " Took " + elapsed);
             Runtime.getRuntime().gc();
             Runtime.getRuntime().gc();
         }
@@ -315,6 +323,90 @@ class BIP0039MnemonicIndexGenerators {
                         index |= 0x1;
                     }
                 }
+                indexValues[i] = index;
+            }
+            int j = 0;
+            for (int i = 0; i < 8; i++) {
+                j |= (concatBits[i * 11] ? 0x1 : 0x0) << i;
+            }
+            return indexValues;
+        }
+    }
+
+
+    private final static class CrinchBitVectorProcessor extends BIP0039MnemonicIndexGenerator {
+
+        /**
+         * Take the input entropy and output an array of word indices.
+         *
+         * @param entropy generated entropy to process.
+         * @return array of integer indices into dictionary.
+         */
+        @Override
+        public int[] generateIndices(byte[] entropy) {
+            Preconditions.checkNotNull(entropy);
+            byte[] checksum = BIP0039MnemonicUtility.sha256digest(entropy);
+
+            /* Convert the length to bits for purpose of BIP0039 specification match-up */
+            int entropyBitCount = entropy.length * 8;
+            int checksumBitCount = entropyBitCount / 32;
+            int totalBitCount = entropyBitCount + checksumBitCount;
+            int mnemonicSentenceLength = totalBitCount / 11;
+
+            byte[] joined = new byte[entropy.length + checksum.length];
+            System.arraycopy(entropy, 0, joined, 0, entropy.length);
+            System.arraycopy(checksum, 0, joined, entropy.length, checksum.length);
+            if (false) {
+            for (int i = 0; i < joined.length / 2; i++) {
+                byte tmp = joined[i];
+                joined[i] = joined[joined.length - i - 1];
+                joined[joined.length - i - 1] = tmp;
+            }}
+            BitVector entropyBits = new BitVector(totalBitCount);
+            entropyBits.setBytes(0, joined, 0, totalBitCount);
+
+            int[] indexValues = new int[mnemonicSentenceLength];
+            int offset = 0;
+            for (int i = 0; i < mnemonicSentenceLength; i++) {
+                /* Extract the 11-bit chunks out (in reverse order due to shifting optimization) */
+                int index;
+                    entropyBits.reverseRange(offset, offset + 11);
+                    index = (int) entropyBits.getBits(offset, 11);
+                indexValues[i] = index;
+                offset = offset + 11;
+            }
+            return indexValues;
+        }
+    }
+
+    private final static class CrinchBitReaderProcessor extends BIP0039MnemonicIndexGenerator {
+
+        /**
+         * Take the input entropy and output an array of word indices.
+         *
+         * @param entropy generated entropy to process.
+         * @return array of integer indices into dictionary.
+         */
+        @Override
+        public int[] generateIndices(byte[] entropy) {
+            Preconditions.checkNotNull(entropy);
+            byte[] checksum = BIP0039MnemonicUtility.sha256digest(entropy);
+
+            /* Convert the length to bits for purpose of BIP0039 specification match-up */
+            int entropyBitCount = entropy.length * 8;
+            int checksumBitCount = entropyBitCount / 32;
+            int totalBitCount = entropyBitCount + checksumBitCount;
+            int mnemonicSentenceLength = totalBitCount / 11;
+
+            byte[] joined = new byte[entropy.length + checksum.length];
+            System.arraycopy(entropy, 0, joined, 0, entropy.length);
+            System.arraycopy(checksum, 0, joined, entropy.length, checksum.length);
+            BitReader bitReader = new ByteArrayBitReader(joined);
+
+            int[] indexValues = new int[mnemonicSentenceLength];
+            for (int i = 0; i < mnemonicSentenceLength; i++) {
+                /* Extract the 11-bit chunks out (in reverse order due to shifting optimization) */
+                int index = bitReader.read(11);
                 indexValues[i] = index;
             }
             return indexValues;
