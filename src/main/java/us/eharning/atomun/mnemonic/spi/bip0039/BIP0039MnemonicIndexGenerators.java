@@ -44,7 +44,6 @@ class BIP0039MnemonicIndexGenerators {
             new BitSetGenerator(),
             new BooleanGenerator(),
             new JoinedBooleanGenerator(),
-            new CrinchBitVectorProcessor(),
             new CrinchBitReaderProcessor()
     );
     public static void main(String[] params) {
@@ -332,55 +331,8 @@ class BIP0039MnemonicIndexGenerators {
             return indexValues;
         }
     }
-
-
-    private final static class CrinchBitVectorProcessor extends BIP0039MnemonicIndexGenerator {
-
-        /**
-         * Take the input entropy and output an array of word indices.
-         *
-         * @param entropy generated entropy to process.
-         * @return array of integer indices into dictionary.
-         */
-        @Override
-        public int[] generateIndices(byte[] entropy) {
-            Preconditions.checkNotNull(entropy);
-            byte[] checksum = BIP0039MnemonicUtility.sha256digest(entropy);
-
-            /* Convert the length to bits for purpose of BIP0039 specification match-up */
-            int entropyBitCount = entropy.length * 8;
-            int checksumBitCount = entropyBitCount / 32;
-            int totalBitCount = entropyBitCount + checksumBitCount;
-            int mnemonicSentenceLength = totalBitCount / 11;
-
-            byte[] joined = new byte[entropy.length + checksum.length];
-            System.arraycopy(entropy, 0, joined, 0, entropy.length);
-            System.arraycopy(checksum, 0, joined, entropy.length, checksum.length);
-            if (false) {
-            for (int i = 0; i < joined.length / 2; i++) {
-                byte tmp = joined[i];
-                joined[i] = joined[joined.length - i - 1];
-                joined[joined.length - i - 1] = tmp;
-            }}
-            BitVector entropyBits = new BitVector(totalBitCount);
-            entropyBits.setBytes(0, joined, 0, totalBitCount);
-
-            int[] indexValues = new int[mnemonicSentenceLength];
-            int offset = 0;
-            for (int i = 0; i < mnemonicSentenceLength; i++) {
-                /* Extract the 11-bit chunks out (in reverse order due to shifting optimization) */
-                int index;
-                    entropyBits.reverseRange(offset, offset + 11);
-                    index = (int) entropyBits.getBits(offset, 11);
-                indexValues[i] = index;
-                offset = offset + 11;
-            }
-            return indexValues;
-        }
-    }
-
+    
     private final static class CrinchBitReaderProcessor extends BIP0039MnemonicIndexGenerator {
-
         /**
          * Take the input entropy and output an array of word indices.
          *
@@ -390,7 +342,10 @@ class BIP0039MnemonicIndexGenerators {
         @Override
         public int[] generateIndices(byte[] entropy) {
             Preconditions.checkNotNull(entropy);
-            byte[] checksum = BIP0039MnemonicUtility.sha256digest(entropy);
+            byte[] joined = new byte[entropy.length + 256 / 8];
+            
+            System.arraycopy(entropy, 0, joined, 0, entropy.length);
+            BIP0039MnemonicUtility.sha256digest(joined, 0, entropy.length, joined, entropy.length);
 
             /* Convert the length to bits for purpose of BIP0039 specification match-up */
             int entropyBitCount = entropy.length * 8;
@@ -398,18 +353,15 @@ class BIP0039MnemonicIndexGenerators {
             int totalBitCount = entropyBitCount + checksumBitCount;
             int mnemonicSentenceLength = totalBitCount / 11;
 
-            byte[] joined = new byte[entropy.length + checksum.length];
-            System.arraycopy(entropy, 0, joined, 0, entropy.length);
-            System.arraycopy(checksum, 0, joined, entropy.length, checksum.length);
             BitReader bitReader = new ByteArrayBitReader(joined);
 
             int[] indexValues = new int[mnemonicSentenceLength];
             for (int i = 0; i < mnemonicSentenceLength; i++) {
-                /* Extract the 11-bit chunks out (in reverse order due to shifting optimization) */
                 int index = bitReader.read(11);
                 indexValues[i] = index;
             }
             return indexValues;
+
         }
     }
 }
