@@ -28,6 +28,7 @@ import com.google.common.io.Resources;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.Normalizer;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -98,6 +99,8 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
 
             @Override
             public boolean processLine(@Nonnull String line) throws IOException {
+                /* Binding dictionary handling to NFKD normalization */
+                line = Normalizer.normalize(line, Normalizer.Form.NFKD);
                 result.add(line);
                 return true;
             }

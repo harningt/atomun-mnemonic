@@ -21,6 +21,8 @@ import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
 import us.eharning.atomun.mnemonic.MnemonicUnit
 
+import java.text.Normalizer
+
 /**
  * Test around the legacy Electrum mnemonic decoder system.
  */
@@ -58,7 +60,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
         unit.getExtensions().isEmpty()
         /* Round-trip test */
         /* Replace ideographic space by space always */
-        unit.getMnemonic().replace("\u3000", " ") == MnemonicBuilder.newBuilder(ALG).setEntropy(testCase.entropyBytes).setWordList(testCase.wordList).build()
+        Normalizer.normalize(unit.getMnemonic().replace("\u3000", " "), Normalizer.Form.NFKD) == Normalizer.normalize(MnemonicBuilder.newBuilder(ALG).setEntropy(testCase.entropyBytes).setWordList(testCase.wordList).build(), Normalizer.Form.NFKD)
         where:
         testCase << BIP0039TestData.JP_VECTORS
     }

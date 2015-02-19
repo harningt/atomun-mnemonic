@@ -17,7 +17,6 @@
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Converter;
-import com.google.common.base.Splitter;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
@@ -119,7 +118,7 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
     @Nonnull
     @Override
     public MnemonicUnit decode(MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
-        List<String> mnemonicWordList = Splitter.onPattern(" |\u3000").splitToList(mnemonicSequence);
+        List<String> mnemonicWordList = BIP0039MnemonicUtility.getNormalizedWordList(mnemonicSequence);
         /* Verify word list has an appropriate length */
         if (mnemonicWordList.size() % 3 != 0) {
             throw new IllegalArgumentException("Word list of the wrong length");
