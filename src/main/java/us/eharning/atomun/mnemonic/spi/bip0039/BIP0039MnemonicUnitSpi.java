@@ -22,6 +22,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
 import com.tomgibara.crinch.bits.BitWriter;
 import com.tomgibara.crinch.bits.ByteArrayBitWriter;
+import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
@@ -46,6 +47,7 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
      *         instance to match mnemonic words against.
      */
     public BIP0039MnemonicUnitSpi(@Nonnull BidirectionalDictionary dictionary) {
+        super(MnemonicAlgorithm.BIP0039);
         this.dictionary = dictionary;
     }
 

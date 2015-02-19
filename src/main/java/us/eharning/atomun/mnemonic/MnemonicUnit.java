@@ -171,6 +171,18 @@ public final class MnemonicUnit {
     }
 
     /**
+     * Get the mnemonic algorithm implemented.
+     *
+     * @return the constant algorithm for this instance.
+     *
+     * @since 0.2.0
+     */
+    @Nonnull
+    public MnemonicAlgorithm getAlgorithm() {
+        return spi.getAlgorithm();
+    }
+
+    /**
      * Get the entropy if possible.
      *
      * @return a copy of the entropy byte array or null if inaccessible.
