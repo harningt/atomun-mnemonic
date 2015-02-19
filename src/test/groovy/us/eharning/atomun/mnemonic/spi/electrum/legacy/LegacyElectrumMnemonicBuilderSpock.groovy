@@ -37,7 +37,7 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         when:
         MnemonicBuilder.newBuilder(ALG).setWordList("TEST")
         then:
-        thrown UnsupportedOperationException
+        thrown IllegalArgumentException
     }
 
     def "check #encoded encodes to #mnemonic"(String mnemonic, String hex) {
@@ -141,7 +141,7 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         when:
         builder.setExtensions(["x": 1])
         then:
-        thrown(UnsupportedOperationException)
+        thrown(IllegalArgumentException)
     }
 
     def "check encoding passes for valid entropy lengths"() {

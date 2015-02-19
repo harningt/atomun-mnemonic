@@ -176,7 +176,7 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         when:
         builder.setExtensions(["x": 1])
         then:
-        thrown(UnsupportedOperationException)
+        thrown(IllegalArgumentException)
     }
 
     def "check encoding passes for valid entropy lengths"() {
