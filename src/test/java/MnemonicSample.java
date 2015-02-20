@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import com.google.common.io.BaseEncoding;
 import org.junit.Test;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicBuilder;
-import us.eharning.atomun.mnemonic.MnemonicDecoder;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 
 /**
@@ -41,7 +41,7 @@ public class MnemonicSample {
             System.out.println("\t" + mnemonic);
             try {
                 /* Decode the mnemonic into a stateful unit to operate on. */
-                MnemonicUnit unit = MnemonicDecoder.decodeMnemonic(algorithm, mnemonic);
+                MnemonicUnit unit = MnemonicUnit.decodeMnemonic(algorithm, mnemonic);
 
                 /* Extract a seed out of the mnemonic unit. */
                 byte[] seed = unit.getSeed();

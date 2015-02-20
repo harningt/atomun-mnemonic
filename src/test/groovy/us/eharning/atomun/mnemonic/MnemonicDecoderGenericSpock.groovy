@@ -24,12 +24,12 @@ import spock.lang.Specification
 class MnemonicDecoderGenericSpock extends Specification {
     def "requesting an unlisted algorithm results in failure"() {
         when:
-            MnemonicDecoder.decodeMnemonic((MnemonicAlgorithm)null, "TEST")
+            MnemonicUnit.decodeMnemonic((MnemonicAlgorithm)null, "TEST")
         then:
             thrown(UnsupportedOperationException)
     }
     def "requesting a certainly invalid mnemonic results in empty list"() {
         expect:
-            Iterables.isEmpty(MnemonicDecoder.decodeMnemonic("123FAKE"))
+            Iterables.isEmpty(MnemonicUnit.decodeMnemonic("123FAKE"))
     }
 }

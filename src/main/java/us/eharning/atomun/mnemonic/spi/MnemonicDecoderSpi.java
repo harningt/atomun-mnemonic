@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package us.eharning.atomun.mnemonic;
+package us.eharning.atomun.mnemonic.spi;
+
+import us.eharning.atomun.mnemonic.MnemonicUnit;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,6 +30,7 @@ public abstract class MnemonicDecoderSpi {
      * Decodes a given mnemonic into a unit.
      * The word list is to be automatically detected and it is expected that only one matches.
      *
+     * @param builder instance maker.
      * @param mnemonicSequence space-delimited sequence of mnemonic words.
      * @param wordListIdentifier optional word list identifier.
      *
@@ -37,5 +40,5 @@ public abstract class MnemonicDecoderSpi {
      * @since 0.1.0
      */
     @Nonnull
-    public abstract MnemonicUnit decode(@Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier);
+    public abstract MnemonicUnit decode(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier);
 }
