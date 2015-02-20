@@ -16,9 +16,9 @@
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
-import us.eharning.atomun.mnemonic.MnemonicDecoderSpi;
-import us.eharning.atomun.mnemonic.MnemonicServiceProvider;
 import us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi;
+import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
+import us.eharning.atomun.mnemonic.spi.MnemonicServiceProvider;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;

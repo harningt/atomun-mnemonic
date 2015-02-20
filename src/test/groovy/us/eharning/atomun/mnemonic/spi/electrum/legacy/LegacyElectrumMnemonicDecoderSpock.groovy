@@ -18,7 +18,6 @@ package us.eharning.atomun.mnemonic.spi.electrum.legacy
 import com.google.common.collect.Iterables
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
-import us.eharning.atomun.mnemonic.MnemonicDecoder
 import us.eharning.atomun.mnemonic.MnemonicUnit
 
 /**
@@ -36,7 +35,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
 
     def "check #mnemonic string decodes to #encoded"(String mnemonic, String hex) {
         given:
-            MnemonicUnit unit = MnemonicDecoder.decodeMnemonic(ALG, mnemonic)
+            MnemonicUnit unit = MnemonicUnit.decodeMnemonic(ALG, mnemonic)
         expect:
             unit.getEntropy() == hex.decodeHex()
             unit.getSeed() == hex.decodeHex()
@@ -49,7 +48,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
     }
     def "generic check #mnemonic string decodes to #encoded with single valid element"(String mnemonic, String hex) {
         given:
-            Iterable<MnemonicUnit> units = MnemonicDecoder.decodeMnemonic(mnemonic)
+            Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(mnemonic)
             MnemonicUnit unit = Iterables.getFirst(units, null)
         expect:
             Iterables.size(units) == 1
@@ -64,7 +63,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
     }
     def "check #mnemonic string with non-standard case decodes to #encoded"(String mnemonic, String hex) {
         given:
-            MnemonicUnit unit = MnemonicDecoder.decodeMnemonic(ALG, mnemonic)
+            MnemonicUnit unit = MnemonicUnit.decodeMnemonic(ALG, mnemonic)
         expect:
             unit.getEntropy() == hex.decodeHex()
             unit.getSeed() == hex.decodeHex()
@@ -77,7 +76,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
     }
     def "generic check #mnemonic string with non-standard case decodes to #encoded with single valid element"(String mnemonic, String hex) {
         given:
-            Iterable<MnemonicUnit> units = MnemonicDecoder.decodeMnemonic(mnemonic.toUpperCase())
+            Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(mnemonic.toUpperCase())
             MnemonicUnit unit = Iterables.getFirst(units, null)
         expect:
             Iterables.size(units) == 1
@@ -93,7 +92,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
 
     def "seed generation with password is unsupported"(String mnemonic) {
         when:
-            MnemonicDecoder.decodeMnemonic(ALG, mnemonic).getSeed("TEST")
+            MnemonicUnit.decodeMnemonic(ALG, mnemonic).getSeed("TEST")
         then:
             thrown(UnsupportedOperationException)
         where:
@@ -102,7 +101,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
 
     def "decoding mnemonics with custom word lists is unsupported"(String mnemonic) {
         when:
-            MnemonicDecoder.decodeMnemonic(ALG, mnemonic, "CUSTOM")
+            MnemonicUnit.decodeMnemonic(ALG, mnemonic, "CUSTOM")
         then:
             thrown(UnsupportedOperationException)
         where:
@@ -111,22 +110,22 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
 
     def "mnemonic decoding of invalid too-short values throw"() {
         when:
-            MnemonicDecoder.decodeMnemonic(ALG, "practice")
+            MnemonicUnit.decodeMnemonic(ALG, "practice")
         then:
             thrown IllegalArgumentException
     }
     def "unspecified mnemonic decoding of invalid too-short values results in empty list"() {
         expect:
-            Iterables.isEmpty(MnemonicDecoder.decodeMnemonic("practice"))
+            Iterables.isEmpty(MnemonicUnit.decodeMnemonic("practice"))
     }
     def "mnemonic decoding with invalid dictionary words throw"() {
         when:
-            MnemonicDecoder.decodeMnemonic(ALG, "practice practice FAILURE")
+            MnemonicUnit.decodeMnemonic(ALG, "practice practice FAILURE")
         then:
             thrown IllegalArgumentException
     }
     def "unspecified mnemonic decoding with invalid dictionary words result in empty list"() {
         expect:
-            Iterables.isEmpty(MnemonicDecoder.decodeMnemonic("practice practice FAILURE"))
+            Iterables.isEmpty(MnemonicUnit.decodeMnemonic("practice practice FAILURE"))
     }
 }

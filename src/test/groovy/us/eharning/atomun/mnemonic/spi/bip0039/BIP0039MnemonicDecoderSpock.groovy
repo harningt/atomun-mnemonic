@@ -19,7 +19,6 @@ import com.google.common.collect.Iterables
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
-import us.eharning.atomun.mnemonic.MnemonicDecoder
 import us.eharning.atomun.mnemonic.MnemonicUnit
 
 /**
@@ -30,7 +29,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
 
     def "check #mnemonic string decodes to #seed for standard vector"() {
         given:
-            MnemonicUnit unit = MnemonicDecoder.decodeMnemonic(ALG, testCase.mnemonic, testCase.wordList)
+            MnemonicUnit unit = MnemonicUnit.decodeMnemonic(ALG, testCase.mnemonic, testCase.wordList)
         expect:
             unit.getEntropy() == testCase.entropyBytes
             unit.getSeed() != testCase.seedBytes
@@ -48,7 +47,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
 
     def "check #mnemonic string decodes to #seed for JP vector"() {
         given:
-            MnemonicUnit unit = MnemonicDecoder.decodeMnemonic(ALG, testCase.mnemonic, testCase.wordList)
+            MnemonicUnit unit = MnemonicUnit.decodeMnemonic(ALG, testCase.mnemonic, testCase.wordList)
         expect:
             unit.getEntropy() == testCase.entropyBytes
             unit.getSeed() != testCase.seedBytes
@@ -65,7 +64,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
     }
     def "generic check #mnemonic string decodes to #encoded with single valid element with specific wordList"() {
         given:
-            Iterable<MnemonicUnit> units = MnemonicDecoder.decodeMnemonic(testCase.mnemonic, testCase.wordList)
+            Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(testCase.mnemonic, testCase.wordList)
             MnemonicUnit unit = Iterables.getFirst(units, null)
         expect:
             Iterables.size(units) == 1
@@ -81,7 +80,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
     }
     def "generic check #mnemonic string decodes to #encoded with single valid element with unspecified wordList"() {
         given:
-            Iterable<MnemonicUnit> units = MnemonicDecoder.decodeMnemonic(testCase.mnemonic)
+            Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(testCase.mnemonic)
             MnemonicUnit unit = Iterables.getFirst(units, null)
         expect:
             Iterables.size(units) == 1
@@ -97,7 +96,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
     }
     def "japanese: generic check #mnemonic string decodes to #encoded with single valid element with unspecified wordList"() {
         given:
-            Iterable<MnemonicUnit> units = MnemonicDecoder.decodeMnemonic(testCase.mnemonic)
+            Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(testCase.mnemonic)
             MnemonicUnit unit = Iterables.getFirst(units, null)
         expect:
             Iterables.size(units) == 1
@@ -114,7 +113,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
 
     def "decoding mnemonics with unknown word lists is unsupported"() {
         when:
-            MnemonicDecoder.decodeMnemonic(ALG, mnemonic, "CUSTOM")
+            MnemonicUnit.decodeMnemonic(ALG, mnemonic, "CUSTOM")
         then:
             thrown IllegalArgumentException
         where:
@@ -123,22 +122,22 @@ class BIP0039MnemonicDecoderSpock extends Specification {
 
     def "mnemonic decoding of invalid too-short values throw"() {
         when:
-            MnemonicDecoder.decodeMnemonic(ALG, "practice")
+            MnemonicUnit.decodeMnemonic(ALG, "practice")
         then:
             thrown IllegalArgumentException
     }
     def "unspecified mnemonic decoding of invalid too-short values results in empty list"() {
         expect:
-            Iterables.isEmpty(MnemonicDecoder.decodeMnemonic("practice"))
+            Iterables.isEmpty(MnemonicUnit.decodeMnemonic("practice"))
     }
     def "mnemonic decoding with invalid dictionary words throw"() {
         when:
-            MnemonicDecoder.decodeMnemonic(ALG, "practice practice FAILURE")
+            MnemonicUnit.decodeMnemonic(ALG, "practice practice FAILURE")
         then:
             thrown IllegalArgumentException
     }
     def "unspecified mnemonic decoding with invalid dictionary words result in empty list"() {
         expect:
-            Iterables.isEmpty(MnemonicDecoder.decodeMnemonic("practice practice FAILURE"))
+            Iterables.isEmpty(MnemonicUnit.decodeMnemonic("practice practice FAILURE"))
     }
 }

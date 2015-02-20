@@ -22,8 +22,8 @@ import com.google.common.collect.ImmutableMap;
 import com.tomgibara.crinch.bits.BitWriter;
 import com.tomgibara.crinch.bits.ByteArrayBitWriter;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
-import us.eharning.atomun.mnemonic.MnemonicUnitSpi;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
+import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -51,14 +51,15 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
     /**
      * Utility method to generate a MnemonicUnit wrapping the given sequence and entropy.
      *
+     * @param builder instance maker.
      * @param mnemonicSequence sequence.
      * @param entropy derived copy of entropy.
      *
      * @return wrapped instance.
      */
     @Nonnull
-    public MnemonicUnit build(CharSequence mnemonicSequence, byte[] entropy) {
-        return super.build(mnemonicSequence, entropy, null, ImmutableMap.<String, Object>of());
+    public MnemonicUnit build(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nonnull byte[] entropy) {
+        return super.build(builder, mnemonicSequence, entropy, null, ImmutableMap.<String, Object>of());
     }
 
     /**

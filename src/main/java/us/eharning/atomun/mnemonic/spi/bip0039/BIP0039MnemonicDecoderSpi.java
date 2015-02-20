@@ -17,9 +17,9 @@ package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Converter;
 import com.google.common.base.Splitter;
-import us.eharning.atomun.mnemonic.MnemonicDecoderSpi;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
+import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -42,6 +42,7 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
      * Decodes a given mnemonic into a unit.
      * The word list is to be automatically detected and it is expected that only one matches.
      *
+     * @param builder instance maker.
      * @param mnemonicSequence   space-delimited sequence of mnemonic words.
      * @param wordListIdentifier optional word list identifier
      *
@@ -51,7 +52,7 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
      */
     @Nonnull
     @Override
-    public MnemonicUnit decode(@Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
+    public MnemonicUnit decode(MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
         List<String> mnemonicWordList = Splitter.onPattern(" |\u3000").splitToList(mnemonicSequence);
         /* Verify word list has an appropriate length */
         if (mnemonicWordList.size() % 3 != 0) {
@@ -78,7 +79,7 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
         }
 
         byte[] entropy = unit.getEntropy(mnemonicSequence);
-        return unit.build(mnemonicSequence, entropy);
+        return unit.build(builder, mnemonicSequence, entropy);
     }
 
     /**

@@ -17,7 +17,7 @@ package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
 import com.google.common.collect.ImmutableMap;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
-import us.eharning.atomun.mnemonic.MnemonicUnitSpi;
+import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,14 +31,15 @@ class LegacyElectrumMnemonicUnitSpi extends MnemonicUnitSpi {
     /**
      * Utility method to generate a MnemonicUnit wrapping the given sequence and entropy.
      *
+     * @param builder instance maker.
      * @param mnemonicSequence sequence.
      * @param entropy derived copy of entropy.
      *
      * @return wrapped instance.
      */
-    public MnemonicUnit build(CharSequence mnemonicSequence, byte[] entropy) {
+    public MnemonicUnit build(MnemonicUnit.Builder builder, CharSequence mnemonicSequence, byte[] entropy) {
         /* Entropy is the seed for this */
-        return super.build(mnemonicSequence, entropy, entropy, ImmutableMap.<String, Object>of());
+        return super.build(builder, mnemonicSequence, entropy, entropy, ImmutableMap.<String, Object>of());
     }
 
     /**
