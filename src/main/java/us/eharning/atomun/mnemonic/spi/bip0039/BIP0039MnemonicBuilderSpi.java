@@ -15,6 +15,7 @@
  */
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
+import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.spi.*;
 
 import javax.annotation.Nonnull;
@@ -27,6 +28,13 @@ import javax.annotation.concurrent.Immutable;
 class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
     private static final EntropyBuilderParameter DEFAULT_ENTROPY_PARAMETER = EntropyBuilderParameter.getRandom(128 / 8);
     private static final WordListBuilderParameter DEFAULT_WORDLIST_PARAMETER = WordListBuilderParameter.getWordList("english");
+
+    /**
+     * Construct a new SPI with the given algorithm.
+     */
+    protected BIP0039MnemonicBuilderSpi() {
+        super(MnemonicAlgorithm.BIP0039);
+    }
 
     /**
      * Return if the given entropy length is valid.

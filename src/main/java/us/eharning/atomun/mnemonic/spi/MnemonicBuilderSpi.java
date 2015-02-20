@@ -16,6 +16,7 @@
 package us.eharning.atomun.mnemonic.spi;
 
 import com.google.common.annotations.Beta;
+import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -29,6 +30,25 @@ import javax.annotation.concurrent.Immutable;
 @Beta
 @Immutable
 public abstract class MnemonicBuilderSpi {
+    private final MnemonicAlgorithm algorithm;
+
+    /**
+     * Construct a new SPI with the given algorithm.
+     * @param algorithm implemented mnemonic algorithm.
+     */
+    protected MnemonicBuilderSpi(MnemonicAlgorithm algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    /**
+     * Get the implemented mnemonic algorithm.
+     *
+     *  @return implemented mnemonic algorithm.
+     */
+    public MnemonicAlgorithm getAlgorithm() {
+        return algorithm;
+    }
+
     /**
      * Generate the mnemonic sequence given the input parameters.
      *

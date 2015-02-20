@@ -97,6 +97,28 @@ public final class MnemonicBuilder {
     }
 
     /**
+     * Encode this instance to a wrapped mnemonic unit.
+     *
+     * @return MnemonicUnit instance wrapping build results.
+     *
+     * @since 0.2.0
+     *
+     * @todo optimize with more build details (perhaps have spi implement)
+     */
+    @Nonnull
+    public MnemonicUnit buildUnit() {
+        String mnemonicSequence = build();
+        /* Check for word list since that can be input. */
+        String wordListIdentifier = null;
+        for (BuilderParameter parameter : parameters) {
+            if (parameter instanceof WordListBuilderParameter) {
+                wordListIdentifier = ((WordListBuilderParameter)parameter).getWordListIdentifier();
+            }
+        }
+        return MnemonicUnit.decodeMnemonic(newSpi.getAlgorithm(), mnemonicSequence, wordListIdentifier);
+    }
+
+    /**
      * Set the entropy to generate the mnemonic with.
      *
      * @param entropy data to encode.

@@ -15,6 +15,7 @@
  */
 package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
+import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.spi.BuilderParameter;
 import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
 import us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi;
@@ -28,6 +29,13 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 class LegacyElectrumMnemonicBuilderSpi extends MnemonicBuilderSpi {
     private static final EntropyBuilderParameter DEFAULT_ENTROPY_PARAMETER = EntropyBuilderParameter.getRandom(128 / 8);
+
+    /**
+     * Construct a new SPI with the given algorithm.
+     */
+    protected LegacyElectrumMnemonicBuilderSpi() {
+        super(MnemonicAlgorithm.LegacyElectrum);
+    }
 
     /**
      * Check that a given entropy length is valid.

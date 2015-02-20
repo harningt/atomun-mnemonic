@@ -18,6 +18,7 @@ package us.eharning.atomun.mnemonic.spi.electrum.legacy
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
+import us.eharning.atomun.mnemonic.MnemonicUnit
 
 /**
  * Test sequence for the legacy Electrum mnemonic builder
@@ -44,9 +45,22 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
             builder.setEntropy(hex.decodeHex())
         expect:
             mnemonic == builder.build()
+            mnemonic == builder.buildUnit().getMnemonic()
         where:
             [ mnemonic, hex ] << pairs
     }
+    def "check roundtrip unit #encoded <-> #mnemonic"(String mnemonic, String hex) {
+        given:
+            def builder = MnemonicBuilder.newBuilder(ALG)
+            builder.setEntropy(hex.decodeHex())
+            MnemonicUnit unit = builder.buildUnit()
+        expect:
+            mnemonic == unit.getMnemonic()
+            hex.decodeHex() == unit.getEntropy()
+        where:
+        [ mnemonic, hex ] << pairs
+    }
+
     def "check encoding succeeds with safe defaults when no state set"() {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
