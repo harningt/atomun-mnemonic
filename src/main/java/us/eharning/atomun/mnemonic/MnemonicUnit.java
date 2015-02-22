@@ -73,8 +73,8 @@ public final class MnemonicUnit {
         Verify.verifyNotNull(extensions);
         this.spi = spi;
         this.mnemonicSequence = mnemonicSequence;
-        this.entropy = entropy;
-        this.seed = seed;
+        this.entropy = entropy == null ? null : Arrays.copyOf(entropy, entropy.length);
+        this.seed = seed == null ? null : Arrays.copyOf(seed, seed.length);
         this.extensions = extensions;
     }
 
