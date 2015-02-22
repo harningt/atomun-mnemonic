@@ -15,6 +15,8 @@
  */
 package us.eharning.atomun.mnemonic;
 
+import com.google.caliper.Benchmark;
+import com.google.caliper.runner.CaliperMain;
 import com.google.common.base.Preconditions;
 import com.tomgibara.crinch.bits.BitReader;
 import com.tomgibara.crinch.bits.ByteArrayBitReader;
@@ -37,6 +39,7 @@ class IndexGeneratorBenchmark {
         RNG.nextBytes(CHECKSUM);        
     }
     
+    @Benchmark
     public int bigIntegerMethod(int reps) {
         int dummy = 0;
         for (int rep = 0; rep < reps; rep++) {
@@ -105,6 +108,7 @@ class IndexGeneratorBenchmark {
         return bits;
     }
 
+    @Benchmark
     public int bitsetMethod(int reps) {
         int dummy = 0;
         for (int rep = 0; rep < reps; rep++) {
@@ -166,6 +170,7 @@ class IndexGeneratorBenchmark {
         return bits;
     }
 
+    @Benchmark
     int joinedBooleanMethod(int reps) {
         int dummy = 0;
         for (int rep = 0; rep < reps; rep++) {
@@ -201,6 +206,7 @@ class IndexGeneratorBenchmark {
         return dummy;
     }
 
+    @Benchmark
     public int crinchBitReaderMethod(int reps) {
         int dummy = 0;
         for (int rep = 0; rep < reps; rep++) {
@@ -229,49 +235,6 @@ class IndexGeneratorBenchmark {
     }
 
     public static void main(String[] args) {
-        new IndexGeneratorBenchmark().run();
-    }
-
-    private void run() {
-        long start, elapsed;
-        int ret;
-        int COUNT = 1000000;
-        ret = bigIntegerMethod(COUNT);
-        Runtime.getRuntime().gc();
-        Runtime.getRuntime().gc();
-
-        start = System.currentTimeMillis();
-        ret = bigIntegerMethod(COUNT);
-        elapsed = System.currentTimeMillis() - start;
-        System.out.println("bigIntegerMethod" + " Took " + elapsed + " -- " + ret);
-
-        ret = bitsetMethod(COUNT);
-        Runtime.getRuntime().gc();
-        Runtime.getRuntime().gc();
-
-        start = System.currentTimeMillis();
-        ret = bitsetMethod(COUNT);
-        elapsed = System.currentTimeMillis() - start;
-        System.out.println("bitsetMethod" + " Took " + elapsed + " -- " + ret);
-
-        ret = joinedBooleanMethod(COUNT);
-        Runtime.getRuntime().gc();
-        Runtime.getRuntime().gc();
-
-        start = System.currentTimeMillis();
-        ret = joinedBooleanMethod(COUNT);
-        elapsed = System.currentTimeMillis() - start;
-        System.out.println("joinedBooleanMethod" + " Took " + elapsed + " -- " + ret);
-
-        ret = crinchBitReaderMethod(COUNT);
-        Runtime.getRuntime().gc();
-        Runtime.getRuntime().gc();
-
-        start = System.currentTimeMillis();
-        ret = crinchBitReaderMethod(COUNT);
-        elapsed = System.currentTimeMillis() - start;
-        System.out.println("crinchBitReaderMethod" + " Took " + elapsed + " -- " + ret);
-        Runtime.getRuntime().gc();
-        Runtime.getRuntime().gc();
+        CaliperMain.main(IndexGeneratorBenchmark.class, args);
     }
 }
