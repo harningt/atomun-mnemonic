@@ -53,10 +53,25 @@ dependencies {
 
     testCompile localGroovy()
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.3-SNAPSHOT'
+    testCompile 'net.trajano.caliper:caliper:1.2.1'
 }
 
 findbugs {
     sourceSets = [ sourceSets.main ]
+}
+
+task runBenchmark(type: JavaExec, dependsOn: test) {
+    def vmVer = System.getProperty('java.version')
+    def osName = System.getProperty('os.name').replaceAll('\\s','')
+    def osArch = System.getProperty('os.arch')
+    def fnameBase = "ver${version}_${osName}-${osArch}_jvm${vmVer}"
+    def benchMarksDir = "${project.buildDir}/benchmarks"
+    ant.mkdir(dir: benchMarksDir)
+    def outStream = new FileOutputStream("${benchMarksDir}/${fnameBase}-out.txt")
+    standardOutput = outStream
+    main = 'us.eharning.atomun.mnemonic.IndexGeneratorBenchmark'
+    classpath = sourceSets.test.runtimeClasspath
+    //args = ['--saveResults', "${benchMarksDir}/${fnameBase}.json", '-Jmode=-server,-client']
 }
 
 apply from: "$rootDir/gradle/maven-publish.gradle"
