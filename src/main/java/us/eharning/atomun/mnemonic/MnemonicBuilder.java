@@ -97,6 +97,23 @@ public final class MnemonicBuilder {
     }
 
     /**
+     * Encode this instance to a wrapped mnemonic unit.
+     *
+     * @return MnemonicUnit instance wrapping build results.
+     *
+     * @since 0.2.0
+     */
+    @Nonnull
+    public MnemonicUnit buildUnit() {
+        try {
+            newSpi.validate(parameters);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+        return newSpi.generateMnemonicUnit(MnemonicUnit.BUILDER, parameters);
+    }
+
+    /**
      * Set the entropy to generate the mnemonic with.
      *
      * @param entropy data to encode.

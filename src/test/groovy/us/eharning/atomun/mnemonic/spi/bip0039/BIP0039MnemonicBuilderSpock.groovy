@@ -18,6 +18,7 @@ package us.eharning.atomun.mnemonic.spi.bip0039
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
+import us.eharning.atomun.mnemonic.MnemonicUnit
 
 import java.text.Normalizer
 
@@ -48,6 +49,7 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         then:
             /* Normalize output to ensure it properly matches normalized test case */
             testCase.normalizedMnemonic == Normalizer.normalize(builder.build(), Normalizer.Form.NFKD)
+            testCase.normalizedMnemonic == Normalizer.normalize(builder.buildUnit().getMnemonic(), Normalizer.Form.NFKD)
         where:
             testCase << BIP0039TestData.TREZOR_OFFICIAL_VECTORS
     }
@@ -61,9 +63,38 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         then:
             /* Normalize output to ensure it properly matches normalized test case */
             testCase.normalizedMnemonic == Normalizer.normalize(builder.build(), Normalizer.Form.NFKD)
+            testCase.normalizedMnemonic == Normalizer.normalize(builder.buildUnit().getMnemonic(), Normalizer.Form.NFKD)
         where:
             testCase << BIP0039TestData.JP_VECTORS
     }
+    def "check standard test vectors roundtrip"() {
+        given:
+            def builder = MnemonicBuilder.newBuilder(ALG)
+            builder.setWordList(testCase.wordList)
+            builder.setEntropy(testCase.entropyBytes)
+            MnemonicUnit unit = builder.buildUnit()
+        expect:
+            /* Normalize output to ensure it properly matches normalized test case */
+            testCase.normalizedMnemonic == Normalizer.normalize(unit.mnemonic, Normalizer.Form.NFKD)
+            testCase.entropyBytes == unit.entropy
+        where:
+            testCase << BIP0039TestData.TREZOR_OFFICIAL_VECTORS
+    }
+
+    def "check jp test vectors roundtrip"() {
+        given:
+            def builder = MnemonicBuilder.newBuilder(ALG)
+            builder.setWordList(testCase.wordList)
+            builder.setEntropy(testCase.entropyBytes)
+            MnemonicUnit unit = builder.buildUnit()
+        expect:
+            /* Normalize output to ensure it properly matches normalized test case */
+            testCase.normalizedMnemonic == Normalizer.normalize(unit.mnemonic, Normalizer.Form.NFKD)
+            testCase.entropyBytes == unit.entropy
+        where:
+            testCase << BIP0039TestData.JP_VECTORS
+    }
+
     def "check encoding paases when no state set with safe defaults"() {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)

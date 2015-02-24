@@ -27,7 +27,7 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 class LegacyElectrumMnemonicDecoderSpi extends MnemonicDecoderSpi {
-    private static final LegacyElectrumMnemonicUnitSpi SPI = new LegacyElectrumMnemonicUnitSpi();
+    static final LegacyElectrumMnemonicUnitSpi SPI = new LegacyElectrumMnemonicUnitSpi();
 
     /**
      * Decodes a given mnemonic into a unit.
