@@ -72,14 +72,28 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
             }
         }
 
+        BIP0039MnemonicUnitSpi unit = getMnemonicUnitSpi(wordListIdentifier, dictionary);
+
+        byte[] entropy = unit.getEntropy(mnemonicSequence);
+        return unit.build(builder, mnemonicSequence, entropy);
+    }
+
+    /**
+     * Obtain the mnemonic unit SPI for the given wordListIdentifier and dictionary.
+     *
+     * @param wordListIdentifier
+     * @param dictionary
+     *
+     * @return
+     */
+    @Nonnull
+    static BIP0039MnemonicUnitSpi getMnemonicUnitSpi(@Nonnull String wordListIdentifier, @Nonnull BidirectionalDictionary dictionary) {
         BIP0039MnemonicUnitSpi unit = WORD_LIST_SPI.get(wordListIdentifier);
         if (null == unit) {
             unit = new BIP0039MnemonicUnitSpi(dictionary);
             WORD_LIST_SPI.putIfAbsent(wordListIdentifier, unit);
         }
-
-        byte[] entropy = unit.getEntropy(mnemonicSequence);
-        return unit.build(builder, mnemonicSequence, entropy);
+        return unit;
     }
 
     /**
@@ -91,7 +105,7 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
      */
     @CheckForNull
     private static BidirectionalDictionary detectWordList(@Nonnull List<String> mnemonicWordList) {
-    /* Need to autodetect the word list from the sequence. */
+        /* Need to autodetect the word list from the sequence. */
         for (BidirectionalDictionary availableDictionary: BIP0039MnemonicUtility.getDictionaries()) {
             /* Check that all the words are in the dictionary and if so, found */
             if (verifyDictionary(availableDictionary, mnemonicWordList)) {

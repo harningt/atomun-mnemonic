@@ -39,7 +39,7 @@ import java.util.Map;
  */
 @Immutable
 public final class MnemonicUnit {
-    private static final Builder BUILDER = new Builder();
+    static final Builder BUILDER = new Builder();
     private static final ImmutableList<MnemonicServiceProvider> SERVICE_PROVIDERS = ImmutableList.of(
             new LegacyElectrumMnemonicService(),
             new BIP0039MnemonicService()

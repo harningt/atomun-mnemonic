@@ -110,7 +110,7 @@ public final class MnemonicBuilder {
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
-        return newSpi.generateMnemonicUnit(parameters);
+        return newSpi.generateMnemonicUnit(MnemonicUnit.BUILDER, parameters);
     }
 
     /**

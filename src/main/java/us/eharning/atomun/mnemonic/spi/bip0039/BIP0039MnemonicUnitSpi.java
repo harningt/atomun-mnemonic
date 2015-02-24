@@ -141,7 +141,7 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
      *
      * @return a derived copy of the entropy byte array.
      */
-    @CheckForNull
+    @Nonnull
     @Override
     public byte[] getEntropy(@Nonnull CharSequence mnemonicSequence) {
         List<String> mnemonicWordList = Splitter.onPattern(" |\u3000").splitToList(mnemonicSequence);

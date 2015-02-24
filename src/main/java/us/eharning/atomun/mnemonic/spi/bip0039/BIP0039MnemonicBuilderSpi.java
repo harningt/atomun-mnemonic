@@ -16,6 +16,7 @@
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.*;
 
 import javax.annotation.Nonnull;
@@ -40,14 +41,92 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
      * Return if the given entropy length is valid.
      *
      * @param entropyLength number of bytes of entropy.
+     *
      * @throws IllegalArgumentException if the entropyLength is invalid
      */
-    private void checkEntropyLengthValid(int entropyLength) {
+    private static void checkEntropyLengthValid(int entropyLength) {
         if (entropyLength <= 0 || entropyLength % 4 != 0) {
             throw new IllegalArgumentException("entropyLength must be a positive multiple of 4");
         }
     }
 
+    /**
+     * Extracts the entropy parameter from parameters, else a default.
+     *
+     * @param parameters builder parameters to drive the process.
+     *
+     * @return entropy
+     */
+    @Nonnull
+    private static byte[] getParameterEntropy(BuilderParameter... parameters) {
+        byte[] entropy = null;
+        for (BuilderParameter parameter: parameters) {
+            if (null == parameter) {
+                continue;
+            }
+            if (parameter instanceof EntropyBuilderParameter) {
+                entropy = ((EntropyBuilderParameter)parameter).getEntropy();
+            } else if (parameter instanceof WordListBuilderParameter) {
+            } else {
+                throw new UnsupportedOperationException("Unsupported parameter type: " + parameter);
+            }
+        }
+        if (null == entropy) {
+            /* Use default */
+            entropy = DEFAULT_ENTROPY_PARAMETER.getEntropy();
+        }
+        return entropy;        
+    }
+
+    /**
+     * Extracts the word list parameter from parameters, else a default.
+     *
+     * @param parameters builder parameters to drive the process.
+     *
+     * @return word list identifier.
+     */
+    @Nonnull
+    private static String getParameterWordListIdentifier(BuilderParameter ...parameters) {
+        String wordListIdentifier = null;
+        for (BuilderParameter parameter: parameters) {
+            if (null == parameter) {
+                continue;
+            }
+            if (parameter instanceof EntropyBuilderParameter) {
+            } else if (parameter instanceof WordListBuilderParameter) {
+                wordListIdentifier = ((WordListBuilderParameter)parameter).getWordListIdentifier();
+            } else {
+                throw new UnsupportedOperationException("Unsupported parameter type: " + parameter);
+            }
+        }
+        if (null == wordListIdentifier) {
+            wordListIdentifier = DEFAULT_WORDLIST_PARAMETER.getWordListIdentifier();
+        }
+        return wordListIdentifier;
+    }
+
+    /**
+     * Generates a mnemonic sequence from the provided entropy using the dictionary.
+     *
+     * @param entropy value to encode.
+     * @param dictionary dictionary to encode entropy with.
+     *
+     * @return space-delimited sequence of mnemonic words.
+     */
+    @Nonnull
+    private static String generateMnemonicSequence(@Nonnull byte[] entropy, @Nonnull BidirectionalDictionary dictionary) {
+        int[] indexArray = BIP0039MnemonicIndexGenerator.generateIndices(entropy);
+        StringBuilder mnemonicSentence = new StringBuilder();
+        for (int i = 0; i < indexArray.length; i++) {
+            String word = dictionary.convert(indexArray[i]);
+            if (i != 0) {
+                mnemonicSentence.append(' ');
+            }
+            mnemonicSentence.append(word);
+        }
+        return mnemonicSentence.toString();
+    }
+    
     /**
      * Generate the mnemonic sequence given the input parameters.
      *
@@ -60,38 +139,32 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
     @Nonnull
     @Override
     public String generateMnemonic(BuilderParameter... parameters) {
-        byte[] entropy = null;
-        String wordListIdentifier = null;
-        for (BuilderParameter parameter: parameters) {
-            if (null == parameter) {
-                continue;
-            }
-            if (parameter instanceof EntropyBuilderParameter) {
-                entropy = ((EntropyBuilderParameter)parameter).getEntropy();
-            } else if (parameter instanceof WordListBuilderParameter) {
-                wordListIdentifier = ((WordListBuilderParameter)parameter).getWordListIdentifier();
-            } else {
-                throw new UnsupportedOperationException("Unsupported parameter type: " + parameter);
-            }
-        }
-        if (null == entropy) {
-            /* Use default */
-            entropy = DEFAULT_ENTROPY_PARAMETER.getEntropy();
-        }
-        if (null == wordListIdentifier) {
-            wordListIdentifier = DEFAULT_WORDLIST_PARAMETER.getWordListIdentifier();
-        }
+        byte[] entropy = getParameterEntropy(parameters);
+        String wordListIdentifier = getParameterWordListIdentifier(parameters);
         BidirectionalDictionary dictionary = BIP0039MnemonicUtility.getDictionary(wordListIdentifier);
-        int[] indexArray = BIP0039MnemonicIndexGenerator.generateIndices(entropy);
-        StringBuilder mnemonicSentence = new StringBuilder();
-        for (int i = 0; i < indexArray.length; i++) {
-            String word = dictionary.convert(indexArray[i]);
-            if (i != 0) {
-                mnemonicSentence.append(' ');
-            }
-            mnemonicSentence.append(word);
-        }
-        return mnemonicSentence.toString();
+        return generateMnemonicSequence(entropy, dictionary);
+    }
+
+    /**
+     * Encode this instance to a wrapped mnemonic unit.
+     *
+     * @param builder instance to construct MnemonicUnit with.
+     * @param parameters builder parameters to drive the process.
+     *
+     * @return MnemonicUnit instance wrapping build results.
+     *
+     * @since 0.2.0
+     */
+    @Nonnull
+    @Override
+    public MnemonicUnit generateMnemonicUnit(@Nonnull MnemonicUnit.Builder builder, BuilderParameter... parameters) {
+        byte[] entropy = getParameterEntropy(parameters);
+        String wordListIdentifier = getParameterWordListIdentifier(parameters);
+        BidirectionalDictionary dictionary = BIP0039MnemonicUtility.getDictionary(wordListIdentifier);
+        String mnemonicSequence = generateMnemonicSequence(entropy, dictionary);
+        
+        BIP0039MnemonicUnitSpi spi = BIP0039MnemonicDecoderSpi.getMnemonicUnitSpi(wordListIdentifier, dictionary);
+        return spi.build(builder, mnemonicSequence, entropy);
     }
 
     /**

@@ -66,12 +66,15 @@ public abstract class MnemonicBuilderSpi {
      * Encode this instance to a wrapped mnemonic unit.
      * The default implementation performs a naive generation without optimisation.
      *
+     * @param builder instance to construct MnemonicUnit with.
+     * @param parameters builder parameters to drive the process.
+     *
      * @return MnemonicUnit instance wrapping build results.
      *
      * @since 0.2.0
      */
     @Nonnull
-    public MnemonicUnit generateMnemonicUnit(BuilderParameter... parameters) {
+    public MnemonicUnit generateMnemonicUnit(@Nonnull MnemonicUnit.Builder builder, BuilderParameter... parameters) {
         String mnemonicSequence = generateMnemonic(parameters);
         /* Check for word list since that can be input. */
         String wordListIdentifier = null;
