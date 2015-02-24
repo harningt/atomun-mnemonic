@@ -60,6 +60,10 @@ findbugs {
     sourceSets = [ sourceSets.main ]
 }
 
+javadoc {
+    options.tags "todo:a:TODO:"
+}
+
 task runBenchmark(type: JavaExec, dependsOn: test) {
     def vmVer = System.getProperty('java.version')
     def osName = System.getProperty('os.name').replaceAll('\\s','')
