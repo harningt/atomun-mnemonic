@@ -102,20 +102,15 @@ public final class MnemonicBuilder {
      * @return MnemonicUnit instance wrapping build results.
      *
      * @since 0.2.0
-     *
-     * @todo optimize with more build details (perhaps have spi implement)
      */
     @Nonnull
     public MnemonicUnit buildUnit() {
-        String mnemonicSequence = build();
-        /* Check for word list since that can be input. */
-        String wordListIdentifier = null;
-        for (BuilderParameter parameter : parameters) {
-            if (parameter instanceof WordListBuilderParameter) {
-                wordListIdentifier = ((WordListBuilderParameter)parameter).getWordListIdentifier();
-            }
+        try {
+            newSpi.validate(parameters);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
         }
-        return MnemonicUnit.decodeMnemonic(newSpi.getAlgorithm(), mnemonicSequence, wordListIdentifier);
+        return newSpi.generateMnemonicUnit(parameters);
     }
 
     /**

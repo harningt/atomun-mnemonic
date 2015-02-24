@@ -17,6 +17,7 @@ package us.eharning.atomun.mnemonic.spi;
 
 import com.google.common.annotations.Beta;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.MnemonicUnit;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -60,6 +61,27 @@ public abstract class MnemonicBuilderSpi {
      */
     @Nonnull
     public abstract String generateMnemonic(BuilderParameter... parameters);
+
+    /**
+     * Encode this instance to a wrapped mnemonic unit.
+     * The default implementation performs a naive generation without optimisation.
+     *
+     * @return MnemonicUnit instance wrapping build results.
+     *
+     * @since 0.2.0
+     */
+    @Nonnull
+    public MnemonicUnit generateMnemonicUnit(BuilderParameter... parameters) {
+        String mnemonicSequence = generateMnemonic(parameters);
+        /* Check for word list since that can be input. */
+        String wordListIdentifier = null;
+        for (BuilderParameter parameter : parameters) {
+            if (parameter instanceof WordListBuilderParameter) {
+                wordListIdentifier = ((WordListBuilderParameter)parameter).getWordListIdentifier();
+            }
+        }
+        return MnemonicUnit.decodeMnemonic(getAlgorithm(), mnemonicSequence, wordListIdentifier);
+    }
 
     /**
      * Validate the builder parameters.

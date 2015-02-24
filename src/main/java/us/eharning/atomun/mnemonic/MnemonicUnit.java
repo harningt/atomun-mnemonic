@@ -64,10 +64,8 @@ public final class MnemonicUnit {
      *         derived seed or null if on-demand.
      * @param extensions
      *         map of property-to-value dependent on algorithm.
-     *
-     * @todo Make private and tweak SPI usage to handle this case.
      */
-    public MnemonicUnit(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<String, Object> extensions) {
+    private MnemonicUnit(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<String, Object> extensions) {
         Verify.verifyNotNull(spi);
         Verify.verifyNotNull(mnemonicSequence);
         Verify.verifyNotNull(extensions);
