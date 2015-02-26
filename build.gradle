@@ -6,6 +6,7 @@ plugins {
     id 'maven'
     id 'org.ajoberstar.release-opinion' version '1.0.0'
     id 'org.ajoberstar.defaults' version '0.5.2'
+    id 'checkstyle'
     id 'findbugs'
 }
 
@@ -54,6 +55,12 @@ dependencies {
     testCompile localGroovy()
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.3-SNAPSHOT'
     testCompile 'net.trajano.caliper:caliper:1.2.1'
+}
+
+checkstyle {
+    /* Using checkstyle 6.1 as that is the maximum for the IntelliJ extensions */
+    toolVersion = '6.1'
+    configFile = new File(rootDir, 'gradle/checkstyle/checkstyle.xml')
 }
 
 findbugs {
