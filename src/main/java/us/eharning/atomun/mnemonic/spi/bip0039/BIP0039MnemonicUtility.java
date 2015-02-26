@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Function;
@@ -22,8 +23,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
@@ -32,16 +31,18 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Utility class to support BIP0039 mnemonics.
  */
 class BIP0039MnemonicUtility {
-    private final static List<String> KNOWN_DICTIONARIES = ImmutableList.of(
+    private static final List<String> KNOWN_DICTIONARIES = ImmutableList.of(
             "english",
             "japanese"
     );
-    private final static ConcurrentMap<String, BidirectionalDictionary> dictionaries = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, BidirectionalDictionary> dictionaries = new ConcurrentHashMap<>();
     private static final int PBKDF_ROUNDS = 2048;
     private static final String PBKDF_MAC = "HmacSHA512";
     private static final int PBKDF_SEED_OUTPUT = 64;

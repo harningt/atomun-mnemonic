@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
 import com.google.common.base.CharMatcher;
@@ -23,9 +24,9 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
+import javax.annotation.Nonnull;
 
 /**
  * Static utility to handle encoding/decoding details of the legacy Electrum mnemonic format.
@@ -63,8 +64,7 @@ class LegacyElectrumMnemonicUtility {
      * @param currentIndex offset into buffer to write into.
      * @param value 32-bit integer to write at buffer[currentIndex].
      */
-    private static void putInteger(@Nonnull byte[] buffer, int currentIndex, int value)
-    {
+    private static void putInteger(@Nonnull byte[] buffer, int currentIndex, int value) {
         buffer[currentIndex] = (byte)((value >> 24) & 0xFF);
         buffer[currentIndex + 1] = (byte)((value >> 16) & 0xFF);
         buffer[currentIndex + 2] = (byte)((value >> 8) & 0xFF);
@@ -79,8 +79,7 @@ class LegacyElectrumMnemonicUtility {
      *
      * @return 32-bit integer stored at buffer[currentIndex]
      */
-    private static int getInteger(@Nonnull byte[] buffer, int currentIndex)
-    {
+    private static int getInteger(@Nonnull byte[] buffer, int currentIndex) {
         int value =
                 (buffer[currentIndex] & 0xFF) << 24
                 | (buffer[currentIndex + 1] & 0xFF) << 16
@@ -102,11 +101,11 @@ class LegacyElectrumMnemonicUtility {
         ArrayList<String> encoded = Lists.newArrayList();
         encoded.ensureCapacity(entropy.length / 8 * 3);
         while (entropyIndex < entropy.length) {
-            long x = getInteger(entropy, entropyIndex) & 0xFFFFFFFFL;
+            long subValue = getInteger(entropy, entropyIndex) & 0xFFFFFFFFL;
             entropyIndex += 4;
-            int w1 = (int)(x % N);
-            int w2 = (int)(x / N + w1) % N;
-            int w3 = (int)(x / N / N + w2) % N;
+            int w1 = (int)(subValue % N);
+            int w2 = (int)(subValue / N + w1) % N;
+            int w3 = (int)(subValue / N / N + w2) % N;
             encoded.add(DICTIONARY.convert(w1));
             encoded.add(DICTIONARY.convert(w2));
             encoded.add(DICTIONARY.convert(w3));
@@ -126,7 +125,7 @@ class LegacyElectrumMnemonicUtility {
         String[] mnemonicWords = Iterables.toArray(WORD_SPLITTER.split(mnemonicSequence), String.class);
         byte[] entropy = new  byte[mnemonicWords.length * 4 / 3];
         int entropyIndex = 0;
-        Converter<String, Integer> REVERSE_DICTIONARY = DICTIONARY.reverse();
+        Converter<String, Integer> reverseDictionary = DICTIONARY.reverse();
         if (mnemonicWords.length % 3 != 0) {
             throw new IllegalArgumentException("Mnemonic sequence is not a multiple of 3");
         }
@@ -134,15 +133,15 @@ class LegacyElectrumMnemonicUtility {
             String word1 = mnemonicWords[i].toLowerCase();
             String word2 = mnemonicWords[i + 1].toLowerCase();
             String word3 = mnemonicWords[i + 2].toLowerCase();
-            Integer w1 = REVERSE_DICTIONARY.convert(word1);
-            Integer w2 = REVERSE_DICTIONARY.convert(word2);
-            Integer w3 = REVERSE_DICTIONARY.convert(word3);
+            Integer w1 = reverseDictionary.convert(word1);
+            Integer w2 = reverseDictionary.convert(word2);
+            Integer w3 = reverseDictionary.convert(word3);
             if (null == w1 || null == w2 || null == w3) {
                 throw new IllegalArgumentException("Unknown mnemonic word used");
             }
-            int x = w1 + N * mn_mod(w2 - w1, N) + N * N * mn_mod(w3 - w2, N);
+            int subValue = w1 + N * mn_mod(w2 - w1, N) + N * N * mn_mod(w3 - w2, N);
             /* Convert to 4 bytes */
-            putInteger(entropy, entropyIndex, x);
+            putInteger(entropy, entropyIndex, subValue);
             entropyIndex += 4;
         }
         return entropy;

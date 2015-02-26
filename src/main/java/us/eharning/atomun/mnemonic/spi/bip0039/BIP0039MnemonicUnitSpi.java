@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Charsets;
@@ -25,12 +26,11 @@ import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
 
-import javax.annotation.CheckForNull;
+import java.text.Normalizer;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.text.Normalizer;
-import java.util.List;
 
 /**
  * Internal class to implement the BIP0039 mnemonic details.

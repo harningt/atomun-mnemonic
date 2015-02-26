@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
-import us.eharning.atomun.mnemonic.spi.*;
+import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
+import us.eharning.atomun.mnemonic.spi.BuilderParameter;
+import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
+import us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi;
+import us.eharning.atomun.mnemonic.spi.WordListBuilderParameter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -27,8 +32,10 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
-    private static final EntropyBuilderParameter DEFAULT_ENTROPY_PARAMETER = EntropyBuilderParameter.getRandom(128 / 8);
-    private static final WordListBuilderParameter DEFAULT_WORDLIST_PARAMETER = WordListBuilderParameter.getWordList("english");
+    private static final EntropyBuilderParameter DEFAULT_ENTROPY_PARAMETER
+            = EntropyBuilderParameter.getRandom(128 / 8);
+    private static final WordListBuilderParameter DEFAULT_WORDLIST_PARAMETER
+            = WordListBuilderParameter.getWordList("english");
 
     /**
      * Construct a new SPI with the given algorithm.
@@ -67,6 +74,7 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
             if (parameter instanceof EntropyBuilderParameter) {
                 entropy = ((EntropyBuilderParameter)parameter).getEntropy();
             } else if (parameter instanceof WordListBuilderParameter) {
+                /* Not used */
             } else {
                 throw new UnsupportedOperationException("Unsupported parameter type: " + parameter);
             }
@@ -75,7 +83,7 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
             /* Use default */
             entropy = DEFAULT_ENTROPY_PARAMETER.getEntropy();
         }
-        return entropy;        
+        return entropy;
     }
 
     /**
@@ -93,6 +101,7 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
                 continue;
             }
             if (parameter instanceof EntropyBuilderParameter) {
+                /* Not used */
             } else if (parameter instanceof WordListBuilderParameter) {
                 wordListIdentifier = ((WordListBuilderParameter)parameter).getWordListIdentifier();
             } else {
@@ -126,7 +135,7 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
         }
         return mnemonicSentence.toString();
     }
-    
+
     /**
      * Generate the mnemonic sequence given the input parameters.
      *
@@ -162,7 +171,7 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
         String wordListIdentifier = getParameterWordListIdentifier(parameters);
         BidirectionalDictionary dictionary = BIP0039MnemonicUtility.getDictionary(wordListIdentifier);
         String mnemonicSequence = generateMnemonicSequence(entropy, dictionary);
-        
+
         BIP0039MnemonicUnitSpi spi = BIP0039MnemonicDecoderSpi.getMnemonicUnitSpi(wordListIdentifier, dictionary);
         return spi.build(builder, mnemonicSequence, entropy);
     }

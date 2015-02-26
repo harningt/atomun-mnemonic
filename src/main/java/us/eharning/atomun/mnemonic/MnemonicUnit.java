@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic;
 
 import com.google.common.base.Verify;
@@ -24,12 +25,12 @@ import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
 import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
 import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
 
+import java.util.Arrays;
+import java.util.Map;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Arrays;
-import java.util.Map;
 
 /**
  * Service provider to back the MnemonicDecoder.
@@ -247,6 +248,7 @@ public final class MnemonicUnit {
          */
         Builder() {
         }
+
         @Nonnull
         public final MnemonicUnit build(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<String, Object> extensions) {
             return new MnemonicUnit(spi, mnemonicSequence, entropy, seed, extensions);

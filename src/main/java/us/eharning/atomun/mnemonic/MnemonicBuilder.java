@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import us.eharning.atomun.mnemonic.spi.*;
+import us.eharning.atomun.mnemonic.spi.BuilderParameter;
+import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
+import us.eharning.atomun.mnemonic.spi.ExtensionBuilderParameter;
+import us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi;
+import us.eharning.atomun.mnemonic.spi.MnemonicServiceProvider;
+import us.eharning.atomun.mnemonic.spi.WordListBuilderParameter;
 import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
 import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
 
+import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.Map;
 
 /**
  * Builder API to generate mnemonic sequences.

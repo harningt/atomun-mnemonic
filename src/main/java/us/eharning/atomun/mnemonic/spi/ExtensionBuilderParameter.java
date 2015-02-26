@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi;
 
 import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableMap;
 
+import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import java.util.Map;
 
 /**
  * Builder parameter representing list of named extension values.

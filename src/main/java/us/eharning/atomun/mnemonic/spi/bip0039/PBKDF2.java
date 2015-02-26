@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
+import static java.lang.System.arraycopy;
+
+import java.security.GeneralSecurityException;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.GeneralSecurityException;
-
-import static java.lang.System.arraycopy;
 
 /**
  * Internal implementation of PBKDF2 layered atop standard primitives for more flexibility.
@@ -40,6 +41,7 @@ final class PBKDF2 {
      *
      * @throws  GeneralSecurityException
      */
+    @SuppressWarnings({"checkstyle:parametername", "checkstyle:localvariablename"})
     public static byte[] pbkdf2(String alg, byte[] P, byte[] S, int c, int dkLen) throws GeneralSecurityException {
         Mac mac = Mac.getInstance(alg);
         mac.init(new SecretKeySpec(P, alg));
@@ -59,6 +61,7 @@ final class PBKDF2 {
      *
      * @throws  GeneralSecurityException
      */
+    @SuppressWarnings({"checkstyle:parametername", "checkstyle:localvariablename"})
     public static void pbkdf2(Mac mac, byte[] S, int c, byte[] DK, int dkLen) throws GeneralSecurityException {
         int hLen = mac.getMacLength();
 

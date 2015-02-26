@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi;
 
 import com.google.common.annotations.Beta;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Builder parameter representing entropy fill-in.
@@ -32,7 +33,7 @@ import java.util.Arrays;
 public abstract class EntropyBuilderParameter implements BuilderParameter {
     /**
      * Get a sequence of bytes representing the entropy to use for building.
-     *
+     * <p/>
      * Must be called once per build because this value may change per-call.
      *
      * @return configured entropy data for building mnemonic sequences.
@@ -89,7 +90,7 @@ public abstract class EntropyBuilderParameter implements BuilderParameter {
 
         /**
          * Get a sequence of bytes representing the entropy to use for building.
-         *
+         * <p/>
          * Must be called once per build because this value may change per-call.
          * NOTE: In this instance, the value is securely generated each time.
          *
@@ -130,7 +131,7 @@ public abstract class EntropyBuilderParameter implements BuilderParameter {
 
         /**
          * Get a sequence of bytes representing the entropy to use for building.
-         *
+         * <p/>
          * NOTE: In this instance, the value does not change per-call.
          *
          * @return configured entropy data for building mnemonic sequences.

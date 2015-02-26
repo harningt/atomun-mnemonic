@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Converter;
@@ -21,17 +22,17 @@ import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
 
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * Decoder system for the BIP0039 mnemonic system.
- *
+ * <p/>
  * Thanks to the BitcoinJ project for inspiration of the boolean-array based decoder.
  */
 @Immutable

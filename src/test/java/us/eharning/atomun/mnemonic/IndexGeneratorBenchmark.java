@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic;
 
 import com.google.caliper.Benchmark;
@@ -21,11 +22,11 @@ import com.google.common.base.Preconditions;
 import com.tomgibara.crinch.bits.BitReader;
 import com.tomgibara.crinch.bits.ByteArrayBitReader;
 
-import javax.annotation.Nonnull;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Random;
+import javax.annotation.Nonnull;
 
 /**
  * Benchmark tool for mnemonic index generation methods (aligned 11-bit reading).
@@ -33,12 +34,13 @@ import java.util.Random;
 class IndexGeneratorBenchmark {
     private static final byte[] INPUT = new byte[128 / 8];
     private static final byte[] CHECKSUM = new byte[256 / 8];
+
     static {
-        Random RNG = new Random(0x1234);
-        RNG.nextBytes(INPUT);
-        RNG.nextBytes(CHECKSUM);        
+        Random rng = new Random(0x1234);
+        rng.nextBytes(INPUT);
+        rng.nextBytes(CHECKSUM);
     }
-    
+
     @Benchmark
     public int bigIntegerMethod(int reps) {
         int dummy = 0;
@@ -114,7 +116,7 @@ class IndexGeneratorBenchmark {
         for (int rep = 0; rep < reps; rep++) {
             byte[] entropy = INPUT;
             byte[] checksum = Arrays.copyOf(CHECKSUM, CHECKSUM.length);
-            
+
             /* Convert the length to bits for purpose of BIP0039 specification match-up */
             int entropyBitCount = entropy.length * 8;
             int checksumBitCount = entropyBitCount / 32;
@@ -152,6 +154,7 @@ class IndexGeneratorBenchmark {
         }
         return bits;
     }
+
     @Nonnull
     private static boolean[] bytesToBits(int totalBits, @Nonnull byte[] data) {
         Preconditions.checkNotNull(data);
@@ -228,7 +231,7 @@ class IndexGeneratorBenchmark {
                 int index = bitReader.read(11);
                 indexValues[i] = index;
             }
-            
+
             dummy += indexValues[0];
         }
         return dummy;

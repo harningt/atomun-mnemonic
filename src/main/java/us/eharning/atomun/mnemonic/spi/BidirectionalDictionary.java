@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi;
 
 import com.google.common.annotations.Beta;
@@ -25,11 +26,11 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.io.LineProcessor;
 import com.google.common.io.Resources;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Utility class representing a bidirectional map between integer and string.
@@ -39,8 +40,8 @@ import java.util.List;
 @Beta
 @Immutable
 public class BidirectionalDictionary extends Converter<Integer, String> {
-    private final ImmutableList<String> INTEGER_TO_DICTIONARY;
-    private final ImmutableMap<String, Integer> DICTIONARY_TO_INTEGER;
+    private final ImmutableList<String> indexToWordMap;
+    private final ImmutableMap<String, Integer> wordToIndexMap;
     private final String wordListIdentifier;
 
     /**
@@ -53,12 +54,12 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
      */
     public BidirectionalDictionary(@Nonnull List<String> wordList, @Nonnull String wordListIdentifier) {
         this.wordListIdentifier = wordListIdentifier;
-        INTEGER_TO_DICTIONARY = ImmutableList.copyOf(wordList);
+        indexToWordMap = ImmutableList.copyOf(wordList);
         ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
-        for (int i = 0; i < INTEGER_TO_DICTIONARY.size(); i++) {
-            builder.put(INTEGER_TO_DICTIONARY.get(i), i);
+        for (int i = 0; i < indexToWordMap.size(); i++) {
+            builder.put(indexToWordMap.get(i), i);
         }
-        DICTIONARY_TO_INTEGER = builder.build();
+        wordToIndexMap = builder.build();
     }
     /**
      * Construct an instance by reading a resource as UTF-8 and line-splitting.
@@ -101,23 +102,23 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object that) {
+        if (this == that) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (that == null || getClass() != that.getClass()) {
             return false;
         }
-        /* NOTE: Skipping DICTIONARY_TO_INTEGER due to invariants */
-        BidirectionalDictionary that = (BidirectionalDictionary) o;
-        return Objects.equal(INTEGER_TO_DICTIONARY, that.INTEGER_TO_DICTIONARY) &&
-                Objects.equal(wordListIdentifier, that.wordListIdentifier);
+        /* NOTE: Skipping wordToIndexMap due to invariants */
+        BidirectionalDictionary thatDictionary = (BidirectionalDictionary) that;
+        return Objects.equal(indexToWordMap, thatDictionary.indexToWordMap)
+                && Objects.equal(wordListIdentifier, thatDictionary.wordListIdentifier);
     }
 
     @Override
     public int hashCode() {
-        /* NOTE: Skipping DICTIONARY_TO_INTEGER due to invariants */
-        return Objects.hashCode(INTEGER_TO_DICTIONARY, wordListIdentifier);
+        /* NOTE: Skipping wordToIndexMap due to invariants */
+        return Objects.hashCode(indexToWordMap, wordListIdentifier);
     }
 
     /**
@@ -130,7 +131,7 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
     @Nonnull
     @Override
     protected String doForward(@Nonnull Integer integer) {
-        String result = INTEGER_TO_DICTIONARY.get(integer);
+        String result = indexToWordMap.get(integer);
         Preconditions.checkArgument(null != result, "Unknown dictionary index");
         //noinspection ConstantConditions
         return result;
@@ -140,18 +141,17 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
      * Returns a representation of {@code b} as an instance of type {@code A}. If {@code b} cannot be
      * converted, an unchecked exception (such as {@link IllegalArgumentException}) should be thrown.
      *
-     * @param s the instance to convert; will never be null
+     * @param word the instance to convert; will never be null
      * @return the converted instance; <b>must not</b> be null
      * @throws UnsupportedOperationException if backward conversion is not implemented; this should be
      *                                       very rare. Note that if backward conversion is not only unimplemented but
      *                                       unimplement<i>able</i> (for example, consider a {@code Converter<Chicken, ChickenNugget>}),
-     *                                       then this is not logically a {@code Converter} at all, and should just implement {@link
-     *                                       com.google.common.base.Function}.
+     *                                       then this is not logically a {@code Converter} at all, and should just implement {@link com.google.common.base.Function}.
      */
     @Nonnull
     @Override
-    protected Integer doBackward(@Nonnull String s) {
-        Integer result = DICTIONARY_TO_INTEGER.get(s);
+    protected Integer doBackward(@Nonnull String word) {
+        Integer result = wordToIndexMap.get(word);
         Preconditions.checkArgument(null != result, "Unknown dictionary word");
         //noinspection ConstantConditions
         return result;
@@ -177,6 +177,6 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
      * @since 0.1.0
      */
     public int getSize() {
-        return INTEGER_TO_DICTIONARY.size();
+        return indexToWordMap.size();
     }
 }
