@@ -32,9 +32,12 @@ class LegacyElectrumMnemonicUnitSpi extends MnemonicUnitSpi {
     /**
      * Utility method to generate a MnemonicUnit wrapping the given sequence and entropy.
      *
-     * @param builder instance maker.
-     * @param mnemonicSequence sequence.
-     * @param entropy derived copy of entropy.
+     * @param builder
+     *         instance maker.
+     * @param mnemonicSequence
+     *         sequence.
+     * @param entropy
+     *         derived copy of entropy.
      *
      * @return wrapped instance.
      */
@@ -46,7 +49,8 @@ class LegacyElectrumMnemonicUnitSpi extends MnemonicUnitSpi {
     /**
      * Get the entropy if possible.
      *
-     * @param mnemonicSequence sequence to derive entropy from.
+     * @param mnemonicSequence
+     *         sequence to derive entropy from.
      *
      * @return a derived copy of the entropy byte array.
      */
@@ -59,8 +63,10 @@ class LegacyElectrumMnemonicUnitSpi extends MnemonicUnitSpi {
     /**
      * Get a seed from this mnemonic.
      *
-     * @param mnemonicSequence sequence to derive the seed from.
-     * @param password password to supply for decoding.
+     * @param mnemonicSequence
+     *         sequence to derive the seed from.
+     * @param password
+     *         password to supply for decoding.
      *
      * @return a derived seed.
      */

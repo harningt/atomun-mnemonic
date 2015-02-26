@@ -48,8 +48,10 @@ class LegacyElectrumMnemonicUtility {
     /**
      * Simple modular math hack to deal with signed/unsigned integer issues and java.
      *
-     * @param value signed integer to apply modulo operator to.
-     * @param mod modulo operator parameter.
+     * @param value
+     *         signed integer to apply modulo operator to.
+     * @param mod
+     *         modulo operator parameter.
      *
      * @return value % mod honoring signed/unsigned rules for this usage.
      */
@@ -60,38 +62,44 @@ class LegacyElectrumMnemonicUtility {
     /**
      * Utility method to add a 32-bit integer to a byte array.
      *
-     * @param buffer byte array to write to.
-     * @param currentIndex offset into buffer to write into.
-     * @param value 32-bit integer to write at buffer[currentIndex].
+     * @param buffer
+     *         byte array to write to.
+     * @param currentIndex
+     *         offset into buffer to write into.
+     * @param value
+     *         32-bit integer to write at buffer[currentIndex].
      */
     private static void putInteger(@Nonnull byte[] buffer, int currentIndex, int value) {
-        buffer[currentIndex] = (byte)((value >> 24) & 0xFF);
-        buffer[currentIndex + 1] = (byte)((value >> 16) & 0xFF);
-        buffer[currentIndex + 2] = (byte)((value >> 8) & 0xFF);
-        buffer[currentIndex + 3] = (byte)(value & 0xFF);
+        buffer[currentIndex] = (byte) ((value >> 24) & 0xFF);
+        buffer[currentIndex + 1] = (byte) ((value >> 16) & 0xFF);
+        buffer[currentIndex + 2] = (byte) ((value >> 8) & 0xFF);
+        buffer[currentIndex + 3] = (byte) (value & 0xFF);
     }
 
     /**
      * Utility method to extract a 32-bit integer from a byte array.
      *
-     * @param buffer byte array to read from.
-     * @param currentIndex offset into buffer to read from.
+     * @param buffer
+     *         byte array to read from.
+     * @param currentIndex
+     *         offset into buffer to read from.
      *
      * @return 32-bit integer stored at buffer[currentIndex]
      */
     private static int getInteger(@Nonnull byte[] buffer, int currentIndex) {
         int value =
                 (buffer[currentIndex] & 0xFF) << 24
-                | (buffer[currentIndex + 1] & 0xFF) << 16
-                | (buffer[currentIndex + 2] & 0xFF) << 8
-                | buffer[currentIndex + 3] & 0xFF;
+                        | (buffer[currentIndex + 1] & 0xFF) << 16
+                        | (buffer[currentIndex + 2] & 0xFF) << 8
+                        | buffer[currentIndex + 3] & 0xFF;
         return value;
     }
 
     /**
      * Encode a sequence of bytes to a space-delimited series of mnemonic words.
      *
-     * @param entropy value to encode.
+     * @param entropy
+     *         value to encode.
      *
      * @return space-delimited sequence of mnemonic words.
      */
@@ -103,9 +111,9 @@ class LegacyElectrumMnemonicUtility {
         while (entropyIndex < entropy.length) {
             long subValue = getInteger(entropy, entropyIndex) & 0xFFFFFFFFL;
             entropyIndex += 4;
-            int w1 = (int)(subValue % N);
-            int w2 = (int)(subValue / N + w1) % N;
-            int w3 = (int)(subValue / N / N + w2) % N;
+            int w1 = (int) (subValue % N);
+            int w2 = (int) (subValue / N + w1) % N;
+            int w3 = (int) (subValue / N / N + w2) % N;
             encoded.add(DICTIONARY.convert(w1));
             encoded.add(DICTIONARY.convert(w2));
             encoded.add(DICTIONARY.convert(w3));
@@ -116,14 +124,15 @@ class LegacyElectrumMnemonicUtility {
     /**
      * Decode a space-delimited sequence of mnemonic words.
      *
-     * @param mnemonicSequence space-delimited sequence of mnemonic words to toEntropy.
+     * @param mnemonicSequence
+     *         space-delimited sequence of mnemonic words to toEntropy.
      *
      * @return encoded value.
      */
     @Nonnull
     static byte[] toEntropy(@Nonnull CharSequence mnemonicSequence) {
         String[] mnemonicWords = Iterables.toArray(WORD_SPLITTER.split(mnemonicSequence), String.class);
-        byte[] entropy = new  byte[mnemonicWords.length * 4 / 3];
+        byte[] entropy = new byte[mnemonicWords.length * 4 / 3];
         int entropyIndex = 0;
         Converter<String, Integer> reverseDictionary = DICTIONARY.reverse();
         if (mnemonicWords.length % 3 != 0) {

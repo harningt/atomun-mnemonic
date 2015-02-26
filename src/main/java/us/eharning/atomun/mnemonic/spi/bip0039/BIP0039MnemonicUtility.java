@@ -50,11 +50,13 @@ class BIP0039MnemonicUtility {
     /**
      * Utility method to obtain a dictionary given the wordListIdentifier.
      *
-     * @param wordListIdentifier name of the word list to retrieve.
+     * @param wordListIdentifier
+     *         name of the word list to retrieve.
      *
      * @return dictionary for the given word list.
      *
-     * @throws java.lang.IllegalArgumentException If the word list cannot be found/loaded.
+     * @throws java.lang.IllegalArgumentException
+     *         If the word list cannot be found/loaded.
      */
     @Nonnull
     static BidirectionalDictionary getDictionary(@Nonnull String wordListIdentifier) {
@@ -78,11 +80,13 @@ class BIP0039MnemonicUtility {
     /**
      * Simple utility to calculate the SHA-256 digest.
      *
-     * @param data value to digest.
+     * @param data
+     *         value to digest.
      *
      * @return sha256-digest of data.
      *
-     * @throws java.lang.Error if the digest cannot be found (should not happen).
+     * @throws java.lang.Error
+     *         if the digest cannot be found (should not happen).
      */
     @Nonnull
     static byte[] sha256digest(@Nonnull byte[] data) {
@@ -98,13 +102,19 @@ class BIP0039MnemonicUtility {
     /**
      * Simple utility to calculate the SHA-256 digest.
      *
-     * @param data value to digest a portion of.
-     * @param dataStart index into data for where to begin digest.
-     * @param dataLength number of bytes to digest.
-     * @param output array to write result into.
-     * @param outputStart index into output to begin writing result.
+     * @param data
+     *         value to digest a portion of.
+     * @param dataStart
+     *         index into data for where to begin digest.
+     * @param dataLength
+     *         number of bytes to digest.
+     * @param output
+     *         array to write result into.
+     * @param outputStart
+     *         index into output to begin writing result.
      *
-     * @throws java.lang.Error if the digest cannot be found or input is bad (should not happen).
+     * @throws java.lang.Error
+     *         if the digest cannot be found or input is bad (should not happen).
      */
     @Nonnull
     static void sha256digest(@Nonnull byte[] data, int dataStart, int dataLength, @Nonnull byte[] output, int outputStart) {
@@ -121,12 +131,15 @@ class BIP0039MnemonicUtility {
     /**
      * Utility method to derive a seed given the password and processed mnemonic sequence.
      *
-     * @param passwordBytes UTF-8 byte sequence representing the password to use.
-     * @param mnemonicSequenceBytes UTF-8 byte sequence representing the mnemonic sequence.
+     * @param passwordBytes
+     *         UTF-8 byte sequence representing the password to use.
+     * @param mnemonicSequenceBytes
+     *         UTF-8 byte sequence representing the mnemonic sequence.
      *
      * @return 64-byte seed value
      *
-     * @throws java.lang.Error if the Mac cannot be found (should not happen).
+     * @throws java.lang.Error
+     *         if the Mac cannot be found (should not happen).
      */
     @Nonnull
     static byte[] deriveSeed(@Nonnull byte[] passwordBytes, @Nonnull byte[] mnemonicSequenceBytes) {

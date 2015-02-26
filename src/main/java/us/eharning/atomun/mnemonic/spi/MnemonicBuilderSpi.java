@@ -36,7 +36,9 @@ public abstract class MnemonicBuilderSpi {
 
     /**
      * Construct a new SPI with the given algorithm.
-     * @param algorithm implemented mnemonic algorithm.
+     *
+     * @param algorithm
+     *         implemented mnemonic algorithm.
      */
     protected MnemonicBuilderSpi(MnemonicAlgorithm algorithm) {
         this.algorithm = algorithm;
@@ -45,7 +47,7 @@ public abstract class MnemonicBuilderSpi {
     /**
      * Get the implemented mnemonic algorithm.
      *
-     *  @return implemented mnemonic algorithm.
+     * @return implemented mnemonic algorithm.
      */
     public MnemonicAlgorithm getAlgorithm() {
         return algorithm;
@@ -54,7 +56,8 @@ public abstract class MnemonicBuilderSpi {
     /**
      * Generate the mnemonic sequence given the input parameters.
      *
-     * @param parameters builder parameters to drive the process.
+     * @param parameters
+     *         builder parameters to drive the process.
      *
      * @return the generated mnemonic sequence.
      *
@@ -67,8 +70,10 @@ public abstract class MnemonicBuilderSpi {
      * Encode this instance to a wrapped mnemonic unit.
      * The default implementation performs a naive generation without optimisation.
      *
-     * @param builder instance to construct MnemonicUnit with.
-     * @param parameters builder parameters to drive the process.
+     * @param builder
+     *         instance to construct MnemonicUnit with.
+     * @param parameters
+     *         builder parameters to drive the process.
      *
      * @return MnemonicUnit instance wrapping build results.
      *
@@ -81,7 +86,7 @@ public abstract class MnemonicBuilderSpi {
         String wordListIdentifier = null;
         for (BuilderParameter parameter : parameters) {
             if (parameter instanceof WordListBuilderParameter) {
-                wordListIdentifier = ((WordListBuilderParameter)parameter).getWordListIdentifier();
+                wordListIdentifier = ((WordListBuilderParameter) parameter).getWordListIdentifier();
             }
         }
         return MnemonicUnit.decodeMnemonic(getAlgorithm(), mnemonicSequence, wordListIdentifier);
@@ -90,10 +95,11 @@ public abstract class MnemonicBuilderSpi {
     /**
      * Validate the builder parameters.
      *
-     * @param parameters builder parameters to validate.
+     * @param parameters
+     *         builder parameters to validate.
      *
-     * @throws RuntimeException varieties in case of invalid input.
-     *
+     * @throws RuntimeException
+     *         varieties in case of invalid input.
      * @since 0.1.0
      */
     public abstract void validate(BuilderParameter... parameters);

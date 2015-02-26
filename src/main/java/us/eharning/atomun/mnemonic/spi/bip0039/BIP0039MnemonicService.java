@@ -38,7 +38,8 @@ public class BIP0039MnemonicService extends MnemonicServiceProvider {
     /**
      * Obtain a mnemonic builder SPI for the given algorithm.
      *
-     * @param algorithm mnemonic algorithm to try to retrieve.
+     * @param algorithm
+     *         mnemonic algorithm to try to retrieve.
      *
      * @return SPI instance for the given algorithm, else null.
      */
@@ -54,7 +55,8 @@ public class BIP0039MnemonicService extends MnemonicServiceProvider {
     /**
      * Obtain a mnemonic decoder SPI for the given algorithm.
      *
-     * @param algorithm mnemonic algorithm to try to retrieve.
+     * @param algorithm
+     *         mnemonic algorithm to try to retrieve.
      *
      * @return SPI instance for the given algorithm, else null.
      */

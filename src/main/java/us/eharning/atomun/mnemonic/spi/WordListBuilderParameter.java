@@ -34,10 +34,24 @@ public class WordListBuilderParameter implements BuilderParameter {
     /**
      * Construct an instance given the provided word list identifier.
      *
-     * @param wordListIdentifier identifier to configure the builder with.
+     * @param wordListIdentifier
+     *         identifier to configure the builder with.
      */
     private WordListBuilderParameter(@Nonnull String wordListIdentifier) {
         this.wordListIdentifier = wordListIdentifier;
+    }
+
+    /**
+     * Obtain a parameter instance given the provided word list identifier.
+     *
+     * @param wordListIdentifier
+     *         identifier to configure the builder with.
+     *
+     * @return wrapped wordListIdentifier parameter.
+     */
+    @Nonnull
+    public static WordListBuilderParameter getWordList(@Nonnull String wordListIdentifier) {
+        return new WordListBuilderParameter(wordListIdentifier);
     }
 
     /**
@@ -48,17 +62,5 @@ public class WordListBuilderParameter implements BuilderParameter {
     @Nonnull
     public String getWordListIdentifier() {
         return wordListIdentifier;
-    }
-
-    /**
-     * Obtain a parameter instance given the provided word list identifier.
-     *
-     * @param wordListIdentifier identifier to configure the builder with.
-     *
-     * @return wrapped wordListIdentifier parameter.
-     */
-    @Nonnull
-    public static WordListBuilderParameter getWordList(@Nonnull String wordListIdentifier) {
-        return new WordListBuilderParameter(wordListIdentifier);
     }
 }

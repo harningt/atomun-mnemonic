@@ -47,9 +47,11 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
     /**
      * Return if the given entropy length is valid.
      *
-     * @param entropyLength number of bytes of entropy.
+     * @param entropyLength
+     *         number of bytes of entropy.
      *
-     * @throws IllegalArgumentException if the entropyLength is invalid
+     * @throws IllegalArgumentException
+     *         if the entropyLength is invalid
      */
     private static void checkEntropyLengthValid(int entropyLength) {
         if (entropyLength <= 0 || entropyLength % 4 != 0) {
@@ -60,19 +62,20 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
     /**
      * Extracts the entropy parameter from parameters, else a default.
      *
-     * @param parameters builder parameters to drive the process.
+     * @param parameters
+     *         builder parameters to drive the process.
      *
      * @return entropy
      */
     @Nonnull
     private static byte[] getParameterEntropy(BuilderParameter... parameters) {
         byte[] entropy = null;
-        for (BuilderParameter parameter: parameters) {
+        for (BuilderParameter parameter : parameters) {
             if (null == parameter) {
                 continue;
             }
             if (parameter instanceof EntropyBuilderParameter) {
-                entropy = ((EntropyBuilderParameter)parameter).getEntropy();
+                entropy = ((EntropyBuilderParameter) parameter).getEntropy();
             } else if (parameter instanceof WordListBuilderParameter) {
                 /* Not used */
             } else {
@@ -89,21 +92,22 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
     /**
      * Extracts the word list parameter from parameters, else a default.
      *
-     * @param parameters builder parameters to drive the process.
+     * @param parameters
+     *         builder parameters to drive the process.
      *
      * @return word list identifier.
      */
     @Nonnull
-    private static String getParameterWordListIdentifier(BuilderParameter ...parameters) {
+    private static String getParameterWordListIdentifier(BuilderParameter... parameters) {
         String wordListIdentifier = null;
-        for (BuilderParameter parameter: parameters) {
+        for (BuilderParameter parameter : parameters) {
             if (null == parameter) {
                 continue;
             }
             if (parameter instanceof EntropyBuilderParameter) {
                 /* Not used */
             } else if (parameter instanceof WordListBuilderParameter) {
-                wordListIdentifier = ((WordListBuilderParameter)parameter).getWordListIdentifier();
+                wordListIdentifier = ((WordListBuilderParameter) parameter).getWordListIdentifier();
             } else {
                 throw new UnsupportedOperationException("Unsupported parameter type: " + parameter);
             }
@@ -117,8 +121,10 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
     /**
      * Generates a mnemonic sequence from the provided entropy using the dictionary.
      *
-     * @param entropy value to encode.
-     * @param dictionary dictionary to encode entropy with.
+     * @param entropy
+     *         value to encode.
+     * @param dictionary
+     *         dictionary to encode entropy with.
      *
      * @return space-delimited sequence of mnemonic words.
      */
@@ -139,7 +145,8 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
     /**
      * Generate the mnemonic sequence given the input parameters.
      *
-     * @param parameters builder parameters to drive the process.
+     * @param parameters
+     *         builder parameters to drive the process.
      *
      * @return the generated mnemonic sequence.
      *
@@ -157,8 +164,10 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
     /**
      * Encode this instance to a wrapped mnemonic unit.
      *
-     * @param builder instance to construct MnemonicUnit with.
-     * @param parameters builder parameters to drive the process.
+     * @param builder
+     *         instance to construct MnemonicUnit with.
+     * @param parameters
+     *         builder parameters to drive the process.
      *
      * @return MnemonicUnit instance wrapping build results.
      *
@@ -172,29 +181,30 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
         BidirectionalDictionary dictionary = BIP0039MnemonicUtility.getDictionary(wordListIdentifier);
         String mnemonicSequence = generateMnemonicSequence(entropy, dictionary);
 
-        BIP0039MnemonicUnitSpi spi = BIP0039MnemonicDecoderSpi.getMnemonicUnitSpi(wordListIdentifier, dictionary);
+        BIP0039MnemonicUnitSpi spi = BIP0039MnemonicDecoderSpi.getMnemonicUnitSpi(dictionary);
         return spi.build(builder, mnemonicSequence, entropy);
     }
 
     /**
      * Validate the builder parameters.
      *
-     * @param parameters builder parameters to validate.
+     * @param parameters
+     *         builder parameters to validate.
      *
-     * @throws RuntimeException varieties in case of invalid input.
-     *
+     * @throws RuntimeException
+     *         varieties in case of invalid input.
      * @since 0.1.0
      */
     @Override
     public void validate(BuilderParameter... parameters) {
-        for (BuilderParameter parameter: parameters) {
+        for (BuilderParameter parameter : parameters) {
             if (null == parameter) {
                 continue;
             }
             if (parameter instanceof EntropyBuilderParameter) {
                 checkEntropyLengthValid(((EntropyBuilderParameter) parameter).getEntropyLength());
             } else if (parameter instanceof WordListBuilderParameter) {
-                BIP0039MnemonicUtility.getDictionary(((WordListBuilderParameter)parameter).getWordListIdentifier());
+                BIP0039MnemonicUtility.getDictionary(((WordListBuilderParameter) parameter).getWordListIdentifier());
             } else {
                 throw new UnsupportedOperationException("Unsupported parameter type: " + parameter);
             }

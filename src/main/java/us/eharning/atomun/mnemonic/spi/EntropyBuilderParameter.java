@@ -32,8 +32,33 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public abstract class EntropyBuilderParameter implements BuilderParameter {
     /**
+     * Obtain an entropy builder that will generate random entropy bytes of the given size.
+     *
+     * @param size
+     *         number of bytes of entropy to generate for each call to #getEntropy().
+     *
+     * @return entropy builder instance.
+     */
+    @Nonnull
+    public static EntropyBuilderParameter getRandom(int size) {
+        return new RandomEntropyBuilderParameter(size);
+    }
+
+    /**
+     * Obtain an entropy builder that will return a consistent entropy sequence.
+     *
+     * @param entropy
+     *         bytes to return in #getEntropy()..
+     *
+     * @return entropy builder instance.
+     */
+    @Nonnull
+    public static EntropyBuilderParameter getStatic(@Nonnull byte[] entropy) {
+        return new StaticEntropyBuilderParameter(entropy);
+    }
+
+    /**
      * Get a sequence of bytes representing the entropy to use for building.
-     * <p/>
      * Must be called once per build because this value may change per-call.
      *
      * @return configured entropy data for building mnemonic sequences.
@@ -49,30 +74,6 @@ public abstract class EntropyBuilderParameter implements BuilderParameter {
     public abstract int getEntropyLength();
 
     /**
-     * Obtain an entropy builder that will generate random entropy bytes of the given size.
-     *
-     * @param size number of bytes of entropy to generate for each call to #getEntropy().
-     *
-     * @return entropy builder instance.
-     */
-    @Nonnull
-    public static EntropyBuilderParameter getRandom(int size) {
-        return new RandomEntropyBuilderParameter(size);
-    }
-
-    /**
-     * Obtain an entropy builder that will return a consistent entropy sequence.
-     *
-     * @param entropy bytes to return in #getEntropy()..
-     *
-     * @return entropy builder instance.
-     */
-    @Nonnull
-    public static EntropyBuilderParameter getStatic(@Nonnull byte[] entropy) {
-        return new StaticEntropyBuilderParameter(entropy);
-    }
-
-    /**
      * Internal entropy builder that will return random entropy of a given size.
      */
     private static class RandomEntropyBuilderParameter extends EntropyBuilderParameter {
@@ -82,7 +83,8 @@ public abstract class EntropyBuilderParameter implements BuilderParameter {
         /**
          * Construct the internal entropy builder that will return random entropy of the given size.
          *
-         * @param size number of bytes to return in #getEntropy().
+         * @param size
+         *         number of bytes to return in #getEntropy().
          */
         private RandomEntropyBuilderParameter(int size) {
             this.size = size;
@@ -123,7 +125,8 @@ public abstract class EntropyBuilderParameter implements BuilderParameter {
         /**
          * Construct the internal entropy builder that will return a copy of the given entropy.
          *
-         * @param entropy bytes to return in #getEntropy().
+         * @param entropy
+         *         bytes to return in #getEntropy().
          */
         private StaticEntropyBuilderParameter(@Nonnull byte[] entropy) {
             this.entropy = Arrays.copyOf(entropy, entropy.length);

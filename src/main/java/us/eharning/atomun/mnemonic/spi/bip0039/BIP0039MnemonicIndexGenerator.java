@@ -29,7 +29,9 @@ class BIP0039MnemonicIndexGenerator {
     /**
      * Take the input entropy and output an array of word indices.
      *
-     * @param entropy generated entropy to process.
+     * @param entropy
+     *         generated entropy to process.
+     *
      * @return array of integer indices into dictionary.
      */
     @Nonnull

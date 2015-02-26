@@ -31,13 +31,17 @@ public abstract class MnemonicDecoderSpi {
      * Decodes a given mnemonic into a unit.
      * The word list is to be automatically detected and it is expected that only one matches.
      *
-     * @param builder instance maker.
-     * @param mnemonicSequence space-delimited sequence of mnemonic words.
-     * @param wordListIdentifier optional word list identifier.
+     * @param builder
+     *         instance maker.
+     * @param mnemonicSequence
+     *         space-delimited sequence of mnemonic words.
+     * @param wordListIdentifier
+     *         optional word list identifier.
      *
      * @return mnemonic unit.
-     * @throws java.lang.IllegalArgumentException the sequence cannot match.
      *
+     * @throws java.lang.IllegalArgumentException
+     *         the sequence cannot match.
      * @since 0.1.0
      */
     @Nonnull

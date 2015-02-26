@@ -36,11 +36,16 @@ public abstract class MnemonicUnitSpi {
     /**
      * Utility method to return a wrapped instance of this SPI.
      *
-     * @param builder instance maker.
-     * @param mnemonicSequence represented sequence.
-     * @param entropy derived entropy or null if on-demand.
-     * @param seed derived seed or null if on-demand.
-     * @param extensions map of property-to-value dependent on algorithm.
+     * @param builder
+     *         instance maker.
+     * @param mnemonicSequence
+     *         represented sequence.
+     * @param entropy
+     *         derived entropy or null if on-demand.
+     * @param seed
+     *         derived seed or null if on-demand.
+     * @param extensions
+     *         map of property-to-value dependent on algorithm.
      *
      * @return wrapped instance.
      *
@@ -56,7 +61,8 @@ public abstract class MnemonicUnitSpi {
     /**
      * Get the entropy if possible.
      *
-     * @param mnemonicSequence sequence to derive the entropy for.
+     * @param mnemonicSequence
+     *         sequence to derive the entropy for.
      *
      * @return a copy of the entropy byte array or null if inaccessible.
      *
@@ -68,9 +74,10 @@ public abstract class MnemonicUnitSpi {
     /**
      * Get a seed from this mnemonic.
      *
-     *
-     * @param mnemonicSequence sequence to derive the seed from.
-     * @param password password to supply for decoding.
+     * @param mnemonicSequence
+     *         sequence to derive the seed from.
+     * @param password
+     *         password to supply for decoding.
      *
      * @return a derived seed.
      *
