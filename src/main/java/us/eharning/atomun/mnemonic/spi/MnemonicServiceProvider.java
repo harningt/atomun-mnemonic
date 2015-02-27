@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi;
 
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
@@ -29,7 +30,8 @@ public abstract class MnemonicServiceProvider {
     /**
      * Obtain a mnemonic builder SPI for the given algorithm.
      *
-     * @param algorithm mnemonic algorithm to try to retrieve.
+     * @param algorithm
+     *         mnemonic algorithm to try to retrieve.
      *
      * @return SPI instance for the given algorithm, else null.
      *
@@ -41,7 +43,8 @@ public abstract class MnemonicServiceProvider {
     /**
      * Obtain a mnemonic decoder SPI for the given algorithm.
      *
-     * @param algorithm mnemonic algorithm to try to retrieve.
+     * @param algorithm
+     *         mnemonic algorithm to try to retrieve.
      *
      * @return SPI instance for the given algorithm, else null.
      *

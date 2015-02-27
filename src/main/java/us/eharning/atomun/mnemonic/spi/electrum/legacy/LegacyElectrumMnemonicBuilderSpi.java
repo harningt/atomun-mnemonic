@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
@@ -20,7 +21,6 @@ import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BuilderParameter;
 import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
 import us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi;
-import us.eharning.atomun.mnemonic.spi.WordListBuilderParameter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -42,9 +42,11 @@ class LegacyElectrumMnemonicBuilderSpi extends MnemonicBuilderSpi {
     /**
      * Check that a given entropy length is valid.
      *
-     * @param entropyLength number of bytes of entropy.
+     * @param entropyLength
+     *         number of bytes of entropy.
      *
-     * @throws IllegalArgumentException if the entropyLength is invalid
+     * @throws IllegalArgumentException
+     *         if the entropyLength is invalid
      */
     private static void checkEntropyLengthValid(int entropyLength) {
         if (entropyLength <= 0 || entropyLength % 4 != 0) {
@@ -55,19 +57,20 @@ class LegacyElectrumMnemonicBuilderSpi extends MnemonicBuilderSpi {
     /**
      * Extracts the entropy parameter from parameters, else a default.
      *
-     * @param parameters builder parameters to drive the process.
+     * @param parameters
+     *         builder parameters to drive the process.
      *
      * @return entropy
      */
     @Nonnull
     private static byte[] getParameterEntropy(BuilderParameter... parameters) {
         byte[] entropy = null;
-        for (BuilderParameter parameter: parameters) {
+        for (BuilderParameter parameter : parameters) {
             if (null == parameter) {
                 continue;
             }
             if (parameter instanceof EntropyBuilderParameter) {
-                entropy = ((EntropyBuilderParameter)parameter).getEntropy();
+                entropy = ((EntropyBuilderParameter) parameter).getEntropy();
             } else {
                 throw new UnsupportedOperationException("Unsupported parameter type: " + parameter);
             }
@@ -82,7 +85,8 @@ class LegacyElectrumMnemonicBuilderSpi extends MnemonicBuilderSpi {
     /**
      * Generate the mnemonic sequence given the input parameters.
      *
-     * @param parameters builder parameters to drive the process.
+     * @param parameters
+     *         builder parameters to drive the process.
      *
      * @return the generated mnemonic sequence.
      *
@@ -119,15 +123,16 @@ class LegacyElectrumMnemonicBuilderSpi extends MnemonicBuilderSpi {
     /**
      * Validate the builder parameters.
      *
-     * @param parameters builder parameters to validate.
+     * @param parameters
+     *         builder parameters to validate.
      *
-     * @throws RuntimeException varieties in case of invalid input.
-     *
+     * @throws RuntimeException
+     *         varieties in case of invalid input.
      * @since 0.1.0
      */
     @Override
     public void validate(BuilderParameter... parameters) {
-        for (BuilderParameter parameter: parameters) {
+        for (BuilderParameter parameter : parameters) {
             if (null == parameter) {
                 continue;
             }

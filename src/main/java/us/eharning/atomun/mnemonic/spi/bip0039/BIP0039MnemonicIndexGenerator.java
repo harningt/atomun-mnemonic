@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Preconditions;
@@ -28,7 +29,9 @@ class BIP0039MnemonicIndexGenerator {
     /**
      * Take the input entropy and output an array of word indices.
      *
-     * @param entropy generated entropy to process.
+     * @param entropy
+     *         generated entropy to process.
+     *
      * @return array of integer indices into dictionary.
      */
     @Nonnull

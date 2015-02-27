@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
 import us.eharning.atomun.mnemonic.MnemonicUnit;
@@ -33,13 +34,17 @@ class LegacyElectrumMnemonicDecoderSpi extends MnemonicDecoderSpi {
      * Decodes a given mnemonic into a unit.
      * The word list is to be automatically detected and it is expected that only one matches.
      *
-     * @param builder instance maker.
-     * @param mnemonicSequence   space-delimited sequence of mnemonic words.
-     * @param wordListIdentifier optional word list identifier
+     * @param builder
+     *         instance maker.
+     * @param mnemonicSequence
+     *         space-delimited sequence of mnemonic words.
+     * @param wordListIdentifier
+     *         optional word list identifier
      *
      * @return mnemonic unit
      *
-     * @throws IllegalArgumentException the sequence cannot match
+     * @throws IllegalArgumentException
+     *         the sequence cannot match
      */
     @Nonnull
     @Override

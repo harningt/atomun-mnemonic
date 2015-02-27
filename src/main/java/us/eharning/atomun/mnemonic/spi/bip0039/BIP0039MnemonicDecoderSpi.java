@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Converter;
@@ -21,17 +22,17 @@ import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
 
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * Decoder system for the BIP0039 mnemonic system.
- *
+ * <p/>
  * Thanks to the BitcoinJ project for inspiration of the boolean-array based decoder.
  */
 @Immutable
@@ -39,16 +40,81 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
     private static final ConcurrentMap<String, BIP0039MnemonicUnitSpi> WORD_LIST_SPI = new ConcurrentHashMap<>();
 
     /**
+     * Obtain the mnemonic unit SPI for the given wordListIdentifier and dictionary.
+     *
+     * @param dictionary
+     *         instance base to use.
+     *
+     * @return provider instance.
+     */
+    @Nonnull
+    static BIP0039MnemonicUnitSpi getMnemonicUnitSpi(@Nonnull BidirectionalDictionary dictionary) {
+        BIP0039MnemonicUnitSpi unit = WORD_LIST_SPI.get(dictionary.getWordListIdentifier());
+        if (null == unit) {
+            unit = new BIP0039MnemonicUnitSpi(dictionary);
+            WORD_LIST_SPI.putIfAbsent(dictionary.getWordListIdentifier(), unit);
+        }
+        return unit;
+    }
+
+    /**
+     * Detect the appropriate word list for the given mnemonic sequence.
+     *
+     * @param mnemonicWordList
+     *         sequence of mnemonic words to match up against a dictionary.
+     *
+     * @return a dictionary instance if found, else null.
+     */
+    @CheckForNull
+    private static BidirectionalDictionary detectWordList(@Nonnull List<String> mnemonicWordList) {
+        /* Need to autodetect the word list from the sequence. */
+        for (BidirectionalDictionary availableDictionary : BIP0039MnemonicUtility.getDictionaries()) {
+            /* Check that all the words are in the dictionary and if so, found */
+            if (verifyDictionary(availableDictionary, mnemonicWordList)) {
+                return availableDictionary;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Verify that the dictionary contains all of the words in the given mnemonic sequence.
+     *
+     * @param dictionary
+     *         instance to check for the presence of all words.
+     * @param mnemonicWordList
+     *         sequence of mnemonic words to match up against a dictionary.
+     *
+     * @return true if dictionary contains all words in mnemonicWordList.
+     */
+    private static boolean verifyDictionary(@Nonnull BidirectionalDictionary dictionary, @Nonnull List<String> mnemonicWordList) {
+        Converter<String, Integer> reverseDictionary = dictionary.reverse();
+        /* Due to inability for converters to return null as a valid response, need to catch thrown exception */
+        try {
+            for (String word : mnemonicWordList) {
+                reverseDictionary.convert(word);
+            }
+        } catch (IllegalArgumentException ignored) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Decodes a given mnemonic into a unit.
      * The word list is to be automatically detected and it is expected that only one matches.
      *
-     * @param builder instance maker.
-     * @param mnemonicSequence   space-delimited sequence of mnemonic words.
-     * @param wordListIdentifier optional word list identifier
+     * @param builder
+     *         instance maker.
+     * @param mnemonicSequence
+     *         space-delimited sequence of mnemonic words.
+     * @param wordListIdentifier
+     *         optional word list identifier
      *
      * @return mnemonic unit
      *
-     * @throws IllegalArgumentException the sequence cannot match
+     * @throws IllegalArgumentException
+     *         the sequence cannot match
      */
     @Nonnull
     @Override
@@ -64,7 +130,6 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
             if (null == dictionary) {
                 throw new IllegalArgumentException("Could not detect dictionary for words");
             }
-            wordListIdentifier = dictionary.getWordListIdentifier();
         } else {
             dictionary = BIP0039MnemonicUtility.getDictionary(wordListIdentifier);
             if (!verifyDictionary(dictionary, mnemonicWordList)) {
@@ -72,67 +137,9 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
             }
         }
 
-        BIP0039MnemonicUnitSpi unit = getMnemonicUnitSpi(wordListIdentifier, dictionary);
+        BIP0039MnemonicUnitSpi unit = getMnemonicUnitSpi(dictionary);
 
         byte[] entropy = unit.getEntropy(mnemonicSequence);
         return unit.build(builder, mnemonicSequence, entropy);
-    }
-
-    /**
-     * Obtain the mnemonic unit SPI for the given wordListIdentifier and dictionary.
-     *
-     * @param wordListIdentifier
-     * @param dictionary
-     *
-     * @return
-     */
-    @Nonnull
-    static BIP0039MnemonicUnitSpi getMnemonicUnitSpi(@Nonnull String wordListIdentifier, @Nonnull BidirectionalDictionary dictionary) {
-        BIP0039MnemonicUnitSpi unit = WORD_LIST_SPI.get(wordListIdentifier);
-        if (null == unit) {
-            unit = new BIP0039MnemonicUnitSpi(dictionary);
-            WORD_LIST_SPI.putIfAbsent(wordListIdentifier, unit);
-        }
-        return unit;
-    }
-
-    /**
-     * Detect the appropriate word list for the given mnemonic sequence.
-     *
-     * @param mnemonicWordList sequence of mnemonic words to match up against a dictionary.
-     *
-     * @return a dictionary instance if found, else null.
-     */
-    @CheckForNull
-    private static BidirectionalDictionary detectWordList(@Nonnull List<String> mnemonicWordList) {
-        /* Need to autodetect the word list from the sequence. */
-        for (BidirectionalDictionary availableDictionary: BIP0039MnemonicUtility.getDictionaries()) {
-            /* Check that all the words are in the dictionary and if so, found */
-            if (verifyDictionary(availableDictionary, mnemonicWordList)) {
-                return availableDictionary;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Verify that the dictionary contains all of the words in the given mnemonic sequence.
-     *
-     * @param dictionary instance to check for the presence of all words.
-     * @param mnemonicWordList sequence of mnemonic words to match up against a dictionary.
-     *
-     * @return true if dictionary contains all words in mnemonicWordList.
-     */
-    private static boolean verifyDictionary(@Nonnull BidirectionalDictionary dictionary, @Nonnull List<String> mnemonicWordList) {
-        Converter<String, Integer> reverseDictionary = dictionary.reverse();
-        /* Due to inability for converters to return null as a valid response, need to catch thrown exception */
-        try {
-            for (String word: mnemonicWordList) {
-                reverseDictionary.convert(word);
-            }
-        } catch (IllegalArgumentException ignored) {
-            return false;
-        }
-        return true;
     }
 }

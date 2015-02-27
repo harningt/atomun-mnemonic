@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Charsets;
@@ -25,12 +26,11 @@ import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
 
-import javax.annotation.CheckForNull;
+import java.text.Normalizer;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.text.Normalizer;
-import java.util.List;
 
 /**
  * Internal class to implement the BIP0039 mnemonic details.
@@ -42,31 +42,20 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
     /**
      * Construct a BIP0039 decoder SPI instance for the given dictionary.
      *
-     * @param dictionary instance to match mnemonic words against.
+     * @param dictionary
+     *         instance to match mnemonic words against.
      */
     public BIP0039MnemonicUnitSpi(@Nonnull BidirectionalDictionary dictionary) {
         this.dictionary = dictionary;
     }
 
     /**
-     * Utility method to generate a MnemonicUnit wrapping the given sequence and entropy.
-     *
-     * @param builder instance maker.
-     * @param mnemonicSequence sequence.
-     * @param entropy derived copy of entropy.
-     *
-     * @return wrapped instance.
-     */
-    @Nonnull
-    public MnemonicUnit build(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nonnull byte[] entropy) {
-        return super.build(builder, mnemonicSequence, entropy, null, ImmutableMap.<String, Object>of());
-    }
-
-    /**
      * Convert a sequence of mnemonic word into a bit array for validation and usage.
      *
-     * @param dictionary instance to check for the presence of all words.
-     * @param mnemonicWordList sequence of mnemonic words to map against a dictionary for bit values.
+     * @param dictionary
+     *         instance to check for the presence of all words.
+     * @param mnemonicWordList
+     *         sequence of mnemonic words to map against a dictionary for bit values.
      *
      * @return sequence of bytes based on word list.
      */
@@ -79,7 +68,7 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
         byte[] mnemonicSentenceBytes = new byte[mnemonicSentenceByteCount];
         BitWriter bitWriter = new ByteArrayBitWriter(mnemonicSentenceBytes);
         Converter<String, Integer> reverseConverter = dictionary.reverse();
-        for (String word: mnemonicWordList) {
+        for (String word : mnemonicWordList) {
             /* Find the word index in the wordList. */
             /* Warning suppressed due to word guaranteed non-null */
             //noinspection ConstantConditions
@@ -94,8 +83,10 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
     /**
      * Extract the entropy portion from the mnemonic sentence bits as a byte array.
      *
-     * @param mnemonicSentenceBytes container of entropy bytes.
-     * @param mnemonicSentenceBitCount number of bits representative of sequence.
+     * @param mnemonicSentenceBytes
+     *         container of entropy bytes.
+     * @param mnemonicSentenceBitCount
+     *         number of bits representative of sequence.
      *
      * @return array of bytes containing the entropy.
      */
@@ -113,8 +104,10 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
     /**
      * Verify that the entropy matches the checksum embedded in the mnemonic sentence bits.
      *
-     * @param entropy bytes to validate checksum of.
-     * @param mnemonicSentenceBytes container of checksum bits.
+     * @param entropy
+     *         bytes to validate checksum of.
+     * @param mnemonicSentenceBytes
+     *         container of checksum bits.
      *
      * @return true if the checksum matches, else false.
      */
@@ -135,9 +128,27 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
     }
 
     /**
+     * Utility method to generate a MnemonicUnit wrapping the given sequence and entropy.
+     *
+     * @param builder
+     *         instance maker.
+     * @param mnemonicSequence
+     *         sequence.
+     * @param entropy
+     *         derived copy of entropy.
+     *
+     * @return wrapped instance.
+     */
+    @Nonnull
+    public MnemonicUnit build(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nonnull byte[] entropy) {
+        return super.build(builder, mnemonicSequence, entropy, null, ImmutableMap.<String, Object>of());
+    }
+
+    /**
      * Get the entropy if possible.
      *
-     * @param mnemonicSequence sequence to derive entropy from.
+     * @param mnemonicSequence
+     *         sequence to derive entropy from.
      *
      * @return a derived copy of the entropy byte array.
      */
@@ -161,8 +172,10 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
     /**
      * Get a seed from this mnemonic.
      *
-     * @param mnemonicSequence sequence to derive the seed from.
-     * @param password password to supply for decoding.
+     * @param mnemonicSequence
+     *         sequence to derive the seed from.
+     * @param password
+     *         password to supply for decoding.
      *
      * @return a derived seed.
      */
