@@ -25,11 +25,6 @@ defaults {
     copyrightYears = '2014, 2015'
 }
 
-configurations {
-    // use local groovy
-    all*.exclude group: 'org.codehaus.groovy'
-}
-
 release {
     // Adds SNAPSHOT strategy to allowed list to be used by Travis-CI
     versionStrategy Strategies.SNAPSHOT
@@ -52,8 +47,8 @@ dependencies {
     /* Benchmarks */
     compile 'com.tomgibara.crinch:crinch-bits:0.7.2'
 
-    testCompile localGroovy()
-    testCompile 'org.spockframework:spock-core:1.0-groovy-2.3-SNAPSHOT'
+    testCompile 'org.codehaus.groovy:groovy:2.4.1'
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     testCompile 'net.trajano.caliper:caliper:1.2.1'
 }
 
