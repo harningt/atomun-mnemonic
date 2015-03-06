@@ -9,6 +9,10 @@ Enter Atomun - the Java Bitcoin utility library collection.
 This library implements Mnemonic transformations to address human data
 backup / transfer using word sequences.
 
+[![Join the chat at https://gitter.im/harningt/atomun](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/harningt/atomun?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+[Central Project Data](https://github.com/harningt/atomun)
+
 ## Versioning
 
 This library will follow the guidelines set forth in [Semantic Versioning 2.0][SemVer2.0]
