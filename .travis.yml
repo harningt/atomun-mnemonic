@@ -17,3 +17,11 @@ script:
     - TERM=dumb ./gradlew clean check
 after_success: |
     test ${TRAVIS_SECURE_ENV_VARS} == true && test ${TRAVIS_BRANCH} = develop && test ${TRAVIS_PULL_REQUEST} = false && ./gradlew -P release.stage=SNAPSHOT uploadArchives || false
+
+notifications:
+    webhooks:
+        urls:
+            https://webhooks.gitter.im/e/74683ef1b91adc4b3534
+        on_success: change
+        on_failure: always
+        on_start: false
