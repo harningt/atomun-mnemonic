@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import us.eharning.atomun.mnemonic.spi.*;
+import us.eharning.atomun.mnemonic.spi.BuilderParameter;
+import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
+import us.eharning.atomun.mnemonic.spi.ExtensionBuilderParameter;
+import us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi;
+import us.eharning.atomun.mnemonic.spi.MnemonicServiceProvider;
+import us.eharning.atomun.mnemonic.spi.WordListBuilderParameter;
 import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
 import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
 
+import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.Map;
 
 /**
  * Builder API to generate mnemonic sequences.
@@ -53,7 +59,8 @@ public final class MnemonicBuilder {
     /**
      * Construct a MnemonicBuilder around the given implementation.
      *
-     * @param spi implementation provider.
+     * @param spi
+     *         implementation provider.
      */
     private MnemonicBuilder(@Nonnull MnemonicBuilderSpi spi) {
         this.newSpi = spi;
@@ -62,7 +69,8 @@ public final class MnemonicBuilder {
     /**
      * Construct a new MnemonicBuilder for the named algorithm.
      *
-     * @param algorithm kind of instance to construct.
+     * @param algorithm
+     *         kind of instance to construct.
      *
      * @return new builder instance.
      *
@@ -70,7 +78,7 @@ public final class MnemonicBuilder {
      */
     @Nonnull
     public static MnemonicBuilder newBuilder(@Nonnull MnemonicAlgorithm algorithm) {
-        for (MnemonicServiceProvider provider: SERVICE_PROVIDERS) {
+        for (MnemonicServiceProvider provider : SERVICE_PROVIDERS) {
             MnemonicBuilderSpi spi = provider.getMnemonicBuilder(algorithm);
             if (null != spi) {
                 return new MnemonicBuilder(spi);
@@ -97,9 +105,27 @@ public final class MnemonicBuilder {
     }
 
     /**
+     * Encode this instance to a wrapped mnemonic unit.
+     *
+     * @return MnemonicUnit instance wrapping build results.
+     *
+     * @since 0.2.0
+     */
+    @Nonnull
+    public MnemonicUnit buildUnit() {
+        try {
+            newSpi.validate(parameters);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+        return newSpi.generateMnemonicUnit(MnemonicUnit.BUILDER, parameters);
+    }
+
+    /**
      * Set the entropy to generate the mnemonic with.
      *
-     * @param entropy data to encode.
+     * @param entropy
+     *         data to encode.
      *
      * @return this to allow chaining.
      *
@@ -115,7 +141,8 @@ public final class MnemonicBuilder {
     /**
      * Set the length of the desired entropy to generate the mnemonic with.
      *
-     * @param entropyLength number of bytes of entropy to use.
+     * @param entropyLength
+     *         number of bytes of entropy to use.
      *
      * @return this to allow chaining.
      *
@@ -131,7 +158,8 @@ public final class MnemonicBuilder {
     /**
      * Sets extensions for this builder, replacing any prior set extensions.
      *
-     * @param extensions map of extension property-to-value elements, algorithm-dependent.
+     * @param extensions
+     *         map of extension property-to-value elements, algorithm-dependent.
      *
      * @return this to allow chaining.
      *
@@ -147,7 +175,8 @@ public final class MnemonicBuilder {
     /**
      * Set the word list to use for encoding the mnemonic.
      *
-     * @param wordListIdentifier name of the word list to use.
+     * @param wordListIdentifier
+     *         name of the word list to use.
      *
      * @return this to allow chaining.
      *

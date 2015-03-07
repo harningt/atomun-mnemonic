@@ -18,6 +18,7 @@ package us.eharning.atomun.mnemonic.spi.bip0039
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
+import us.eharning.atomun.mnemonic.MnemonicUnit
 
 import java.text.Normalizer
 
@@ -29,139 +30,186 @@ class BIP0039MnemonicBuilderSpock extends Specification {
 
     def "check word lists supported"() {
         given:
-            MnemonicBuilder.newBuilder(ALG).setWordList("english")
+        MnemonicBuilder.newBuilder(ALG).setWordList("english")
     }
+
     def "check unknown word lists throw"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setWordList("UNKNOWN")
+        builder.setWordList("UNKNOWN")
         then:
-            thrown(IllegalArgumentException)
+        thrown(IllegalArgumentException)
     }
+
     def "check standard test vectors"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setWordList(testCase.wordList)
-            builder.setEntropy(testCase.entropyBytes)
+        builder.setWordList(testCase.wordList)
+        builder.setEntropy(testCase.entropyBytes)
         then:
-            /* Normalize output to ensure it properly matches normalized test case */
-            testCase.normalizedMnemonic == Normalizer.normalize(builder.build(), Normalizer.Form.NFKD)
+        /* Normalize output to ensure it properly matches normalized test case */
+        testCase.normalizedMnemonic == Normalizer.normalize(builder.build(), Normalizer.Form.NFKD)
+        testCase.normalizedMnemonic == Normalizer.normalize(builder.buildUnit().getMnemonic(), Normalizer.Form.NFKD)
         where:
-            testCase << BIP0039TestData.TREZOR_OFFICIAL_VECTORS
+        testCase << BIP0039TestData.TREZOR_OFFICIAL_VECTORS
     }
 
     def "check jp test vectors"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setWordList(testCase.wordList)
-            builder.setEntropy(testCase.entropyBytes)
+        builder.setWordList(testCase.wordList)
+        builder.setEntropy(testCase.entropyBytes)
         then:
-            /* Normalize output to ensure it properly matches normalized test case */
-            testCase.normalizedMnemonic == Normalizer.normalize(builder.build(), Normalizer.Form.NFKD)
+        /* Normalize output to ensure it properly matches normalized test case */
+        testCase.normalizedMnemonic == Normalizer.normalize(builder.build(), Normalizer.Form.NFKD)
+        testCase.normalizedMnemonic == Normalizer.normalize(builder.buildUnit().getMnemonic(), Normalizer.Form.NFKD)
         where:
-            testCase << BIP0039TestData.JP_VECTORS
+        testCase << BIP0039TestData.JP_VECTORS
     }
+
+    def "check standard test vectors roundtrip"() {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        builder.setWordList(testCase.wordList)
+        builder.setEntropy(testCase.entropyBytes)
+        MnemonicUnit unit = builder.buildUnit()
+        expect:
+        /* Normalize output to ensure it properly matches normalized test case */
+        testCase.normalizedMnemonic == Normalizer.normalize(unit.mnemonic, Normalizer.Form.NFKD)
+        testCase.entropyBytes == unit.entropy
+        where:
+        testCase << BIP0039TestData.TREZOR_OFFICIAL_VECTORS
+    }
+
+    def "check jp test vectors roundtrip"() {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        builder.setWordList(testCase.wordList)
+        builder.setEntropy(testCase.entropyBytes)
+        MnemonicUnit unit = builder.buildUnit()
+        expect:
+        /* Normalize output to ensure it properly matches normalized test case */
+        testCase.normalizedMnemonic == Normalizer.normalize(unit.mnemonic, Normalizer.Form.NFKD)
+        testCase.entropyBytes == unit.entropy
+        where:
+        testCase << BIP0039TestData.JP_VECTORS
+    }
+
     def "check encoding paases when no state set with safe defaults"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.build()
+        builder.build()
         then:
-            noExceptionThrown()
+        noExceptionThrown()
     }
+
     def "check encoding fails when attempted entropyLength set fails"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            try { builder.setEntropyLength(1) } catch(ignored) {}
-            builder.build()
+        try {
+            builder.setEntropyLength(1)
+        } catch (ignored) {
+        }
+        builder.build()
         then:
-            thrown(IllegalStateException)
+        thrown(IllegalStateException)
     }
+
     def "check encoding fails when attempted entropy set fails"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            try { builder.setEntropy(new byte[1]) } catch(ignored) {}
-            builder.build()
+        try {
+            builder.setEntropy(new byte[1])
+        } catch (ignored) {
+        }
+        builder.build()
         then:
-            thrown(IllegalStateException)
+        thrown(IllegalStateException)
     }
+
     def "check encoding fails for invalid entropyLength values"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setEntropyLength(length)
+        builder.setEntropyLength(length)
         then:
-            thrown(IllegalArgumentException)
+        thrown(IllegalArgumentException)
         where:
-            _ | length
-            _ | -1
-            _ | 0
-            _ | 1
-            _ | 2
-            _ | 3
-            _ | 5
-            _ | 9
-            _ | 1022
+        _ | length
+        _ | -1
+        _ | 0
+        _ | 1
+        _ | 2
+        _ | 3
+        _ | 5
+        _ | 9
+        _ | 1022
     }
+
     def "check encoding fails for invalid entropy values"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setEntropy(new byte[length])
+        builder.setEntropy(new byte[length])
         then:
-            thrown(IllegalArgumentException)
+        thrown(IllegalArgumentException)
         where:
-            _ | length
-            _ | 0
-            _ | 1
-            _ | 2
-            _ | 3
-            _ | 5
-            _ | 9
-            _ | 1022
+        _ | length
+        _ | 0
+        _ | 1
+        _ | 2
+        _ | 3
+        _ | 5
+        _ | 9
+        _ | 1022
     }
+
     def "check encoding fails for unknown extension properties"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setExtensions(["x": 1])
+        builder.setExtensions(["x": 1])
         then:
-            thrown(UnsupportedOperationException)
+        thrown(UnsupportedOperationException)
     }
+
     def "check encoding passes for valid entropy lengths"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setEntropyLength(length)
+        builder.setEntropyLength(length)
         then:
-            builder.build() != null
+        builder.build() != null
         where:
-            _ | length
-            _ | 4 * 1
-            _ | 4 * 9
-            _ | 4 * 100
+        _ | length
+        _ | 4 * 1
+        _ | 4 * 9
+        _ | 4 * 100
     }
+
     def "check that settings entropy after entropy length passes"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setEntropyLength(4)
-            builder.setEntropy(new byte[4])
+        builder.setEntropyLength(4)
+        builder.setEntropy(new byte[4])
         then:
-            noExceptionThrown()
+        noExceptionThrown()
     }
+
     def "check that settings entropy length after entropy passes"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setEntropy(new byte[4])
-            builder.setEntropyLength(4)
+        builder.setEntropy(new byte[4])
+        builder.setEntropyLength(4)
         then:
-            noExceptionThrown()
+        noExceptionThrown()
     }
 }

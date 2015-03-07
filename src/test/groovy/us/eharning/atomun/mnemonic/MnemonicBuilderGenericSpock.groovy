@@ -24,8 +24,8 @@ import spock.lang.Specification
 class MnemonicBuilderGenericSpock extends Specification {
     def "requesting an unlisted algorithm results in failure"() {
         when:
-            MnemonicBuilder.newBuilder(null)
+        MnemonicBuilder.newBuilder(null)
         then:
-            thrown(UnsupportedOperationException)
+        thrown(UnsupportedOperationException)
     }
 }

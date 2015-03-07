@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
+import static java.lang.System.arraycopy;
+
+import java.security.GeneralSecurityException;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.GeneralSecurityException;
-
-import static java.lang.System.arraycopy;
 
 /**
  * Internal implementation of PBKDF2 layered atop standard primitives for more flexibility.
@@ -30,16 +31,22 @@ final class PBKDF2 {
     /**
      * Implementation of PBKDF2 (RFC2898).
      *
-     * @param   alg     HMAC algorithm to use.
-     * @param   P       Password.
-     * @param   S       Salt.
-     * @param   c       Iteration count.
-     * @param   dkLen   Intended length, in octets, of the derived key.
+     * @param alg
+     *         HMAC algorithm to use.
+     * @param P
+     *         Password.
+     * @param S
+     *         Salt.
+     * @param c
+     *         Iteration count.
+     * @param dkLen
+     *         Intended length, in octets, of the derived key.
      *
-     * @return  The derived key.
+     * @return The derived key.
      *
-     * @throws  GeneralSecurityException
+     * @throws GeneralSecurityException
      */
+    @SuppressWarnings({"checkstyle:parametername", "checkstyle:localvariablename"})
     public static byte[] pbkdf2(String alg, byte[] P, byte[] S, int c, int dkLen) throws GeneralSecurityException {
         Mac mac = Mac.getInstance(alg);
         mac.init(new SecretKeySpec(P, alg));
@@ -51,14 +58,20 @@ final class PBKDF2 {
     /**
      * Implementation of PBKDF2 (RFC2898).
      *
-     * @param   mac     Pre-initialized {@link Mac} instance to use.
-     * @param   S       Salt.
-     * @param   c       Iteration count.
-     * @param   DK      Byte array that derived key will be placed in.
-     * @param   dkLen   Intended length, in octets, of the derived key.
+     * @param mac
+     *         Pre-initialized {@link Mac} instance to use.
+     * @param S
+     *         Salt.
+     * @param c
+     *         Iteration count.
+     * @param DK
+     *         Byte array that derived key will be placed in.
+     * @param dkLen
+     *         Intended length, in octets, of the derived key.
      *
-     * @throws  GeneralSecurityException
+     * @throws GeneralSecurityException
      */
+    @SuppressWarnings({"checkstyle:parametername", "checkstyle:localvariablename"})
     public static void pbkdf2(Mac mac, byte[] S, int c, byte[] DK, int dkLen) throws GeneralSecurityException {
         int hLen = mac.getMacLength();
 
@@ -66,8 +79,8 @@ final class PBKDF2 {
             throw new GeneralSecurityException("Requested key length too long");
         }
 
-        byte[] U      = new byte[hLen];
-        byte[] T      = new byte[hLen];
+        byte[] U = new byte[hLen];
+        byte[] T = new byte[hLen];
         byte[] block1 = new byte[S.length + 4];
 
         int l = (int) Math.ceil((double) dkLen / hLen);
@@ -78,8 +91,8 @@ final class PBKDF2 {
         for (int i = 1; i <= l; i++) {
             block1[S.length + 0] = (byte) (i >> 24 & 0xff);
             block1[S.length + 1] = (byte) (i >> 16 & 0xff);
-            block1[S.length + 2] = (byte) (i >> 8  & 0xff);
-            block1[S.length + 3] = (byte) (i >> 0  & 0xff);
+            block1[S.length + 2] = (byte) (i >> 8 & 0xff);
+            block1[S.length + 3] = (byte) (i >> 0 & 0xff);
 
             mac.update(block1);
             mac.doFinal(U, 0);

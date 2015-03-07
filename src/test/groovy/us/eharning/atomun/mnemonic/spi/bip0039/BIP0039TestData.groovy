@@ -29,15 +29,18 @@ class BIP0039TestData {
     static class MnemonicTestCase {
         String wordList;
         String mnemonic;
+
         public String getNormalizedMnemonic() {
             return Normalizer.normalize(mnemonic, Normalizer.Form.NFKD);
         }
         public String passphrase;
         public String entropy;
+
         public byte[] getEntropyBytes() {
             return entropy.decodeHex();
         }
         public String seed;
+
         public byte[] getSeedBytes() {
             return seed.decodeHex();
         }
@@ -51,11 +54,12 @@ class BIP0039TestData {
         InputStream input = BIP0039MnemonicBuilderSpock.class.classLoader.getResourceAsStream(resourceName)
         return new JsonSlurper().parse(new InputStreamReader(input, Charsets.UTF_8));
     }
+
     static {
         TREZOR_OFFICIAL_VECTORS = parseResource("us/eharning/atomun/mnemonic/spi/bip0039/BIP0039_TREZOR_VECTORS.json").collectMany {
             String wordList = it.key
             return it.value.collect { test ->
-                return [ wordList: wordList, mnemonic: test[1], entropy: test[0], seed: test[2], passphrase: TREZOR_OFFICIAL_PASSWORD ] as MnemonicTestCase
+                return [wordList: wordList, mnemonic: test[1], entropy: test[0], seed: test[2], passphrase: TREZOR_OFFICIAL_PASSWORD] as MnemonicTestCase
             }
         }
         JP_VECTORS = parseResource("us/eharning/atomun/mnemonic/spi/bip0039/BIP0039-test_JP.json").collect {

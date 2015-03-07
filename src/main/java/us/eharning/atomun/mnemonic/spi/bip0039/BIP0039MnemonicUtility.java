@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Function;
@@ -22,8 +23,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
@@ -32,16 +31,18 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Utility class to support BIP0039 mnemonics.
  */
 class BIP0039MnemonicUtility {
-    private final static List<String> KNOWN_DICTIONARIES = ImmutableList.of(
+    private static final List<String> KNOWN_DICTIONARIES = ImmutableList.of(
             "english",
             "japanese"
     );
-    private final static ConcurrentMap<String, BidirectionalDictionary> dictionaries = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, BidirectionalDictionary> dictionaries = new ConcurrentHashMap<>();
     private static final int PBKDF_ROUNDS = 2048;
     private static final String PBKDF_MAC = "HmacSHA512";
     private static final int PBKDF_SEED_OUTPUT = 64;
@@ -49,11 +50,13 @@ class BIP0039MnemonicUtility {
     /**
      * Utility method to obtain a dictionary given the wordListIdentifier.
      *
-     * @param wordListIdentifier name of the word list to retrieve.
+     * @param wordListIdentifier
+     *         name of the word list to retrieve.
      *
      * @return dictionary for the given word list.
      *
-     * @throws java.lang.IllegalArgumentException If the word list cannot be found/loaded.
+     * @throws java.lang.IllegalArgumentException
+     *         If the word list cannot be found/loaded.
      */
     @Nonnull
     static BidirectionalDictionary getDictionary(@Nonnull String wordListIdentifier) {
@@ -77,11 +80,13 @@ class BIP0039MnemonicUtility {
     /**
      * Simple utility to calculate the SHA-256 digest.
      *
-     * @param data value to digest.
+     * @param data
+     *         value to digest.
      *
      * @return sha256-digest of data.
      *
-     * @throws java.lang.Error if the digest cannot be found (should not happen).
+     * @throws java.lang.Error
+     *         if the digest cannot be found (should not happen).
      */
     @Nonnull
     static byte[] sha256digest(@Nonnull byte[] data) {
@@ -95,14 +100,46 @@ class BIP0039MnemonicUtility {
     }
 
     /**
+     * Simple utility to calculate the SHA-256 digest.
+     *
+     * @param data
+     *         value to digest a portion of.
+     * @param dataStart
+     *         index into data for where to begin digest.
+     * @param dataLength
+     *         number of bytes to digest.
+     * @param output
+     *         array to write result into.
+     * @param outputStart
+     *         index into output to begin writing result.
+     *
+     * @throws java.lang.Error
+     *         if the digest cannot be found or input is bad (should not happen).
+     */
+    @Nonnull
+    static void sha256digest(@Nonnull byte[] data, int dataStart, int dataLength, @Nonnull byte[] output, int outputStart) {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+            digest.update(data, dataStart, dataLength);
+            digest.digest(output, outputStart, 256 / 8);
+        } catch (GeneralSecurityException e) {
+            throw new Error(e);
+        }
+    }
+
+    /**
      * Utility method to derive a seed given the password and processed mnemonic sequence.
      *
-     * @param passwordBytes UTF-8 byte sequence representing the password to use.
-     * @param mnemonicSequenceBytes UTF-8 byte sequence representing the mnemonic sequence.
+     * @param passwordBytes
+     *         UTF-8 byte sequence representing the password to use.
+     * @param mnemonicSequenceBytes
+     *         UTF-8 byte sequence representing the mnemonic sequence.
      *
      * @return 64-byte seed value
      *
-     * @throws java.lang.Error if the Mac cannot be found (should not happen).
+     * @throws java.lang.Error
+     *         if the Mac cannot be found (should not happen).
      */
     @Nonnull
     static byte[] deriveSeed(@Nonnull byte[] passwordBytes, @Nonnull byte[] mnemonicSequenceBytes) {

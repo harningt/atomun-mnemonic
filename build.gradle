@@ -6,6 +6,7 @@ plugins {
     id 'maven'
     id 'org.ajoberstar.release-opinion' version '1.0.0'
     id 'org.ajoberstar.defaults' version '0.5.2'
+    id 'checkstyle'
     id 'findbugs'
 }
 
@@ -24,11 +25,6 @@ defaults {
     copyrightYears = '2014, 2015'
 }
 
-configurations {
-    // use local groovy
-    all*.exclude group: 'org.codehaus.groovy'
-}
-
 release {
     // Adds SNAPSHOT strategy to allowed list to be used by Travis-CI
     versionStrategy Strategies.SNAPSHOT
@@ -38,6 +34,7 @@ repositories {
     jcenter()
     mavenCentral()
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'http://www.tomgibara.com/maven/repo/' }
 }
 
 dependencies {
@@ -47,12 +44,31 @@ dependencies {
     compile 'com.google.code.findbugs:annotations:3.0.0'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
 
-    testCompile localGroovy()
-    testCompile 'org.spockframework:spock-core:1.0-groovy-2.3-SNAPSHOT'
+    /* Benchmarks */
+    compile 'com.tomgibara.crinch:crinch-bits:0.7.2'
+
+    testCompile 'org.codehaus.groovy:groovy:2.4.1'
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+    testCompile 'net.trajano.caliper:caliper:1.2.1'
+}
+
+checkstyle {
+    /* Using checkstyle 6.1 as that is the maximum for the IntelliJ extensions */
+    toolVersion = '6.1'
+    configFile = new File(rootDir, 'gradle/checkstyle/checkstyle.xml')
 }
 
 findbugs {
     sourceSets = [ sourceSets.main ]
+}
+
+javadoc {
+    options.tags "todo:a:TODO:"
+}
+
+task runBenchmark(type: JavaExec, dependsOn: test) {
+    main = 'us.eharning.atomun.mnemonic.IndexGeneratorBenchmark'
+    classpath = sourceSets.test.runtimeClasspath
 }
 
 apply from: "$rootDir/gradle/maven-publish.gradle"

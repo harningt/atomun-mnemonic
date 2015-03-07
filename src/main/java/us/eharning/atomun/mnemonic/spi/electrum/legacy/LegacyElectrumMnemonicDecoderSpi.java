@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
-import us.eharning.atomun.mnemonic.MnemonicDecoderSpi;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
+import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,28 +28,33 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 class LegacyElectrumMnemonicDecoderSpi extends MnemonicDecoderSpi {
-    private static final LegacyElectrumMnemonicUnitSpi SPI = new LegacyElectrumMnemonicUnitSpi();
+    static final LegacyElectrumMnemonicUnitSpi SPI = new LegacyElectrumMnemonicUnitSpi();
 
     /**
      * Decodes a given mnemonic into a unit.
      * The word list is to be automatically detected and it is expected that only one matches.
      *
-     * @param mnemonicSequence   space-delimited sequence of mnemonic words.
-     * @param wordListIdentifier optional word list identifier
+     * @param builder
+     *         instance maker.
+     * @param mnemonicSequence
+     *         space-delimited sequence of mnemonic words.
+     * @param wordListIdentifier
+     *         optional word list identifier
      *
      * @return mnemonic unit
      *
-     * @throws IllegalArgumentException the sequence cannot match
+     * @throws IllegalArgumentException
+     *         the sequence cannot match
      */
     @Nonnull
     @Override
-    public MnemonicUnit decode(@Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
+    public MnemonicUnit decode(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
         if (null != wordListIdentifier && !wordListIdentifier.isEmpty()) {
             /* There are no custom word lists for legacy Electrum mnemonic system. */
             throw new UnsupportedOperationException("No custom wordListIdentifiers allowed");
         }
         byte[] entropy = LegacyElectrumMnemonicUtility.toEntropy(mnemonicSequence);
-        return SPI.build(mnemonicSequence, entropy);
+        return SPI.build(builder, mnemonicSequence, entropy);
     }
 
 }

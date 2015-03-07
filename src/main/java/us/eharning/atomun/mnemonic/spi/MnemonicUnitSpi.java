@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package us.eharning.atomun.mnemonic;
+
+package us.eharning.atomun.mnemonic.spi;
 
 import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableMap;
+import us.eharning.atomun.mnemonic.MnemonicUnit;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -34,26 +36,33 @@ public abstract class MnemonicUnitSpi {
     /**
      * Utility method to return a wrapped instance of this SPI.
      *
-     * @param mnemonicSequence represented sequence.
-     * @param entropy derived entropy or null if on-demand.
-     * @param seed derived seed or null if on-demand.
-     * @param extensions map of property-to-value dependent on algorithm.
+     * @param builder
+     *         instance maker.
+     * @param mnemonicSequence
+     *         represented sequence.
+     * @param entropy
+     *         derived entropy or null if on-demand.
+     * @param seed
+     *         derived seed or null if on-demand.
+     * @param extensions
+     *         map of property-to-value dependent on algorithm.
      *
      * @return wrapped instance.
      *
      * @since 0.1.0
      */
     @Nonnull
-    protected MnemonicUnit build(@Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<String, Object> extensions) {
+    protected MnemonicUnit build(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<String, Object> extensions) {
         Verify.verifyNotNull(mnemonicSequence);
         Verify.verifyNotNull(extensions);
-        return new MnemonicUnit(this, mnemonicSequence, entropy, seed, extensions);
+        return builder.build(this, mnemonicSequence, entropy, seed, extensions);
     }
 
     /**
      * Get the entropy if possible.
      *
-     * @param mnemonicSequence sequence to derive the entropy for.
+     * @param mnemonicSequence
+     *         sequence to derive the entropy for.
      *
      * @return a copy of the entropy byte array or null if inaccessible.
      *
@@ -65,9 +74,10 @@ public abstract class MnemonicUnitSpi {
     /**
      * Get a seed from this mnemonic.
      *
-     *
-     * @param mnemonicSequence sequence to derive the seed from.
-     * @param password password to supply for decoding.
+     * @param mnemonicSequence
+     *         sequence to derive the seed from.
+     * @param password
+     *         password to supply for decoding.
      *
      * @return a derived seed.
      *

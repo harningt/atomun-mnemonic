@@ -18,6 +18,7 @@ package us.eharning.atomun.mnemonic.spi.electrum.legacy
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
+import us.eharning.atomun.mnemonic.MnemonicUnit
 
 /**
  * Test sequence for the legacy Electrum mnemonic builder
@@ -34,80 +35,106 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
 
     def "check word lists not supported"() {
         when:
-            MnemonicBuilder.newBuilder(ALG).setWordList("TEST")
+        MnemonicBuilder.newBuilder(ALG).setWordList("TEST")
         then:
-            thrown UnsupportedOperationException
+        thrown UnsupportedOperationException
     }
+
     def "check #encoded encodes to #mnemonic"(String mnemonic, String hex) {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
-            builder.setEntropy(hex.decodeHex())
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        builder.setEntropy(hex.decodeHex())
         expect:
-            mnemonic == builder.build()
+        mnemonic == builder.build()
+        mnemonic == builder.buildUnit().getMnemonic()
         where:
-            [ mnemonic, hex ] << pairs
+        [mnemonic, hex] << pairs
     }
+
+    def "check roundtrip unit #encoded <-> #mnemonic"(String mnemonic, String hex) {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        builder.setEntropy(hex.decodeHex())
+        MnemonicUnit unit = builder.buildUnit()
+        expect:
+        mnemonic == unit.getMnemonic()
+        hex.decodeHex() == unit.getEntropy()
+        where:
+        [mnemonic, hex] << pairs
+    }
+
     def "check encoding succeeds with safe defaults when no state set"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.build()
+        builder.build()
         then:
-            noExceptionThrown()
+        noExceptionThrown()
     }
+
     def "check encoding fails when attempted entropyLength set fails"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            try { builder.setEntropyLength(1) } catch(ignored) {}
-            builder.build()
+        try {
+            builder.setEntropyLength(1)
+        } catch (ignored) {
+        }
+        builder.build()
         then:
-            thrown(IllegalStateException)
+        thrown(IllegalStateException)
     }
+
     def "check encoding fails when attempted entropy set fails"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            try { builder.setEntropy(new byte[1]) } catch(ignored) {}
-            builder.build()
+        try {
+            builder.setEntropy(new byte[1])
+        } catch (ignored) {
+        }
+        builder.build()
         then:
-            thrown(IllegalStateException)
+        thrown(IllegalStateException)
     }
+
     def "check encoding fails for invalid entropyLength values"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setEntropyLength(length)
+        builder.setEntropyLength(length)
         then:
-            thrown(IllegalArgumentException)
+        thrown(IllegalArgumentException)
         where:
-            _ | length
-            _ | -1
-            _ | 0
-            _ | 1
-            _ | 2
-            _ | 3
-            _ | 5
-            _ | 9
-            _ | 1022
+        _ | length
+        _ | -1
+        _ | 0
+        _ | 1
+        _ | 2
+        _ | 3
+        _ | 5
+        _ | 9
+        _ | 1022
     }
+
     def "check encoding fails for invalid entropy values"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setEntropy(new byte[length])
+        builder.setEntropy(new byte[length])
         then:
-            thrown(IllegalArgumentException)
+        thrown(IllegalArgumentException)
         where:
-            _ | length
-            _ | 0
-            _ | 1
-            _ | 2
-            _ | 3
-            _ | 5
-            _ | 9
-            _ | 1022
+        _ | length
+        _ | 0
+        _ | 1
+        _ | 2
+        _ | 3
+        _ | 5
+        _ | 9
+        _ | 1022
     }
+
     def "check encoding fails for unknown extension properties"() {
         given:
         def builder = MnemonicBuilder.newBuilder(ALG)
@@ -116,35 +143,38 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         then:
         thrown(UnsupportedOperationException)
     }
+
     def "check encoding passes for valid entropy lengths"() {
         given:
-            def builder =MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setEntropyLength(length)
+        builder.setEntropyLength(length)
         then:
-            builder.build() != null
+        builder.build() != null
         where:
-            _ | length
-            _ | 4 * 1
-            _ | 4 * 9
-            _ | 4 * 100
+        _ | length
+        _ | 4 * 1
+        _ | 4 * 9
+        _ | 4 * 100
     }
+
     def "check that settings entropy after entropy length passes"() {
         given:
-            def builder =MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setEntropyLength(4)
-            builder.setEntropy(new byte[4])
+        builder.setEntropyLength(4)
+        builder.setEntropy(new byte[4])
         then:
-            noExceptionThrown()
+        noExceptionThrown()
     }
+
     def "check that settings entropy length after entropy passes"() {
         given:
-            def builder = MnemonicBuilder.newBuilder(ALG)
+        def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setEntropy(new byte[4])
-            builder.setEntropyLength(4)
+        builder.setEntropy(new byte[4])
+        builder.setEntropyLength(4)
         then:
-            noExceptionThrown()
+        noExceptionThrown()
     }
 }
