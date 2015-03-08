@@ -20,6 +20,7 @@ import com.google.caliper.Benchmark;
 import com.google.caliper.runner.CaliperMain;
 import com.google.common.base.Preconditions;
 import com.tomgibara.crinch.bits.BitReader;
+import com.tomgibara.crinch.bits.BitVector;
 import com.tomgibara.crinch.bits.ByteArrayBitReader;
 
 import java.math.BigInteger;
@@ -230,6 +231,37 @@ class IndexGeneratorBenchmark {
             for (int i = 0; i < mnemonicSentenceLength; i++) {
                 int index = bitReader.read(11);
                 indexValues[i] = index;
+            }
+
+            dummy += indexValues[0];
+        }
+        return dummy;
+    }
+
+    @Benchmark
+    public int crinchBitVectorMethod(int reps) {
+        int dummy = 0;
+        for (int rep = 0; rep < reps; rep++) {
+            byte[] entropy = INPUT;
+            byte[] joined = new byte[entropy.length + 256 / 8];
+            System.arraycopy(entropy, 0, joined, 0, entropy.length);
+            System.arraycopy(CHECKSUM, 0, joined, entropy.length, CHECKSUM.length);
+
+            /* Convert the length to bits for purpose of BIP0039 specification match-up */
+            int entropyBitCount = entropy.length * 8;
+            int checksumBitCount = entropyBitCount / 32;
+            int totalBitCount = entropyBitCount + checksumBitCount;
+            int mnemonicSentenceLength = totalBitCount / 11;
+
+            BitVector bitVector = new BitVector(joined.length * 8);
+            bitVector.setBytes(0, joined, 0, joined.length * 8);
+
+            int offset = 0;
+            int[] indexValues = new int[mnemonicSentenceLength];
+            for (int i = 0; i < mnemonicSentenceLength; i++) {
+                int index = (int)bitVector.getBits(offset, 11);
+                indexValues[i] = index;
+                offset += 11;
             }
 
             dummy += indexValues[0];
