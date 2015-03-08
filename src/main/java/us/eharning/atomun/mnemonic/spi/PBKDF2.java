@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package us.eharning.atomun.mnemonic.spi.bip0039;
+package us.eharning.atomun.mnemonic.spi;
 
 import static java.lang.System.arraycopy;
+
+import com.google.common.annotations.Beta;
 
 import java.security.GeneralSecurityException;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -26,8 +28,9 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Internal implementation of PBKDF2 layered atop standard primitives for more flexibility.
  */
+@Beta
 @ParametersAreNonnullByDefault
-final class PBKDF2 {
+public final class PBKDF2 {
     /**
      * Implementation of PBKDF2 (RFC2898).
      *
