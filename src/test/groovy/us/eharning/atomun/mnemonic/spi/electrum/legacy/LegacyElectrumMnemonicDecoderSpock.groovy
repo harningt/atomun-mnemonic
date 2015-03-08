@@ -50,9 +50,9 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
     def "generic check #mnemonic string decodes to #encoded with single valid element"(String mnemonic, String hex) {
         given:
         Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(mnemonic)
-        MnemonicUnit unit = Iterables.getFirst(units, null)
+        MnemonicUnit unit = Iterables.getFirst(Iterables.filter(units, { it.algorithm == ALG }), null)
         expect:
-        Iterables.size(units) == 1
+        Iterables.size(units) >= 1
         unit.getEntropy() == hex.decodeHex()
         unit.getSeed() == hex.decodeHex()
         unit.getSeed(null) == hex.decodeHex()
@@ -80,9 +80,9 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
     def "generic check #mnemonic string with non-standard case decodes to #encoded with single valid element"(String mnemonic, String hex) {
         given:
         Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(mnemonic.toUpperCase())
-        MnemonicUnit unit = Iterables.getFirst(units, null)
+        MnemonicUnit unit = Iterables.getFirst(Iterables.filter(units, { it.algorithm == ALG }), null)
         expect:
-        Iterables.size(units) == 1
+        Iterables.size(units) >= 1
         unit.getEntropy() == hex.decodeHex()
         unit.getSeed() == hex.decodeHex()
         unit.getSeed(null) == hex.decodeHex()

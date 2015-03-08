@@ -68,9 +68,9 @@ class BIP0039MnemonicDecoderSpock extends Specification {
     def "generic check #mnemonic string decodes to #encoded with single valid element with specific wordList"() {
         given:
         Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(testCase.mnemonic, testCase.wordList)
-        MnemonicUnit unit = Iterables.getFirst(units, null)
+        MnemonicUnit unit = Iterables.getFirst(Iterables.filter(units, { it.algorithm == ALG }), null)
         expect:
-        Iterables.size(units) == 1
+        Iterables.size(units) >= 1
         unit.getEntropy() == testCase.entropyBytes
         unit.getSeed() != testCase.seedBytes
         unit.getSeed(null) != testCase.seedBytes
@@ -85,9 +85,9 @@ class BIP0039MnemonicDecoderSpock extends Specification {
     def "generic check #mnemonic string decodes to #encoded with single valid element with unspecified wordList"() {
         given:
         Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(testCase.mnemonic)
-        MnemonicUnit unit = Iterables.getFirst(units, null)
+        MnemonicUnit unit = Iterables.getFirst(Iterables.filter(units, { it.algorithm == ALG }), null)
         expect:
-        Iterables.size(units) == 1
+        Iterables.size(units) >= 1
         unit.getEntropy() == testCase.entropyBytes
         unit.getSeed() != testCase.seedBytes
         unit.getSeed(null) != testCase.seedBytes
@@ -102,9 +102,9 @@ class BIP0039MnemonicDecoderSpock extends Specification {
     def "japanese: generic check #mnemonic string decodes to #encoded with single valid element with unspecified wordList"() {
         given:
         Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(testCase.mnemonic)
-        MnemonicUnit unit = Iterables.getFirst(units, null)
+        MnemonicUnit unit = Iterables.getFirst(Iterables.filter(units, { it.algorithm == ALG }), null)
         expect:
-        Iterables.size(units) == 1
+        Iterables.size(units) >= 1
         unit.getEntropy() == testCase.entropyBytes
         unit.getSeed() != testCase.seedBytes
         unit.getSeed(null) != testCase.seedBytes
