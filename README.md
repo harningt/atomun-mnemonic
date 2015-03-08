@@ -91,6 +91,13 @@ to create a mnemonic strictly derived from the indices in the sorted dictionary.
 Based on the draft [BIP](BIP0039Spec) with English and Japanese dictionaries
 along with the relevant unit tests for each.
 
+## Electrum V2
+
+Technically there is no recorded name for this algorithm, it is just known
+that this has replaced the prior mnemonic implementation in Electrum.
+
+The algorithm is derived based on inspection of the Electrum source code.
+
 ## Dependencies
 ### Build
 

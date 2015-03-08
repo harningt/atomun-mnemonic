@@ -1,0 +1,143 @@
+/*
+ * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package us.eharning.atomun.mnemonic.spi.electrum.v2;
+
+import com.google.common.base.Charsets;
+import com.google.common.base.Converter;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.MnemonicUnit;
+import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
+import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
+
+import java.math.BigInteger;
+import java.text.Normalizer;
+import java.util.List;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
+/**
+ * Internal class to implement the electrum v2 mnemonic details.
+ */
+@Immutable
+class MnemonicUnitSpiImpl extends MnemonicUnitSpi {
+    private final BidirectionalDictionary dictionary;
+
+    /**
+     * Construct a electrum v2 decoder SPI instance for the given dictionary.
+     *
+     * @param dictionary
+     *         instance to match mnemonic words against.
+     */
+    public MnemonicUnitSpiImpl(@Nonnull BidirectionalDictionary dictionary) {
+        super(MnemonicAlgorithm.ElectrumV2);
+        this.dictionary = dictionary;
+    }
+
+    /**
+     * Convert a sequence of mnemonic word into a byte array for validation and usage.
+     *
+     * @param dictionary
+     *         instance to check for the presence of all words.
+     * @param mnemonicWordList
+     *         sequence of mnemonic words to map against a dictionary for bit values.
+     *
+     * @return sequence of bytes based on word list.
+     */
+    @Nonnull
+    private static byte[] mnemonicToBytes(@Nonnull BidirectionalDictionary dictionary, @Nonnull List<String> mnemonicWordList) {
+        Converter<String, Integer> reverseConverter = dictionary.reverse();
+        BigInteger total = BigInteger.ZERO;
+        BigInteger multiplier = BigInteger.valueOf(dictionary.getSize());
+        for (String word : Lists.reverse(mnemonicWordList)) {
+            /* Find the word index in the wordList. */
+            /* Warning suppressed due to word guaranteed non-null */
+            //noinspection ConstantConditions
+            int index = reverseConverter.convert(word);
+
+            total = total.multiply(multiplier).add(BigInteger.valueOf(index));
+        }
+
+        /* Convert the resultant value to an unsigned byte-array */
+        byte[] result = total.toByteArray();
+        if (result[0] == 0) {
+            byte[] tmp = new byte[result.length - 1];
+            System.arraycopy(result, 1, tmp, 0, tmp.length);
+            result = tmp;
+        }
+        return result;
+    }
+
+    /**
+     * Utility method to generate a MnemonicUnit wrapping the given sequence and entropy.
+     *
+     * @param mnemonicSequence
+     *         sequence.
+     * @param entropy
+     *         derived copy of entropy.
+     *
+     * @return wrapped instance.
+     */
+    @Nonnull
+    public MnemonicUnit build(MnemonicUnit.Builder builder, CharSequence mnemonicSequence, byte[] entropy) {
+        return super.build(builder, mnemonicSequence, entropy, null, ImmutableMap.<String, Object>of());
+    }
+
+    /**
+     * Get the entropy if possible.
+     *
+     * @param mnemonicSequence
+     *         sequence to derive entropy from.
+     *
+     * @return a derived copy of the entropy byte array.
+     */
+    @CheckForNull
+    @Override
+    public byte[] getEntropy(@Nonnull CharSequence mnemonicSequence) {
+        List<String> mnemonicWordList = MnemonicUtility.getNormalizedWordList(mnemonicSequence);
+
+        /* Convert the word list into a sequence of booleans representing its bits. */
+        return mnemonicToBytes(dictionary, mnemonicWordList);
+    }
+
+    /**
+     * Get a seed from this mnemonic.
+     *
+     * @param mnemonicSequence
+     *         sequence to derive the seed from.
+     * @param password
+     *         password to supply for decoding.
+     *
+     * @return a derived seed.
+     */
+    @Nonnull
+    @Override
+    public byte[] getSeed(@Nonnull CharSequence mnemonicSequence, @Nullable CharSequence password) {
+        byte[] mnemonicSequenceBytes = Normalizer.normalize(mnemonicSequence, Normalizer.Form.NFKD).getBytes(Charsets.UTF_8);
+
+        /* Normalize the password and get the UTF-8 bytes. */
+        String normalizedPassword = "mnemonic";
+        if (null != password && 0 != password.length()) {
+            normalizedPassword = normalizedPassword + Normalizer.normalize(password, Normalizer.Form.NFKD);
+        }
+        byte[] passwordBytes = normalizedPassword.getBytes(Charsets.UTF_8);
+        return MnemonicUtility.deriveSeed(passwordBytes, mnemonicSequenceBytes);
+    }
+}

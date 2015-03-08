@@ -99,6 +99,10 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
 
             @Override
             public boolean processLine(@Nonnull String line) throws IOException {
+                /* Skip comments and empty lines */
+                if (line.startsWith("#") || line.isEmpty()) {
+                    return true;
+                }
                 /* Binding dictionary handling to NFKD normalization */
                 line = Normalizer.normalize(line, Normalizer.Form.NFKD);
                 result.add(line);
