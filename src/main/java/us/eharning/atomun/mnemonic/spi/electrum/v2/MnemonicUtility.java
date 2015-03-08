@@ -17,6 +17,7 @@
 package us.eharning.atomun.mnemonic.spi.electrum.v2;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Converter;
 import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Predicates;
@@ -26,6 +27,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.PBKDF2;
+import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
 
 import java.io.IOException;
 import java.net.URL;
@@ -53,12 +55,22 @@ class MnemonicUtility {
             "spanish"
     );
     private static final ConcurrentMap<String, BidirectionalDictionary> dictionaries = new ConcurrentHashMap<>();
+    private static final BidirectionalDictionary LEGACY_DICTIONARY;
     private static final int PBKDF_ROUNDS = 2048;
     private static final String PBKDF_MAC = "HmacSHA512";
     private static final int PBKDF_SEED_OUTPUT = 64;
     private static Pattern DIACRITICAL_MATCH = Pattern.compile("[\\p{M}]+");
     private static Pattern WHITESPACE_MATCH = Pattern.compile("[\\p{Space}\u3000]");
     private static CJKCleanupUtility cleanupUtility = new CJKCleanupUtility();
+
+    static {
+        try {
+            LEGACY_DICTIONARY = new BidirectionalDictionary(LegacyElectrumMnemonicService.class.getResource("dictionary.txt"), "english");
+        } catch (IOException e) {
+            throw new Error("Failed to read dictionary.txt for initialization", e);
+        }
+    }
+
 
     /**
      * Utility method to obtain a dictionary given the wordListIdentifier.
@@ -96,7 +108,7 @@ class MnemonicUtility {
      * @param mnemonicSequence
      *         space-separated list of words to split/normalize.
      *
-     * @return list of noralized words.
+     * @return list of normalized words.
      */
     @Nonnull
     public static List<String> getNormalizedWordList(@Nonnull CharSequence mnemonicSequence) {
@@ -162,6 +174,14 @@ class MnemonicUtility {
         return dictionaryIterable;
     }
 
+    /**
+     * Utility method to normalize the seed according to the specification.
+     *
+     * @param seed
+     *         data to normalize.
+     *
+     * @return normalized data.
+     */
     static String normalizeSeed(CharSequence seed) {
         String normalizedSeed = Normalizer.normalize(seed, Normalizer.Form.NFKD);
         normalizedSeed = normalizedSeed.toLowerCase();
@@ -172,10 +192,34 @@ class MnemonicUtility {
         return normalizedSeed;
     }
 
-
+    /**
+     * Utility method to check that the given seed is a valid v2 seed.
+     *
+     * @param seed
+     *         space-separated list of words to validate.
+     * @param prefix
+     *         bytes that must be at the beginning of the seed version mac
+     * @param prefixMask
+     *         byte-mask to apply to the data bytes to best handle prefixes not a multiple of 8 bits
+     *
+     * @return true if the seed can be interpreted as the v2 format but not the legacy format.
+     */
     public static boolean isValidGeneratedSeed(CharSequence seed, byte[] prefix, byte[] prefixMask) {
         return !isOldSeed(seed) && isNewSeed(seed, prefix, prefixMask);
     }
+
+    /**
+     * Utility method to determine if a given seed is of the "old" format.
+     *
+     * @param seed
+     *         space-separated list of words to validate.
+     * @param prefix
+     *         bytes that must be at the beginning of the seed version mac
+     * @param prefixMask
+     *         byte-mask to apply to the data bytes to best handle prefixes not a multiple of 8 bits
+     *
+     * @return true if the seed can be interpreted as the v2 format.
+     */
 
     private static boolean isNewSeed(CharSequence seed, byte[] prefix, byte[] prefixMask) {
         String normalizedSeed = MnemonicUtility.normalizeSeed(seed);
@@ -201,8 +245,30 @@ class MnemonicUtility {
         }
     }
 
+    /**
+     * Utility method to determine if a given seed is of the "old" format.
+     *
+     * @param seed
+     *         space-separated list of words to validate.
+     *
+     * @return true if the seed can be interpreted as a legacy format.
+     */
     private static boolean isOldSeed(CharSequence seed) {
-        return false;
+        List<String> words = Splitter.on(WHITESPACE_MATCH).splitToList(seed);
+        if (words.size() % 3 != 0) {
+            /* Not a multiple of 3 words, not an old seed */
+            return false;
+        }
+        Converter<String, Integer> reverse = LEGACY_DICTIONARY.reverse();
+        try {
+            for (String word : words) {
+                reverse.convert(word);
+            }
+        } catch (IllegalArgumentException ignored) {
+            return false;
+        }
+        /* All words were found and there were a multiple of 3 */
+        return true;
     }
 
 }
