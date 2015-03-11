@@ -48,6 +48,7 @@ public final class PBKDF2 {
      * @return The derived key.
      *
      * @throws GeneralSecurityException
+     *         If algorithm retrieval fails or key parameters are invalid.
      */
     @SuppressWarnings({"checkstyle:parametername", "checkstyle:localvariablename"})
     public static byte[] pbkdf2(String alg, byte[] P, byte[] S, int c, int dkLen) throws GeneralSecurityException {
@@ -73,6 +74,7 @@ public final class PBKDF2 {
      *         Intended length, in octets, of the derived key.
      *
      * @throws GeneralSecurityException
+     *         If key parameters are invalid.
      */
     @SuppressWarnings({"checkstyle:parametername", "checkstyle:localvariablename"})
     public static void pbkdf2(Mac mac, byte[] S, int c, byte[] DK, int dkLen) throws GeneralSecurityException {
