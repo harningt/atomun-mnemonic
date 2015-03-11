@@ -9,6 +9,9 @@ configurations.archives.artifacts.removeAll({
 def isRelease = !version.toString().endsWith("SNAPSHOT")
 def isSigning = isRelease
 def isSigningAllowed = hasProperty('sign') && getProperty('sign') == 'TRUE'
+if (isSigningAllowed) {
+    isSigning = true;
+}
 
 def repo = !isRelease ? 'oss-snapshot-local' : 'oss-release-local'
 def artifactory_password = hasProperty("artifactory_password") ? getProperty("artifactory_password") : null
