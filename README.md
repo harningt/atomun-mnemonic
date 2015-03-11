@@ -45,30 +45,33 @@ releases.
 Maven Group ID: us.eharning.atomun
 Name: atomun-mnemonic
 
-Unsigned SNAPSHOT artifacts are pushed per-commit by Travis-CI to oss.jfrog.org's
-SNAPSHOT archive.
+Signed SNAPSHOT artifacts are pushed per-commit by Travis-CI to the
+Maven Central SNAPSHOT archive.
 
-<http://oss.jfrog.org/artifactory/simple/oss-snapshot-local/>
+Signed release artifacts will be pushed directly to Maven Central.
 
-Signed release artifacts will be pushed to oss.jfrog.org's release archive and
-synced to Maven Central ASAP.
-
-<http://oss.jfrog.org/artifactory/simple/oss-release-local/>
-
-The project will also have a present at:
-
-<https://bintray.com/harningt/atomun>
+<http://oss.sonatype.org/content/groups/public/>
 
 ## Release Signing
 
 Releases will be signed by the following privately held GPG key. It doesn't
-get published to Travis-CI, nor Bintray.
+get published to Travis-CI.
 
     pub   2048R/F8908096 2014-10-29 [expires: 2016-10-28]
           Key fingerprint = B6CC 560D F1C0 991E 08AA  555A ED63 F369 F890 8096
     uid                  Thomas Harning Jr (CODE SIGNING KEY) <harningt@gmail.com>
 
 See also <http://www.eharning.us/gpg/>
+
+## Snapshot Signing
+
+Snapshots will be signed by a key held by Travis-CI in their encrypted
+data stores. I figured it would be better to sign the snapshots than not
+have them signed at all, even if the specific key is less protected.
+
+    pub   2048R/EF39E8D8 2015-03-10 [expires: 2016-03-09]
+          Key fingerprint = FCA2 D4CC 9294 38B7 5B91  8D9E 6BF2 A2D1 EF39 E8D8
+    uid                  Thomas Harning Jr (AUTOMATED CI CODESIGNER) <harningt@gmail.com>
 
 ## Tag Signing
 
