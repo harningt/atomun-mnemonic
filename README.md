@@ -50,7 +50,7 @@ Maven Central SNAPSHOT archive.
 
 Signed release artifacts will be pushed directly to Maven Central.
 
-<http://oss.sonatype.org/content/groups/public/>
+<https://oss.sonatype.org/content/groups/public/>
 
 ## Release Signing
 
