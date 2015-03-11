@@ -19,15 +19,19 @@ package us.eharning.atomun.mnemonic.spi.bip0039;
 import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Predicates;
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
+import us.eharning.atomun.mnemonic.spi.PBKDF2;
 
 import java.io.IOException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.Normalizer;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -174,5 +178,28 @@ class BIP0039MnemonicUtility {
         /* Filter out any missing dictionaries */
         dictionaryIterable = Iterables.filter(dictionaryIterable, Predicates.notNull());
         return dictionaryIterable;
+    }
+
+    /**
+     * Get normalized list of split words.
+     *
+     * @param mnemonicSequence space-separated list of words to split/normalize.
+     *
+     * @return list of noralized words.
+     */
+    @Nonnull
+    public static List<String> getNormalizedWordList(@Nonnull CharSequence mnemonicSequence) {
+        /* Normalize after splitting due to wide spaces getting normalized into space+widener */
+        List<String> mnemonicWordList = Splitter.onPattern(" |\u3000").splitToList(mnemonicSequence);
+        return Lists.transform(mnemonicWordList, new Function<String, String>() {
+            @Nullable
+            @Override
+            public String apply(@Nullable String input) {
+                if (null == input) {
+                    return null;
+                }
+                return Normalizer.normalize(input, Normalizer.Form.NFKD);
+            }
+        });
     }
 }

@@ -26,6 +26,7 @@ import us.eharning.atomun.mnemonic.spi.MnemonicServiceProvider;
 import us.eharning.atomun.mnemonic.spi.WordListBuilderParameter;
 import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
 import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
+import us.eharning.atomun.mnemonic.spi.electrum.v2.ElectrumV2MnemonicService;
 
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -40,7 +41,8 @@ import javax.annotation.concurrent.NotThreadSafe;
 public final class MnemonicBuilder {
     private static final ImmutableList<MnemonicServiceProvider> SERVICE_PROVIDERS = ImmutableList.of(
             new LegacyElectrumMnemonicService(),
-            new BIP0039MnemonicService()
+            new BIP0039MnemonicService(),
+            new ElectrumV2MnemonicService()
     );
 
     /**

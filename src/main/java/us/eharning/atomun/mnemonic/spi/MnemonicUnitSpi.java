@@ -18,6 +18,7 @@ package us.eharning.atomun.mnemonic.spi;
 
 import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableMap;
+import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 
 import javax.annotation.CheckForNull;
@@ -33,6 +34,19 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 public abstract class MnemonicUnitSpi {
+    private final MnemonicAlgorithm algorithm;
+
+    /**
+     * Construct a service provider for the given algorithm.
+     *
+     * @param algorithm the associated mnemonic algorithm implemented.
+     *
+     * @since 0.2.0
+     */
+    protected MnemonicUnitSpi(MnemonicAlgorithm algorithm) {
+        this.algorithm = algorithm;
+    }
+
     /**
      * Utility method to return a wrapped instance of this SPI.
      *
@@ -56,6 +70,18 @@ public abstract class MnemonicUnitSpi {
         Verify.verifyNotNull(mnemonicSequence);
         Verify.verifyNotNull(extensions);
         return builder.build(this, mnemonicSequence, entropy, seed, extensions);
+    }
+
+    /**
+     * Get the mnemonic algorithm implemented.
+     *
+     * @return the constant algorithm for this SPI.
+     *
+     * @since 0.2.0
+     */
+    @Nonnull
+    public final MnemonicAlgorithm getAlgorithm() {
+        return algorithm;
     }
 
     /**

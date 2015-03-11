@@ -24,6 +24,7 @@ import us.eharning.atomun.mnemonic.spi.MnemonicServiceProvider;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
 import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
 import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
+import us.eharning.atomun.mnemonic.spi.electrum.v2.ElectrumV2MnemonicService;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -43,7 +44,8 @@ public final class MnemonicUnit {
     static final Builder BUILDER = new Builder();
     private static final ImmutableList<MnemonicServiceProvider> SERVICE_PROVIDERS = ImmutableList.of(
             new LegacyElectrumMnemonicService(),
-            new BIP0039MnemonicService()
+            new BIP0039MnemonicService(),
+            new ElectrumV2MnemonicService()
     );
 
     private final MnemonicUnitSpi spi;
@@ -168,6 +170,18 @@ public final class MnemonicUnit {
             return system.decode(BUILDER, mnemonicSequence, wordListIdentifier);
         }
         throw new UnsupportedOperationException("Unsupported algorithm " + mnemonicAlgorithm);
+    }
+
+    /**
+     * Get the mnemonic algorithm implemented.
+     *
+     * @return the constant algorithm for this instance.
+     *
+     * @since 0.2.0
+     */
+    @Nonnull
+    public MnemonicAlgorithm getAlgorithm() {
+        return spi.getAlgorithm();
     }
 
     /**

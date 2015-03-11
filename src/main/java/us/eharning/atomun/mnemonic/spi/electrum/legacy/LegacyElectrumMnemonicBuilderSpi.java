@@ -140,7 +140,7 @@ class LegacyElectrumMnemonicBuilderSpi extends MnemonicBuilderSpi {
                 checkEntropyLengthValid(((EntropyBuilderParameter) parameter).getEntropyLength());
                 continue;
             }
-            throw new UnsupportedOperationException("Unsupported parameter type: " + parameter);
+            throw new IllegalArgumentException("Unsupported parameter type: " + parameter);
         }
     }
 }

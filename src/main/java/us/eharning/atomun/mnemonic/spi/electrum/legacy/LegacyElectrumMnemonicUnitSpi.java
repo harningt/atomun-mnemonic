@@ -17,6 +17,7 @@
 package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
 import com.google.common.collect.ImmutableMap;
+import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
 
@@ -29,6 +30,15 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 class LegacyElectrumMnemonicUnitSpi extends MnemonicUnitSpi {
+    /**
+     * Construct a service provider for the given algorithm.
+     *
+     * @since 0.2.0
+     */
+    public LegacyElectrumMnemonicUnitSpi() {
+        super(MnemonicAlgorithm.LegacyElectrum);
+    }
+
     /**
      * Utility method to generate a MnemonicUnit wrapping the given sequence and entropy.
      *

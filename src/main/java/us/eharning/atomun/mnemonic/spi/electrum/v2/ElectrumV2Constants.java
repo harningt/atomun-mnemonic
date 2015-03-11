@@ -14,30 +14,15 @@
  * limitations under the License.
  */
 
-package us.eharning.atomun.mnemonic;
+package us.eharning.atomun.mnemonic.spi.electrum.v2;
+
+import com.google.common.collect.ImmutableSet;
+
+import java.util.Set;
 
 /**
- * Enumeration of possible mnemonic algorithms.
- *
- * @since 0.0.1
+ * Public storage class for constants regarding Electrum V2.
  */
-public enum MnemonicAlgorithm {
-    /**
-     * Legacy Electrum algorithm.
-     *
-     * @since 0.0.1
-     */
-    LegacyElectrum,
-    /**
-     * Identifier for BIP-0039 specified mnemonic algorithm.
-     *
-     * @since 0.1.0
-     */
-    BIP0039,
-    /**
-     * Identifier for Electrum v2 algorithm.
-     *
-     * @since 0.2.0
-     */
-    ElectrumV2
+public class ElectrumV2Constants {
+    static final Set<String> KNOWN_EXTENSION_NAMES = ImmutableSet.of();
 }

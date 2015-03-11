@@ -21,6 +21,8 @@ import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
 import us.eharning.atomun.mnemonic.MnemonicUnit
 
+import java.text.Normalizer
+
 /**
  * Test around the legacy Electrum mnemonic decoder system.
  */
@@ -58,7 +60,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
         unit.getExtensions().isEmpty()
         /* Round-trip test */
         /* Replace ideographic space by space always */
-        unit.getMnemonic().replace("\u3000", " ") == MnemonicBuilder.newBuilder(ALG).setEntropy(testCase.entropyBytes).setWordList(testCase.wordList).build()
+        Normalizer.normalize(unit.getMnemonic().replace("\u3000", " "), Normalizer.Form.NFKD) == Normalizer.normalize(MnemonicBuilder.newBuilder(ALG).setEntropy(testCase.entropyBytes).setWordList(testCase.wordList).build(), Normalizer.Form.NFKD)
         where:
         testCase << BIP0039TestData.JP_VECTORS
     }
@@ -66,9 +68,9 @@ class BIP0039MnemonicDecoderSpock extends Specification {
     def "generic check #mnemonic string decodes to #encoded with single valid element with specific wordList"() {
         given:
         Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(testCase.mnemonic, testCase.wordList)
-        MnemonicUnit unit = Iterables.getFirst(units, null)
+        MnemonicUnit unit = Iterables.getFirst(Iterables.filter(units, { it.algorithm == ALG }), null)
         expect:
-        Iterables.size(units) == 1
+        Iterables.size(units) >= 1
         unit.getEntropy() == testCase.entropyBytes
         unit.getSeed() != testCase.seedBytes
         unit.getSeed(null) != testCase.seedBytes
@@ -83,9 +85,9 @@ class BIP0039MnemonicDecoderSpock extends Specification {
     def "generic check #mnemonic string decodes to #encoded with single valid element with unspecified wordList"() {
         given:
         Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(testCase.mnemonic)
-        MnemonicUnit unit = Iterables.getFirst(units, null)
+        MnemonicUnit unit = Iterables.getFirst(Iterables.filter(units, { it.algorithm == ALG }), null)
         expect:
-        Iterables.size(units) == 1
+        Iterables.size(units) >= 1
         unit.getEntropy() == testCase.entropyBytes
         unit.getSeed() != testCase.seedBytes
         unit.getSeed(null) != testCase.seedBytes
@@ -100,9 +102,9 @@ class BIP0039MnemonicDecoderSpock extends Specification {
     def "japanese: generic check #mnemonic string decodes to #encoded with single valid element with unspecified wordList"() {
         given:
         Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(testCase.mnemonic)
-        MnemonicUnit unit = Iterables.getFirst(units, null)
+        MnemonicUnit unit = Iterables.getFirst(Iterables.filter(units, { it.algorithm == ALG }), null)
         expect:
-        Iterables.size(units) == 1
+        Iterables.size(units) >= 1
         unit.getEntropy() == testCase.entropyBytes
         unit.getSeed() != testCase.seedBytes
         unit.getSeed(null) != testCase.seedBytes

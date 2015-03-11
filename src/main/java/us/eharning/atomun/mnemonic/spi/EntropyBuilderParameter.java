@@ -74,6 +74,14 @@ public abstract class EntropyBuilderParameter implements BuilderParameter {
     public abstract int getEntropyLength();
 
     /**
+     * Obtain a boolean indicating if this parameter is static or generative.
+     *
+     * @return true if #getEntropy() returns the same value every time.
+     * @since 0.3.0
+     */
+    public abstract boolean isStatic();
+
+    /**
      * Internal entropy builder that will return random entropy of a given size.
      */
     private static class RandomEntropyBuilderParameter extends EntropyBuilderParameter {
@@ -114,6 +122,17 @@ public abstract class EntropyBuilderParameter implements BuilderParameter {
         public int getEntropyLength() {
             return size;
         }
+
+        /**
+         * Obtain a boolean indicating if this parameter is static or generative.
+         *
+         * @return true if #getEntropy() returns the same value every time.
+         * @since 0.3.0
+         */
+        @Override
+        public boolean isStatic() {
+            return false;
+        }
     }
 
     /**
@@ -153,6 +172,17 @@ public abstract class EntropyBuilderParameter implements BuilderParameter {
         @Override
         public int getEntropyLength() {
             return entropy.length;
+        }
+
+        /**
+         * Obtain a boolean indicating if this parameter is static or generative.
+         *
+         * @return true if #getEntropy() returns the same value every time.
+         * @since 0.3.0
+         */
+        @Override
+        public boolean isStatic() {
+            return true;
         }
     }
 

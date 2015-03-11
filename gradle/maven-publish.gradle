@@ -1,13 +1,21 @@
 apply plugin: 'signing'
 
+/* Drop groovydoc from artifacts */
+configurations.archives.artifacts.removeAll({
+       return (it.classifier == 'groovydoc')
+})
+
 /* All non-snapshots must be signed */
 def isRelease = !version.toString().endsWith("SNAPSHOT")
 def isSigning = isRelease
 def isSigningAllowed = hasProperty('sign') && getProperty('sign') == 'TRUE'
+if (isSigningAllowed) {
+    isSigning = true;
+}
 
-def repo = !isRelease ? 'oss-snapshot-local' : 'oss-release-local'
-def artifactory_password = hasProperty("artifactory_password") ? getProperty("artifactory_password") : null
-if (null != artifactory_password) {
+def sonatype_user = hasProperty("sonatype_user") ? getProperty("sonatype_user") : null
+def sonatype_password = hasProperty("sonatype_password") ? getProperty("sonatype_password") : null
+if (null != sonatype_user && null != sonatype_password) {
     signing {
         required { isSigning && isSigningAllowed }
         if (isSigning && isSigningAllowed) {
@@ -20,13 +28,13 @@ uploadArchives {
     configuration = configurations.archives
     repositories.mavenDeployer {
         def creds = [
-            userName: 'harningt',
-            password: artifactory_password
+            userName: sonatype_user,
+            password: sonatype_password
         ]
-        repository(url: 'https://oss.jfrog.org/artifactory/oss-release-local/') {
+        repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
             authentication(creds)
         }
-        snapshotRepository(url: 'https://oss.jfrog.org/artifactory/oss-snapshot-local/') {
+        snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
             authentication(creds)
         }
         pom.project {

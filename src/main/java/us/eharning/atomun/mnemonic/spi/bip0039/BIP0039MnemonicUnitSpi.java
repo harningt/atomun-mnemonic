@@ -18,10 +18,10 @@ package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Converter;
-import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
 import com.tomgibara.crinch.bits.BitWriter;
 import com.tomgibara.crinch.bits.ByteArrayBitWriter;
+import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
@@ -46,6 +46,7 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
      *         instance to match mnemonic words against.
      */
     public BIP0039MnemonicUnitSpi(@Nonnull BidirectionalDictionary dictionary) {
+        super(MnemonicAlgorithm.BIP0039);
         this.dictionary = dictionary;
     }
 
@@ -155,7 +156,7 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
     @Nonnull
     @Override
     public byte[] getEntropy(@Nonnull CharSequence mnemonicSequence) {
-        List<String> mnemonicWordList = Splitter.onPattern(" |\u3000").splitToList(mnemonicSequence);
+        List<String> mnemonicWordList = BIP0039MnemonicUtility.getNormalizedWordList(mnemonicSequence);
         int mnemonicSentenceBitCount = mnemonicWordList.size() * 11;
         byte[] mnemonicSentenceBytes = mnemonicToBytes(dictionary, mnemonicWordList);
 
