@@ -28,7 +28,7 @@ uploadArchives {
     configuration = configurations.archives
     repositories.mavenDeployer {
         def creds = [
-            userName: sonatype_user
+            userName: sonatype_user,
             password: sonatype_password
         ]
         repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
