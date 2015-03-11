@@ -42,6 +42,13 @@ uploadArchives {
             description description
             url defaults.siteUrl
             inceptionYear '2014'
+
+            scm {
+                connection 'scm:git:https://github.com/harningt/atomun-mnemonic.git'
+                developerConnection 'scm:git:git@github.com:harningt/atomun-mnemonic.git'
+                url 'https://github.com/harningt/atomun-mnemonic'
+            }
+
             licenses {
                 license {
                     name 'Apache License, Version 2.0'
