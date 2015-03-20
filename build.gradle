@@ -44,7 +44,6 @@ dependencies {
     compile 'com.google.code.findbugs:annotations:3.0.0'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
 
-    /* Benchmarks */
     compile 'com.tomgibara.crinch:crinch-bits:0.7.2'
 
     testCompile 'org.codehaus.groovy:groovy:2.4.1'
