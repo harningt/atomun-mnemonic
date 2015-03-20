@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    findbugs 'com.google.code.findbugs:findbugs:3.0.0'
+    findbugs 'com.google.code.findbugs:findbugs:3.0.1'
 
     compile group: 'com.google.guava', name: 'guava', version: '18.0'
     compile 'com.google.code.findbugs:annotations:3.0.0'
