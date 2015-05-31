@@ -8,6 +8,7 @@ plugins {
     id 'org.ajoberstar.defaults' version '0.5.2'
     id 'checkstyle'
     id 'findbugs'
+    id "org.standardout.versioneye" version "1.0.1"
 }
 
 group = 'us.eharning.atomun'
@@ -46,14 +47,14 @@ dependencies {
 
     compile 'com.tomgibara.crinch:crinch-bits:0.7.2'
 
-    testCompile 'org.codehaus.groovy:groovy:2.4.1'
+    testCompile 'org.codehaus.groovy:groovy:2.4.3'
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     testCompile 'net.trajano.caliper:caliper:1.2.1'
 }
 
 checkstyle {
-    /* Using checkstyle 6.1 as that is the maximum for the IntelliJ extensions */
-    toolVersion = '6.1'
+    /* Using checkstyle 6.6 as that is the maximum for the IntelliJ extensions */
+    toolVersion = '6.6'
     configFile = new File(rootDir, 'gradle/checkstyle/checkstyle.xml')
 }
 
@@ -73,5 +74,5 @@ task runBenchmark(type: JavaExec, dependsOn: test) {
 apply from: "$rootDir/gradle/maven-publish.gradle"
 
 wrapper {
-    gradleVersion = '2.1'
+    gradleVersion = '2.4'
 }
