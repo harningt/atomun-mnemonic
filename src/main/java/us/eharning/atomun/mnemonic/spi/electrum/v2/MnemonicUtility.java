@@ -209,6 +209,22 @@ class MnemonicUtility {
     }
 
     /**
+     * Utility method to extract the seed version bytes from the seed.
+     *
+     * @param seed
+     *         space-separated list of words to validate.
+     *
+     * @return byte array with the seed version bytes value
+     */
+    static byte[] getSeedVersionBytes(CharSequence seed) throws GeneralSecurityException {
+        String normalizedSeed = MnemonicUtility.normalizeSeed(seed);
+        byte[] seedBytes = normalizedSeed.getBytes(Charsets.UTF_8);
+        Mac mac = Mac.getInstance("HmacSHA512");
+        mac.init(new SecretKeySpec("Seed version".getBytes(Charsets.US_ASCII), "HmacSHA512"));
+        return mac.doFinal(seedBytes);
+    }
+
+    /**
      * Utility method to determine if a given seed is of the "old" format.
      *
      * @param seed
@@ -220,14 +236,9 @@ class MnemonicUtility {
      *
      * @return true if the seed can be interpreted as the v2 format.
      */
-
     private static boolean isNewSeed(CharSequence seed, byte[] prefix, byte[] prefixMask) {
-        String normalizedSeed = MnemonicUtility.normalizeSeed(seed);
-        byte[] seedBytes = normalizedSeed.getBytes(Charsets.UTF_8);
         try {
-            Mac mac = Mac.getInstance("HmacSHA512");
-            mac.init(new SecretKeySpec("Seed version".getBytes(Charsets.US_ASCII), "HmacSHA512"));
-            byte[] macBytes = mac.doFinal(seedBytes);
+            byte[] macBytes = getSeedVersionBytes(seed);
 
             /* Check the mask bytes */
             if (prefix.length > macBytes.length) {
@@ -240,7 +251,7 @@ class MnemonicUtility {
                 }
             }
             return true;
-        } catch (InvalidKeyException | NoSuchAlgorithmException e) {
+        } catch (GeneralSecurityException e) {
             return false;
         }
     }
