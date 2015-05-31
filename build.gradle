@@ -8,6 +8,7 @@ plugins {
     id 'org.ajoberstar.defaults' version '0.5.2'
     id 'checkstyle'
     id 'findbugs'
+    id "org.standardout.versioneye" version "1.0.1"
 }
 
 group = 'us.eharning.atomun'
