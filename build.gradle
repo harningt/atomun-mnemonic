@@ -66,6 +66,11 @@ javadoc {
     options.tags "todo:a:TODO:"
 }
 
+license {
+    exclude "**/*.json"
+    exclude "**/*.txt"
+}
+
 task runBenchmark(type: JavaExec, dependsOn: test) {
     main = 'us.eharning.atomun.mnemonic.IndexGeneratorBenchmark'
     classpath = sourceSets.test.runtimeClasspath
