@@ -33,7 +33,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
             unit.getEntropy() == testCase.entropyBytes
             //unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
-            unit.getExtensions().isEmpty()
+            unit.getSupportedExtensions().containsAll(EnumSet.allOf(ElectrumV2ExtensionIdentifiers.class))
         where:
             testCase << ElectrumV2TestData.STANDARD_VECTORS
     }
@@ -44,7 +44,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
             unit.getEntropy() == testCase.entropyBytes
             //unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
-            unit.getExtensions().isEmpty()
+            unit.getSupportedExtensions().containsAll(EnumSet.allOf(ElectrumV2ExtensionIdentifiers.class))
         where:
             testCase << ElectrumV2TestData.LANGUAGE_VECTORS
     }
@@ -64,7 +64,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
             unit.getEntropy() == testCase.entropyBytes
             //unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
-            unit.getExtensions().isEmpty()
+            unit.getSupportedExtensions().containsAll(EnumSet.allOf(ElectrumV2ExtensionIdentifiers.class))
         where:
             testCase << ElectrumV2TestData.ALL_VECTORS
     }
@@ -77,7 +77,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
             unit.getEntropy() == testCase.entropyBytes
             //unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
-            unit.getExtensions().isEmpty()
+            unit.getSupportedExtensions().containsAll(EnumSet.allOf(ElectrumV2ExtensionIdentifiers.class))
         where:
             testCase << ElectrumV2TestData.ALL_VECTORS
     }

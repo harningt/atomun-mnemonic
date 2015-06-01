@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.tomgibara.crinch.bits.BitWriter;
 import com.tomgibara.crinch.bits.ByteArrayBitWriter;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
@@ -31,6 +32,7 @@ import java.math.BigInteger;
 import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -220,7 +222,22 @@ class MnemonicUnitSpiImpl extends MnemonicUnitSpi {
      */
     @Nonnull
     public MnemonicUnit build(MnemonicUnit.Builder builder, CharSequence mnemonicSequence, byte[] entropy) {
-        return super.build(builder, mnemonicSequence, entropy, null, ImmutableMap.<String, Object>of());
+        return super.build(builder, mnemonicSequence, entropy, null, ImmutableMap.<MnemonicExtensionIdentifier, Object>of());
+    }
+
+    /**
+     * Utility method to generate a MnemonicUnit wrapping the given sequence and entropy.
+     *
+     * @param mnemonicSequence
+     *         sequence.
+     * @param entropy
+     *         derived copy of entropy.
+     *
+     * @return wrapped instance.
+     */
+    @Nonnull
+    public MnemonicUnit build(MnemonicUnit.Builder builder, CharSequence mnemonicSequence, byte[] entropy, Map<String, Object> metadata) {
+        return super.build(builder, mnemonicSequence, entropy, null, ImmutableMap.<MnemonicExtensionIdentifier, Object>of());
     }
 
     /**

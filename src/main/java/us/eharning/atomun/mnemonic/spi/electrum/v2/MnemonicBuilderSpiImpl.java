@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.math.BigIntegerMath;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.BuilderParameter;
 import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
@@ -36,6 +37,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -51,7 +53,7 @@ import javax.crypto.spec.SecretKeySpec;
 class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi {
     private static final EntropyBuilderParameter DEFAULT_ENTROPY_PARAMETER = EntropyBuilderParameter.getRandom(128 / 8);
     private static final WordListBuilderParameter DEFAULT_WORDLIST_PARAMETER = WordListBuilderParameter.getWordList("english");
-    private static final Set<String> KNOWN_EXTENSION_NAMES = ElectrumV2Constants.KNOWN_EXTENSION_NAMES;
+    static final Set<? extends MnemonicExtensionIdentifier> KNOWN_EXTENSION_IDENTIFIERS = ImmutableSet.copyOf(EnumSet.allOf(ElectrumV2ExtensionIdentifiers.class));
     private static final Set<String> CJK_IDENTIFIER_SET = ImmutableSet.of("japanese");
     private static final Pattern DIACRITICAL_MATCH = Pattern.compile("[\\p{InCombiningDiacriticalMarks}]+");
     private static final Pattern WHITESPACE_MATCH = Pattern.compile("[\\p{Space}]");
@@ -89,9 +91,9 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
      *         if the parameter contains unknown parameters.
      */
     private static void checkExtensionNames(ExtensionBuilderParameter parameter) {
-        Map<String, Object> extensions = parameter.getExtensions();
-        if (!KNOWN_EXTENSION_NAMES.containsAll(extensions.keySet())) {
-            Iterable<String> unknownNames = Iterables.filter(extensions.keySet(), Predicates.not(Predicates.in(KNOWN_EXTENSION_NAMES)));
+        Map<MnemonicExtensionIdentifier, Object> extensions = parameter.getExtensions();
+        if (!KNOWN_EXTENSION_IDENTIFIERS.containsAll(extensions.keySet())) {
+            Iterable<MnemonicExtensionIdentifier> unknownNames = Iterables.filter(extensions.keySet(), Predicates.not(Predicates.in(KNOWN_EXTENSION_IDENTIFIERS)));
             throw new IllegalArgumentException("Found unhandled extension names: " + Iterables.toString(unknownNames));
         }
     }
@@ -109,7 +111,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
     public String generateMnemonic(BuilderParameter... parameters) {
         int entropyLengthBytes = -1;
         String wordListIdentifier = null;
-        Map<String, Object> extensions = null;
+        Map<MnemonicExtensionIdentifier, Object> extensions = null;
         for (BuilderParameter parameter : parameters) {
             if (null == parameter) {
                 continue;

@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package us.eharning.atomun.mnemonic.spi.electrum.v2;
-
-import com.google.common.collect.ImmutableSet;
-
-import java.util.Set;
+package us.eharning.atomun.mnemonic;
 
 /**
- * Public storage class for constants regarding Electrum V2.
+ * Marker interface to declare a common base class for extension identifiers.
+ * SPI implementors that have extensions are expected to provide these as enum values.
+ *
+ * @since 0.4.0
  */
-public class ElectrumV2Constants {
-    static final Set<String> KNOWN_EXTENSION_NAMES = ImmutableSet.of();
+public interface MnemonicExtensionIdentifier {
 }

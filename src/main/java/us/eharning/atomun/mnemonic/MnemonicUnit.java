@@ -16,9 +16,10 @@
 
 package us.eharning.atomun.mnemonic;
 
+import com.google.common.base.Function;
 import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
 import us.eharning.atomun.mnemonic.spi.MnemonicServiceProvider;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
@@ -27,7 +28,7 @@ import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicSer
 import us.eharning.atomun.mnemonic.spi.electrum.v2.ElectrumV2MnemonicService;
 
 import java.util.Arrays;
-import java.util.Map;
+import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,7 +53,8 @@ public final class MnemonicUnit {
     private final CharSequence mnemonicSequence;
     private final byte[] entropy;
     private final byte[] seed;
-    private final ImmutableMap<String, Object> extensions;
+    private final ImmutableSet<MnemonicExtensionIdentifier> supportedExtensions;
+    private final Function<MnemonicExtensionIdentifier, Object> extensionLoader;
 
     /**
      * Construct a new MnemonicUnit wrapping the given implementation.
@@ -65,18 +67,22 @@ public final class MnemonicUnit {
      *         derived entropy or null if on-demand.
      * @param seed
      *         derived seed or null if on-demand.
-     * @param extensions
-     *         map of property-to-value dependent on algorithm.
+     * @param supportedExtensions
+     *         set of supported extensions dependent on algorithm.
+     * @param extensionLoader
+     *         method to calculate a given extension's value.
      */
-    private MnemonicUnit(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<String, Object> extensions) {
+    private MnemonicUnit(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableSet<MnemonicExtensionIdentifier> supportedExtensions, @Nonnull Function<MnemonicExtensionIdentifier, Object> extensionLoader) {
         Verify.verifyNotNull(spi);
         Verify.verifyNotNull(mnemonicSequence);
-        Verify.verifyNotNull(extensions);
+        Verify.verifyNotNull(supportedExtensions);
+        Verify.verifyNotNull(extensionLoader);
         this.spi = spi;
         this.mnemonicSequence = mnemonicSequence;
         this.entropy = entropy == null ? null : Arrays.copyOf(entropy, entropy.length);
         this.seed = seed == null ? null : Arrays.copyOf(seed, seed.length);
-        this.extensions = extensions;
+        this.supportedExtensions = supportedExtensions;
+        this.extensionLoader = extensionLoader;
     }
 
     /**
@@ -200,15 +206,30 @@ public final class MnemonicUnit {
     }
 
     /**
-     * Get the associated extension values.
+     * Get the supported extension identifiers.
      *
-     * @return map of property-to-value dependent on algorithm.
+     * @return set of supported extensions dependent on algorithm.
      *
-     * @since 0.1.0
+     * @since 0.4.0
      */
     @Nonnull
-    public Map<String, Object> getExtensions() {
-        return extensions;
+    public Set<MnemonicExtensionIdentifier> getSupportedExtensions() {
+        return supportedExtensions;
+    }
+
+    /**
+     * Get the associated extension value.
+     *
+     * @param extensionIdentifier
+     *         identifier for which extension to retrieve.
+     *
+     * @return given extension value.
+     *
+     * @since 0.4.0
+     */
+    @CheckForNull
+    public Object getExtensionValue(MnemonicExtensionIdentifier extensionIdentifier) {
+        return extensionLoader.apply(extensionIdentifier);
     }
 
     /**
@@ -264,8 +285,8 @@ public final class MnemonicUnit {
         }
 
         @Nonnull
-        public final MnemonicUnit build(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<String, Object> extensions) {
-            return new MnemonicUnit(spi, mnemonicSequence, entropy, seed, extensions);
+        public final MnemonicUnit build(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableSet<MnemonicExtensionIdentifier> supportedExtensions, @Nonnull Function<MnemonicExtensionIdentifier, Object> extensionLoader) {
+            return new MnemonicUnit(spi, mnemonicSequence, entropy, seed, supportedExtensions, extensionLoader);
         }
     }
 }

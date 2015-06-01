@@ -18,6 +18,7 @@ package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
 import com.google.common.collect.ImmutableMap;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
 
@@ -53,7 +54,7 @@ class LegacyElectrumMnemonicUnitSpi extends MnemonicUnitSpi {
      */
     public MnemonicUnit build(MnemonicUnit.Builder builder, CharSequence mnemonicSequence, byte[] entropy) {
         /* Entropy is the seed for this */
-        return super.build(builder, mnemonicSequence, entropy, entropy, ImmutableMap.<String, Object>of());
+        return super.build(builder, mnemonicSequence, entropy, entropy, ImmutableMap.<MnemonicExtensionIdentifier, Object>of());
     }
 
     /**
