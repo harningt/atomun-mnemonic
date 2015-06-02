@@ -23,4 +23,16 @@ package us.eharning.atomun.mnemonic;
  * @since 0.4.0
  */
 public interface MnemonicExtensionIdentifier {
+    /**
+     * Whether or not this value can be read.
+     * @return true if it can only be retrieved from MnemonicUnit.
+     */
+    boolean canGet();
+
+
+    /**
+     * Whether or or not this value can be set.
+     * @return true if it can be set in MnemonicBuilder.
+     */
+    boolean canSet();
 }

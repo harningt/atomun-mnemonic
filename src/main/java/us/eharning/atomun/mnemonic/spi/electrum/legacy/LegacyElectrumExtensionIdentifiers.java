@@ -24,4 +24,15 @@ import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
  * @since 0.4.0
  */
 public enum LegacyElectrumExtensionIdentifiers implements MnemonicExtensionIdentifier {
+    ;
+
+    @Override
+    public boolean canGet() {
+        return false;
+    }
+
+    @Override
+    public boolean canSet() {
+        return false;
+    }
 }

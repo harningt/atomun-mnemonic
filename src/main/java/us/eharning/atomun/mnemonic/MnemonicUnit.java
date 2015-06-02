@@ -17,6 +17,7 @@
 package us.eharning.atomun.mnemonic;
 
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -229,6 +230,7 @@ public final class MnemonicUnit {
      */
     @CheckForNull
     public Object getExtensionValue(MnemonicExtensionIdentifier extensionIdentifier) {
+        Preconditions.checkArgument(extensionIdentifier.canGet(), "Cannot get extension: %s", extensionIdentifier);
         return extensionLoader.apply(extensionIdentifier);
     }
 

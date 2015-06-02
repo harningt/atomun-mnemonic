@@ -17,6 +17,7 @@
 package us.eharning.atomun.mnemonic.spi;
 
 import com.google.common.annotations.Beta;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 
@@ -54,6 +55,10 @@ public class ExtensionBuilderParameter implements BuilderParameter {
      */
     @Nonnull
     public static ExtensionBuilderParameter getExtensionsParameter(@Nonnull ImmutableMap<MnemonicExtensionIdentifier, Object> extensions) {
+        /* Only throws out the 1st extension parameter that is not allowed to avoid extra memory space */
+        for (MnemonicExtensionIdentifier extensionIdentifier: extensions.keySet()) {
+            Preconditions.checkArgument(extensionIdentifier.canSet(), "Cannot set extension: %s", extensionIdentifier);
+        }
         return new ExtensionBuilderParameter(extensions);
     }
 
