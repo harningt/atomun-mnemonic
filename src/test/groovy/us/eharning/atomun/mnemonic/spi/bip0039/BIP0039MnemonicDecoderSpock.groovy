@@ -19,7 +19,9 @@ import com.google.common.collect.Iterables
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
+import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 import us.eharning.atomun.mnemonic.MnemonicUnit
+import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers
 
 import java.text.Normalizer
 
@@ -28,6 +30,7 @@ import java.text.Normalizer
  */
 class BIP0039MnemonicDecoderSpock extends Specification {
     static final MnemonicAlgorithm ALG = MnemonicAlgorithm.BIP0039
+    static final Set<MnemonicExtensionIdentifier> GETTABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.onlyCanGet(BIP0039ExtensionIdentifiers.values())
 
     def "check #mnemonic string decodes to #seed for standard vector"() {
         given:
@@ -39,7 +42,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
         unit.getSeed("") != testCase.seedBytes
         unit.getSeed(testCase.passphrase) == testCase.seedBytes
         unit.getMnemonic() == testCase.mnemonic
-        unit.getSupportedExtensions().containsAll(EnumSet.allOf(BIP0039ExtensionIdentifiers.class))
+        unit.getSupportedExtensions().containsAll(GETTABLE_EXTENSIONS)
         /* Round-trip test */
         /* Replace ideographic space by space always */
         unit.getMnemonic().replace("\u3000", " ") == MnemonicBuilder.newBuilder(ALG).setEntropy(testCase.entropyBytes).setWordList(testCase.wordList).build()
@@ -57,7 +60,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
         unit.getSeed("") != testCase.seedBytes
         unit.getSeed(testCase.passphrase) == testCase.seedBytes
         unit.getMnemonic() == testCase.mnemonic
-        unit.getSupportedExtensions().containsAll(EnumSet.allOf(BIP0039ExtensionIdentifiers.class))
+        unit.getSupportedExtensions().containsAll(GETTABLE_EXTENSIONS)
         /* Round-trip test */
         /* Replace ideographic space by space always */
         Normalizer.normalize(unit.getMnemonic().replace("\u3000", " "), Normalizer.Form.NFKD) == Normalizer.normalize(MnemonicBuilder.newBuilder(ALG).setEntropy(testCase.entropyBytes).setWordList(testCase.wordList).build(), Normalizer.Form.NFKD)
@@ -77,7 +80,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
         unit.getSeed("") != testCase.seedBytes
         unit.getSeed(testCase.passphrase) == testCase.seedBytes
         unit.getMnemonic() == testCase.mnemonic
-        unit.getSupportedExtensions().containsAll(EnumSet.allOf(BIP0039ExtensionIdentifiers.class))
+        unit.getSupportedExtensions().containsAll(GETTABLE_EXTENSIONS)
         where:
         testCase << BIP0039TestData.TREZOR_OFFICIAL_VECTORS
     }
@@ -94,7 +97,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
         unit.getSeed("") != testCase.seedBytes
         unit.getSeed(testCase.passphrase) == testCase.seedBytes
         unit.getMnemonic() == testCase.mnemonic
-        unit.getSupportedExtensions().containsAll(EnumSet.allOf(BIP0039ExtensionIdentifiers.class))
+        unit.getSupportedExtensions().containsAll(GETTABLE_EXTENSIONS)
         where:
         testCase << BIP0039TestData.TREZOR_OFFICIAL_VECTORS
     }
@@ -111,7 +114,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
         unit.getSeed("") != testCase.seedBytes
         unit.getSeed(testCase.passphrase) == testCase.seedBytes
         unit.getMnemonic() == testCase.mnemonic
-        unit.getSupportedExtensions().containsAll(EnumSet.allOf(BIP0039ExtensionIdentifiers.class))
+        unit.getSupportedExtensions().containsAll(GETTABLE_EXTENSIONS)
         where:
         testCase << BIP0039TestData.JP_VECTORS
     }
