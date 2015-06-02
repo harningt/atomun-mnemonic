@@ -18,6 +18,7 @@ package us.eharning.atomun.mnemonic.spi.electrum.v2
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
+import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039TestData
 
 import java.text.Normalizer
@@ -27,6 +28,18 @@ import java.text.Normalizer
  */
 class ElectrumV2MnemonicBuilderSpock extends Specification {
     static final MnemonicAlgorithm ALG = MnemonicAlgorithm.ElectrumV2
+
+    private static def RW_IDENTIFIER = new MnemonicExtensionIdentifier() {
+        @Override
+        boolean canGet() {
+            return true
+        }
+
+        @Override
+        boolean canSet() {
+            return true
+        }
+    }
 
     def "check word lists supported"() {
         given:
@@ -111,7 +124,7 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setExtensions(["x": 1])
+            builder.setExtensions([(RW_IDENTIFIER): 1])
         then:
             thrown(IllegalArgumentException)
     }
