@@ -16,7 +16,6 @@
 
 package us.eharning.atomun.mnemonic.spi.electrum.v2;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Predicates;
 import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableSet;
@@ -24,6 +23,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.math.BigIntegerMath;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
+import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.BuilderParameter;
 import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
@@ -32,19 +32,14 @@ import us.eharning.atomun.mnemonic.spi.WordListBuilderParameter;
 
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
-import java.text.Normalizer;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Service provider for the electrum v2 mnemonic specification.
@@ -54,9 +49,6 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
     private static final EntropyBuilderParameter DEFAULT_ENTROPY_PARAMETER = EntropyBuilderParameter.getRandom(128 / 8);
     private static final WordListBuilderParameter DEFAULT_WORDLIST_PARAMETER = WordListBuilderParameter.getWordList("english");
     static final Set<? extends MnemonicExtensionIdentifier> KNOWN_EXTENSION_IDENTIFIERS = ImmutableSet.copyOf(EnumSet.allOf(ElectrumV2ExtensionIdentifiers.class));
-    private static final Set<String> CJK_IDENTIFIER_SET = ImmutableSet.of("japanese");
-    private static final Pattern DIACRITICAL_MATCH = Pattern.compile("[\\p{InCombiningDiacriticalMarks}]+");
-    private static final Pattern WHITESPACE_MATCH = Pattern.compile("[\\p{Space}]");
 
     /**
      * Construct a new SPI with the given algorithm.
@@ -109,144 +101,26 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
     @Nonnull
     @Override
     public String generateMnemonic(BuilderParameter... parameters) {
-        int entropyLengthBytes = -1;
-        String wordListIdentifier = null;
-        Map<MnemonicExtensionIdentifier, Object> extensions = null;
-        for (BuilderParameter parameter : parameters) {
-            if (null == parameter) {
-                continue;
-            }
-            if (parameter instanceof EntropyBuilderParameter) {
-                EntropyBuilderParameter entropyBuilder = (EntropyBuilderParameter) parameter;
-                entropyLengthBytes = entropyBuilder.getEntropyLength();
-            } else if (parameter instanceof WordListBuilderParameter) {
-                wordListIdentifier = ((WordListBuilderParameter) parameter).getWordListIdentifier();
-            } else if (parameter instanceof ExtensionBuilderParameter) {
-                extensions = ((ExtensionBuilderParameter) parameter).getExtensions();
-            } else {
-                throw new IllegalArgumentException("Unsupported parameter type: " + parameter);
-            }
-        }
-        if (entropyLengthBytes < 0) {
-            entropyLengthBytes = DEFAULT_ENTROPY_PARAMETER.getEntropyLength();
-        }
-        if (null == wordListIdentifier) {
-            wordListIdentifier = DEFAULT_WORDLIST_PARAMETER.getWordListIdentifier();
-        }
-        if (null == extensions) {
-            extensions = Collections.emptyMap();
-        }
-        /* DUMMY */
-        Verify.verifyNotNull(extensions);
-        BidirectionalDictionary dictionary = MnemonicUtility.getDictionary(wordListIdentifier);
-
-        BigInteger customEntropy = BigInteger.ONE;
-        /* Based on make_seed algorithm */
-        int customEntropyBits = BigIntegerMath.log2(customEntropy, RoundingMode.CEILING);
-        /* Prefix is a sequence of nibbles, technically we can construct partial-byte
-         * prefixes by using a nice mask. */
-        byte[] prefix = {0x01};
-        byte[] prefixMask = {(byte) 0xFF};
-        int prefixLength = prefix.length * 8;
-        int entropyLengthBits = entropyLengthBytes * 8;
-        int randomEntropy = Math.max(16, prefixLength + entropyLengthBits - customEntropyBits);
-        BigInteger generatedEntropy = new BigInteger(randomEntropy, new SecureRandom());
-        /* Algorithm:
-         * {
-         *      nonce = 1
-         *      i = custom_entropy * (generated entropy + nonce)
-         *      if (not valid) nonce += 1; retry
-         * }
-         * {
-         *      nonce = 1
-         *      i = custom_entropy * generated entropy + custom_entropy * nonce
-         *      if (not valid) nonce += 1; retry
-         * }
-         * {
-         *      nonce = custom_entropy
-         *      i = custom_entropy * generated entropy + nonce
-         *      if (not valid) nonce += custom_entropy; retry
-         * }
-         * {
-         *      customGeneratedEntropy = custom_entropy * generated_entropy
-         *      nonce = custom_entropy
-         *      i = customGeneratedEntropy + nonce
-         *      if (not valid) nonce += custom_entropy; retry
-         * }
-         */
-        /* Start this off with nonce=1 and post-increment */
-        BigInteger nonce = customEntropy;
-        BigInteger customGeneratedEntropy = customEntropy.multiply(generatedEntropy);
-        while (true) {
-            BigInteger value = customGeneratedEntropy.add(nonce);
-            String seed = encodeSeed(dictionary, value);
-            if (MnemonicUtility.isValidGeneratedSeed(seed, prefix, prefixMask)) {
-                return seed;
-            }
-            nonce = nonce.add(customEntropy);
-        }
+        return new BuilderInstance(parameters).generateMnemonic();
     }
 
-    private boolean isValidGeneratedSeed(String seed, String wordListIdentifier, byte[] prefix, byte[] prefixMask) {
-        return !isOldSeed(seed) && isNewSeed(seed, wordListIdentifier, prefix, prefixMask);
-    }
-
-    private boolean isNewSeed(String seed, String wordListIdentifier, byte[] prefix, byte[] prefixMask) {
-        seed = normalizeSeed(seed, wordListIdentifier);
-        byte[] seedBytes = seed.getBytes(Charsets.UTF_8);
-        try {
-            Mac mac = Mac.getInstance("HmacSHA512");
-            mac.init(new SecretKeySpec("Seed version".getBytes(Charsets.US_ASCII), "HmacSHA512"));
-            byte[] macBytes = mac.doFinal(seedBytes);
-
-            /* Check the mask bytes */
-            if (prefix.length > macBytes.length) {
-                return false;
-            }
-            for (int i = 0; i < prefix.length; i++) {
-                /* NOTE: mask presumed to already be applied to prefix */
-                if (prefix[i] != (prefixMask[i] & macBytes[i])) {
-                    return false;
-                }
-            }
-            return true;
-        } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            return false;
-        }
-    }
-
-    private String normalizeSeed(String seed, String wordListIdentifier) {
-        seed = Normalizer.normalize(seed, Normalizer.Form.NFKD);
-        seed = seed.toLowerCase();
-        seed = DIACRITICAL_MATCH.matcher(seed).replaceAll("");
-
-        /* Alternate option if Regex too slow or incorrect */
-        //seed = Joiner.on(' ').join(Splitter.on(CharMatcher.WHITESPACE).split(seed));
-        if (CJK_IDENTIFIER_SET.contains(wordListIdentifier)) {
-            /* CJK drops all whitespace */
-            seed = WHITESPACE_MATCH.matcher(seed).replaceAll("");
-        } else {
-            seed = WHITESPACE_MATCH.matcher(seed).replaceAll(" ");
-        }
-
-        return seed;
-    }
-
-    private boolean isOldSeed(String seed) {
-        return false;
-    }
-
-    private String encodeSeed(BidirectionalDictionary dictionary, BigInteger value) {
-        int[] indexArray = MnemonicIndexGenerator.generateIndices(value, dictionary);
-        StringBuilder mnemonicSentence = new StringBuilder();
-        for (int i = 0; i < indexArray.length; i++) {
-            String word = dictionary.convert(indexArray[i]);
-            if (i != 0) {
-                mnemonicSentence.append(' ');
-            }
-            mnemonicSentence.append(word);
-        }
-        return mnemonicSentence.toString();
+    /**
+     * Encode this instance to a wrapped mnemonic unit.
+     * The default implementation performs a naive generation without optimisation.
+     *
+     * @param builder
+     *         instance to construct MnemonicUnit with.
+     * @param parameters
+     *         builder parameters to drive the process.
+     *
+     * @return MnemonicUnit instance wrapping build results.
+     *
+     * @since 0.4.0
+     */
+    @Override
+    @Nonnull
+    public MnemonicUnit generateMnemonicUnit(@Nonnull MnemonicUnit.Builder builder, BuilderParameter... parameters) {
+        return new BuilderInstance(parameters).generateMnemonicUnit(builder);
     }
 
     /**
@@ -277,6 +151,146 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             } else {
                 throw new IllegalArgumentException("Unsupported parameter type: " + parameter);
             }
+        }
+    }
+
+    private static class BuilderInstance {
+        private static final VersionPrefix DEFAULT_VERSION_PREFIX = VersionPrefix.STANDARD;
+
+        private int entropyLengthBytes = -1;
+        private String wordListIdentifier = null;
+        private BidirectionalDictionary dictionary;
+        private VersionPrefix versionPrefix = null;
+
+        private BigInteger customEntropy = BigInteger.ONE;
+        private BigInteger nonce;
+        private BigInteger customGeneratedEntropy;
+
+        public BuilderInstance(BuilderParameter[] parameters) {
+            Map<MnemonicExtensionIdentifier, Object> extensions = null;
+            for (BuilderParameter parameter : parameters) {
+                if (null == parameter) {
+                    continue;
+                }
+                if (parameter instanceof EntropyBuilderParameter) {
+                    EntropyBuilderParameter entropyBuilder = (EntropyBuilderParameter) parameter;
+                    entropyLengthBytes = entropyBuilder.getEntropyLength();
+                } else if (parameter instanceof WordListBuilderParameter) {
+                    wordListIdentifier = ((WordListBuilderParameter) parameter).getWordListIdentifier();
+                } else if (parameter instanceof ExtensionBuilderParameter) {
+                    extensions = ((ExtensionBuilderParameter) parameter).getExtensions();
+                } else {
+                    throw new IllegalArgumentException("Unsupported parameter type: " + parameter);
+                }
+            }
+            if (entropyLengthBytes < 0) {
+                entropyLengthBytes = DEFAULT_ENTROPY_PARAMETER.getEntropyLength();
+            }
+            if (null == wordListIdentifier) {
+                wordListIdentifier = DEFAULT_WORDLIST_PARAMETER.getWordListIdentifier();
+            }
+            if (null == extensions) {
+                extensions = Collections.emptyMap();
+            }
+            /* DUMMY */
+            Verify.verifyNotNull(extensions);
+            versionPrefix = (VersionPrefix) extensions.get(ElectrumV2ExtensionIdentifiers.MNEMONIC_VERSION_PREFIX);
+            if (null == versionPrefix) {
+                versionPrefix = DEFAULT_VERSION_PREFIX;
+            }
+            dictionary = MnemonicUtility.getDictionary(wordListIdentifier);
+        }
+
+        private void prepareRandomData() {
+            /* Based on make_seed algorithm */
+            int customEntropyBits = BigIntegerMath.log2(customEntropy, RoundingMode.CEILING);
+
+            int prefixLength = versionPrefix.getValueBitLength();
+            int entropyLengthBits = entropyLengthBytes * 8;
+            int randomEntropy = Math.max(16, prefixLength + entropyLengthBits - customEntropyBits);
+            BigInteger generatedEntropy = new BigInteger(randomEntropy, new SecureRandom());
+            /* Algorithm:
+             * {
+             *      nonce = 1
+             *      i = custom_entropy * (generated entropy + nonce)
+             *      if (not valid) nonce += 1; retry
+             * }
+             * {
+             *      nonce = 1
+             *      i = custom_entropy * generated entropy + custom_entropy * nonce
+             *      if (not valid) nonce += 1; retry
+             * }
+             * {
+             *      nonce = custom_entropy
+             *      i = custom_entropy * generated entropy + nonce
+             *      if (not valid) nonce += custom_entropy; retry
+             * }
+             * {
+             *      customGeneratedEntropy = custom_entropy * generated_entropy
+             *      nonce = custom_entropy
+             *      i = customGeneratedEntropy + nonce
+             *      if (not valid) nonce += custom_entropy; retry
+             * }
+             */
+            /* Start this off with nonce=1 and post-increment */
+            nonce = customEntropy;
+            customGeneratedEntropy = customEntropy.multiply(generatedEntropy);
+        }
+
+        public String generateMnemonic() {
+            prepareRandomData();
+            while (true) {
+                BigInteger value = customGeneratedEntropy.add(nonce);
+                String seed = encodeSeed(dictionary, value);
+                if (MnemonicUtility.isValidGeneratedSeed(seed, versionPrefix)) {
+                    return seed;
+                }
+                nonce = nonce.add(customEntropy);
+            }
+        }
+
+        private MnemonicUnit deriveMnemonicUnit(MnemonicUnit.Builder builder, String mnemonicSequence) {
+            /* Known prefixes => 1 */
+            /* Verify that the seed is normal */
+            /* Perform each step independently to permit re-use of pieces */
+            if (MnemonicUtility.isOldSeed(mnemonicSequence)) {
+                return null;
+            }
+            byte[] seedVersionData;
+            try {
+                seedVersionData = MnemonicUtility.getSeedVersionBytes(mnemonicSequence);
+            } catch (GeneralSecurityException e) {
+                return null;
+            }
+            if (!versionPrefix.matches(seedVersionData)) {
+                return null;
+            }
+            return MnemonicDecoderSpiImpl.getMnemonicUnit(builder, mnemonicSequence, dictionary, versionPrefix);
+        }
+
+        public MnemonicUnit generateMnemonicUnit(MnemonicUnit.Builder builder) {
+            prepareRandomData();
+            while (true) {
+                BigInteger value = customGeneratedEntropy.add(nonce);
+                String seed = encodeSeed(dictionary, value);
+                MnemonicUnit unit = deriveMnemonicUnit(builder, seed);
+                if (null != unit) {
+                    return unit;
+                }
+                nonce = nonce.add(customEntropy);
+            }
+        }
+        private String encodeSeed(BidirectionalDictionary dictionary, BigInteger value) {
+            int[] indexArray = MnemonicIndexGenerator.generateIndices(value, dictionary);
+            StringBuilder mnemonicSentence = new StringBuilder();
+            for (int i = 0; i < indexArray.length; i++) {
+                String word = dictionary.convert(indexArray[i]);
+                if (i != 0) {
+                    mnemonicSentence.append(' ');
+                }
+                mnemonicSentence.append(word);
+            }
+            return mnemonicSentence.toString();
         }
     }
 }

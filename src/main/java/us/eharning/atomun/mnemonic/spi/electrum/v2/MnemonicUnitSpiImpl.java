@@ -18,7 +18,8 @@ package us.eharning.atomun.mnemonic.spi.electrum.v2;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Converter;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.tomgibara.crinch.bits.BitWriter;
 import com.tomgibara.crinch.bits.ByteArrayBitWriter;
@@ -32,7 +33,7 @@ import java.math.BigInteger;
 import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -217,27 +218,16 @@ class MnemonicUnitSpiImpl extends MnemonicUnitSpi {
      *         sequence.
      * @param entropy
      *         derived copy of entropy.
-     *
-     * @return wrapped instance.
-     */
-    @Nonnull
-    public MnemonicUnit build(MnemonicUnit.Builder builder, CharSequence mnemonicSequence, byte[] entropy) {
-        return super.build(builder, mnemonicSequence, entropy, null, ImmutableMap.<MnemonicExtensionIdentifier, Object>of());
-    }
+     * @param supportedExtensions
+     *         set of supported extensions dependent on algorithm.
+     * @param extensionLoader
+     *         method to calculate a given extension's value.
 
-    /**
-     * Utility method to generate a MnemonicUnit wrapping the given sequence and entropy.
-     *
-     * @param mnemonicSequence
-     *         sequence.
-     * @param entropy
-     *         derived copy of entropy.
-     *
      * @return wrapped instance.
      */
     @Nonnull
-    public MnemonicUnit build(MnemonicUnit.Builder builder, CharSequence mnemonicSequence, byte[] entropy, Map<String, Object> metadata) {
-        return super.build(builder, mnemonicSequence, entropy, null, ImmutableMap.<MnemonicExtensionIdentifier, Object>of());
+    public MnemonicUnit build(MnemonicUnit.Builder builder, CharSequence mnemonicSequence, byte[] entropy, Set<MnemonicExtensionIdentifier> supportedExtensions, Function<MnemonicExtensionIdentifier, Object> extensionLoader) {
+        return super.build(builder, mnemonicSequence, entropy, null, ImmutableSet.copyOf(supportedExtensions), extensionLoader);
     }
 
     /**

@@ -19,9 +19,6 @@ import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
-import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039TestData
-
-import java.text.Normalizer
 
 /**
  * Test sequence for the legacy Electrum mnemonic builder
@@ -75,6 +72,19 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             "japanese"  | _
             "spanish"   | _
             "portuguese"| _
+    }
+    def "check encoding passes with each version prefix"(VersionPrefix versionPrefix) {
+        given:
+            def builder = MnemonicBuilder.newBuilder(ALG)
+        when:
+            builder.setExtensions([ (ElectrumV2ExtensionIdentifiers.MNEMONIC_VERSION_PREFIX): versionPrefix ])
+        then:
+            noExceptionThrown()
+        expect:
+            builder.buildUnit().getExtensionValue(ElectrumV2ExtensionIdentifiers.MNEMONIC_VERSION_PREFIX) == versionPrefix
+        where:
+            versionPrefix << VersionPrefix.values()
+
     }
     def "check encoding passes when no state set with safe defaults"() {
         given:
