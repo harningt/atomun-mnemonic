@@ -4,8 +4,8 @@ plugins {
     id 'java'
     id 'groovy'
     id 'maven'
-    id 'org.ajoberstar.release-opinion' version '1.0.0'
-    id 'org.ajoberstar.defaults' version '0.5.2'
+    id 'org.ajoberstar.release-opinion' version '1.1.0'
+    id 'org.ajoberstar.defaults' version '0.5.3'
     id 'checkstyle'
     id 'findbugs'
     id "org.standardout.versioneye" version "1.0.1"
