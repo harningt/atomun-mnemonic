@@ -28,28 +28,60 @@ import java.util.Set;
  * @since 0.4.0
  */
 public class MoreMnemonicExtensionIdentifiers {
+    /**
+     * Obtains the extension identifiers from the set that canGet.
+     *
+     * @param mnemonicExtensionIdentifiers
+     *         set of extension identifiers to filter.
+     *
+     * @return filtered set of identifiers
+     */
     public static Set<MnemonicExtensionIdentifier> onlyCanGet(Set<MnemonicExtensionIdentifier> mnemonicExtensionIdentifiers) {
         return Sets.filter(mnemonicExtensionIdentifiers, new Predicate<MnemonicExtensionIdentifier>() {
             @Override
             public boolean apply(MnemonicExtensionIdentifier input) {
-                return input.canGet();
+                return input != null ? input.canGet() : false;
             }
         });
     }
 
+    /**
+     * Obtains the extension identifiers from the set that canGet.
+     *
+     * @param mnemonicExtensionIdentifiers
+     *         set of extension identifiers to filter.
+     *
+     * @return filtered set of identifiers
+     */
     public static Set<MnemonicExtensionIdentifier> onlyCanGet(MnemonicExtensionIdentifier... mnemonicExtensionIdentifiers) {
         return onlyCanGet(ImmutableSet.copyOf(mnemonicExtensionIdentifiers));
     }
 
+    /**
+     * Obtains the extension identifiers from the set that canSet.
+     *
+     * @param mnemonicExtensionIdentifiers
+     *         set of extension identifiers to filter.
+     *
+     * @return filtered set of identifiers
+     */
     public static Set<MnemonicExtensionIdentifier> onlyCanSet(Set<MnemonicExtensionIdentifier> mnemonicExtensionIdentifiers) {
         return Sets.filter(mnemonicExtensionIdentifiers, new Predicate<MnemonicExtensionIdentifier>() {
             @Override
             public boolean apply(MnemonicExtensionIdentifier input) {
-                return input.canSet();
+                return input != null ? input.canSet() : false;
             }
         });
     }
 
+    /**
+     * Obtains the extension identifiers from the set that canSet.
+     *
+     * @param mnemonicExtensionIdentifiers
+     *         set of extension identifiers to filter.
+     *
+     * @return filtered set of identifiers
+     */
     public static Set<MnemonicExtensionIdentifier> onlyCanSet(MnemonicExtensionIdentifier... mnemonicExtensionIdentifiers) {
         return onlyCanSet(ImmutableSet.copyOf(mnemonicExtensionIdentifiers));
     }

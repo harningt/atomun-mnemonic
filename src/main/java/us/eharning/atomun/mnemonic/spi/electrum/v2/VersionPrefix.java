@@ -32,18 +32,42 @@ public enum VersionPrefix {
         this.valueMask = valueMask;
     }
 
+    /**
+     * Get the raw value of the prefix.
+     *
+     * @return copy of the raw value.
+     */
     public byte[] getValue() {
         return Arrays.copyOf(value, value.length);
     }
+
+    /**
+     * Get the mask of the value of the prefix.
+     *
+     * @return copy of the mask of the value.
+     */
     public byte[] getValueMask() {
         return Arrays.copyOf(valueMask, valueMask.length);
     }
 
+    /**
+     * Obtain the bit-length of the prefix
+     *
+     * @return prefix length in bits.
+     */
     public int getValueBitLength() {
         /* TODO: Count last bit used by mask */
         return value.length * 8;
     }
 
+    /**
+     * Check to see if the input data has the given prefix.
+     *
+     * @param data
+     *         input data to check.
+     *
+     * @return true if the data starts with the given prefix+mask, false otherwise.
+     */
     public boolean matches(byte[] data) {
         /* Check the mask bytes */
         if (value.length > data.length) {

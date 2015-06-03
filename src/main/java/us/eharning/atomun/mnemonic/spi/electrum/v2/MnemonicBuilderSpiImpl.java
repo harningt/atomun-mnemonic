@@ -280,6 +280,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
                 nonce = nonce.add(customEntropy);
             }
         }
+
         private String encodeSeed(BidirectionalDictionary dictionary, BigInteger value) {
             int[] indexArray = MnemonicIndexGenerator.generateIndices(value, dictionary);
             StringBuilder mnemonicSentence = new StringBuilder();
