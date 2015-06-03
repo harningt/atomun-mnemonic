@@ -32,8 +32,6 @@ import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicSer
 import java.io.IOException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -197,50 +195,47 @@ class MnemonicUtility {
      *
      * @param seed
      *         space-separated list of words to validate.
-     * @param prefix
-     *         bytes that must be at the beginning of the seed version mac
-     * @param prefixMask
-     *         byte-mask to apply to the data bytes to best handle prefixes not a multiple of 8 bits
+     * @param versionPrefix
+     *         prefix value that must be at the beginning of the seed version mac
      *
      * @return true if the seed can be interpreted as the v2 format but not the legacy format.
      */
-    public static boolean isValidGeneratedSeed(CharSequence seed, byte[] prefix, byte[] prefixMask) {
-        return !isOldSeed(seed) && isNewSeed(seed, prefix, prefixMask);
+    public static boolean isValidGeneratedSeed(CharSequence seed, VersionPrefix versionPrefix) {
+        return !isOldSeed(seed) && isNewSeed(seed, versionPrefix);
     }
 
     /**
-     * Utility method to determine if a given seed is of the "old" format.
+     * Utility method to extract the seed version bytes from the seed.
      *
      * @param seed
      *         space-separated list of words to validate.
-     * @param prefix
-     *         bytes that must be at the beginning of the seed version mac
-     * @param prefixMask
-     *         byte-mask to apply to the data bytes to best handle prefixes not a multiple of 8 bits
+     *
+     * @return byte array with the seed version bytes value
+     */
+    public static byte[] getSeedVersionBytes(CharSequence seed) throws GeneralSecurityException {
+        String normalizedSeed = MnemonicUtility.normalizeSeed(seed);
+        byte[] seedBytes = normalizedSeed.getBytes(Charsets.UTF_8);
+        Mac mac = Mac.getInstance("HmacSHA512");
+        mac.init(new SecretKeySpec("Seed version".getBytes(Charsets.US_ASCII), "HmacSHA512"));
+        return mac.doFinal(seedBytes);
+    }
+
+    /**
+     * Utility method to determine if a given seed is of the "new" format.
+     *
+     * @param seed
+     *         space-separated list of words to validate.
+     * @param versionPrefix
+     *         prefix value that must be at the beginning of the seed version mac
      *
      * @return true if the seed can be interpreted as the v2 format.
      */
-
-    private static boolean isNewSeed(CharSequence seed, byte[] prefix, byte[] prefixMask) {
-        String normalizedSeed = MnemonicUtility.normalizeSeed(seed);
-        byte[] seedBytes = normalizedSeed.getBytes(Charsets.UTF_8);
+    public static boolean isNewSeed(CharSequence seed, VersionPrefix versionPrefix) {
         try {
-            Mac mac = Mac.getInstance("HmacSHA512");
-            mac.init(new SecretKeySpec("Seed version".getBytes(Charsets.US_ASCII), "HmacSHA512"));
-            byte[] macBytes = mac.doFinal(seedBytes);
+            byte[] macBytes = getSeedVersionBytes(seed);
 
-            /* Check the mask bytes */
-            if (prefix.length > macBytes.length) {
-                return false;
-            }
-            for (int i = 0; i < prefix.length; i++) {
-                /* NOTE: mask presumed to already be applied to prefix */
-                if (prefix[i] != (prefixMask[i] & macBytes[i])) {
-                    return false;
-                }
-            }
-            return true;
-        } catch (InvalidKeyException | NoSuchAlgorithmException e) {
+            return versionPrefix.matches(macBytes);
+        } catch (GeneralSecurityException e) {
             return false;
         }
     }
@@ -253,7 +248,7 @@ class MnemonicUtility {
      *
      * @return true if the seed can be interpreted as a legacy format.
      */
-    private static boolean isOldSeed(CharSequence seed) {
+    public static boolean isOldSeed(CharSequence seed) {
         List<String> words = Splitter.on(WHITESPACE_MATCH).splitToList(seed);
         if (words.size() % 3 != 0) {
             /* Not a multiple of 3 words, not an old seed */

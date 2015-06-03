@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-package us.eharning.atomun.mnemonic.spi.electrum.v2;
+package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
-import com.google.common.collect.ImmutableSet;
-
-import java.util.Set;
+import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 
 /**
- * Public storage class for constants regarding Electrum V2.
+ * Enumeration for Legacy Electrum extension identifiers.
+ *
+ * @since 0.4.0
  */
-public class ElectrumV2Constants {
-    static final Set<String> KNOWN_EXTENSION_NAMES = ImmutableSet.of();
+public enum LegacyElectrumExtensionIdentifiers implements MnemonicExtensionIdentifier {
+    ;
+
+    @Override
+    public boolean canGet() {
+        return false;
+    }
+
+    @Override
+    public boolean canSet() {
+        return false;
+    }
 }

@@ -18,6 +18,7 @@ package us.eharning.atomun.mnemonic.spi.bip0039
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
+import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 import us.eharning.atomun.mnemonic.MnemonicUnit
 
 import java.text.Normalizer
@@ -27,6 +28,18 @@ import java.text.Normalizer
  */
 class BIP0039MnemonicBuilderSpock extends Specification {
     static final MnemonicAlgorithm ALG = MnemonicAlgorithm.BIP0039
+
+    private static def RW_IDENTIFIER = new MnemonicExtensionIdentifier() {
+        @Override
+        boolean canGet() {
+            return true
+        }
+
+        @Override
+        boolean canSet() {
+            return true
+        }
+    }
 
     def "check word lists supported"() {
         given:
@@ -174,7 +187,7 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         given:
         def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-        builder.setExtensions(["x": 1])
+        builder.setExtensions([(RW_IDENTIFIER): 1])
         then:
         thrown(IllegalArgumentException)
     }

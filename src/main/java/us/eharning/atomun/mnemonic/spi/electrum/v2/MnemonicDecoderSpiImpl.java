@@ -17,11 +17,15 @@
 package us.eharning.atomun.mnemonic.spi.electrum.v2;
 
 import com.google.common.base.Converter;
+import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
+import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
 
+import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.CheckForNull;
@@ -35,6 +39,14 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
     private static final ConcurrentMap<String, MnemonicUnitSpiImpl> WORD_LIST_SPI = new ConcurrentHashMap<>();
+
+    private static final byte[] STANDARD_PREFIX = new byte[] { 0x01 };
+    private static final byte[] STANDARD_PREFIX_MASK = new byte[] { (byte)0xFF };
+    private static final Set<MnemonicExtensionIdentifier> SUPPORTED_READABLE_EXTENSIONS;
+
+    static {
+        SUPPORTED_READABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.onlyCanGet(ElectrumV2ExtensionIdentifiers.values());
+    }
 
     /**
      * Detect the appropriate word list for the given mnemonic sequence.
@@ -83,12 +95,14 @@ class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
      * Decodes a given mnemonic into a unit.
      * The word list is to be automatically detected and it is expected that only one matches.
      *
+     * @param builder
+     *         instance maker.
      * @param mnemonicSequence
      *         space-delimited sequence of mnemonic words.
      * @param wordListIdentifier
-     *         optional word list identifier
+     *         optional word list identifier.
      *
-     * @return mnemonic unit
+     * @return mnemonic unit.
      *
      * @throws IllegalArgumentException
      *         the sequence cannot match
@@ -98,7 +112,24 @@ class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
     public MnemonicUnit decode(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
         /* Known prefixes => 1 */
         /* Verify that the seed is normal */
-        if (!MnemonicUtility.isValidGeneratedSeed(mnemonicSequence, new byte[]{0x01}, new byte[]{(byte) 0xFF})) {
+        /* Perform each step independently to permit re-use of pieces */
+        if (MnemonicUtility.isOldSeed(mnemonicSequence)) {
+            throw new IllegalArgumentException("Mnemonic does not have the expected seed version");
+        }
+        byte[] seedVersionData;
+        try {
+            seedVersionData = MnemonicUtility.getSeedVersionBytes(mnemonicSequence);
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException("Failed to calculate the seed version data", e);
+        }
+        VersionPrefix versionPrefix = null;
+        for (VersionPrefix testVersionPrefix: VersionPrefix.values()) {
+            if (testVersionPrefix.matches(seedVersionData)) {
+                versionPrefix = testVersionPrefix;
+                break;
+            }
+        }
+        if (null == versionPrefix) {
             throw new IllegalArgumentException("Mnemonic does not have the expected seed version");
         }
         List<String> mnemonicWordList = MnemonicUtility.getNormalizedWordList(mnemonicSequence);
@@ -108,7 +139,6 @@ class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
             if (null == dictionary) {
                 throw new IllegalArgumentException("Could not detect dictionary for words");
             }
-            wordListIdentifier = dictionary.getWordListIdentifier();
         } else {
             dictionary = MnemonicUtility.getDictionary(wordListIdentifier);
             if (!verifyDictionary(dictionary, mnemonicWordList)) {
@@ -116,6 +146,26 @@ class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
             }
         }
 
+        return getMnemonicUnit(builder, mnemonicSequence, dictionary, versionPrefix);
+    }
+
+    /**
+     * Static utility method to factor value construction.
+     *
+     * @param builder
+     *         instance maker.
+     * @param mnemonicSequence
+     *         space-delimited sequence of mnemonic words.
+     * @param dictionary
+     *         word list dictionary.
+     * @param versionPrefix
+     *         detected sequence version.
+     *
+     * @return mnemonic unit.
+     */
+    @Nonnull
+    static MnemonicUnit getMnemonicUnit(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nonnull BidirectionalDictionary dictionary, @Nonnull VersionPrefix versionPrefix) {
+        String wordListIdentifier = dictionary.getWordListIdentifier();
         MnemonicUnitSpiImpl unit = WORD_LIST_SPI.get(wordListIdentifier);
         if (null == unit) {
             unit = new MnemonicUnitSpiImpl(dictionary);
@@ -123,6 +173,6 @@ class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
         }
 
         byte[] entropy = unit.getEntropy(mnemonicSequence);
-        return unit.build(builder, mnemonicSequence, entropy);
+        return unit.build(builder, mnemonicSequence, entropy, SUPPORTED_READABLE_EXTENSIONS, new ElectrumV2ExtensionLoader(versionPrefix));
     }
 }

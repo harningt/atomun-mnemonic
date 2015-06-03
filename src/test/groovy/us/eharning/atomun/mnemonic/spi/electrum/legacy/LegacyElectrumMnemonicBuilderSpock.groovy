@@ -18,6 +18,7 @@ package us.eharning.atomun.mnemonic.spi.electrum.legacy
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
+import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 import us.eharning.atomun.mnemonic.MnemonicUnit
 
 /**
@@ -32,6 +33,18 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
             ["happen made spring knock heart middle suppose fish bought plain real ignore", "88c811176129b2882fc4737728195b87"],
             ["class group aside accept eat howl harm world ignorance brain count dude", "f9379762a6da83b4e40e31b682a6dd8d"]
     ]
+
+    private static def RW_IDENTIFIER = new MnemonicExtensionIdentifier() {
+        @Override
+        boolean canGet() {
+            return true
+        }
+
+        @Override
+        boolean canSet() {
+            return true
+        }
+    }
 
     def "check word lists not supported"() {
         when:
@@ -139,7 +152,7 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         given:
         def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-        builder.setExtensions(["x": 1])
+        builder.setExtensions([(RW_IDENTIFIER): 1])
         then:
         thrown(IllegalArgumentException)
     }

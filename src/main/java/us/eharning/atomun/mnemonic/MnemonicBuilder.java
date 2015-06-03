@@ -168,7 +168,7 @@ public final class MnemonicBuilder {
      * @since 0.1.0
      */
     @Nonnull
-    public MnemonicBuilder setExtensions(Map<String, Object> extensions) {
+    public MnemonicBuilder setExtensions(Map<MnemonicExtensionIdentifier, Object> extensions) {
         parameters[2] = ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.copyOf(extensions));
         newSpi.validate(parameters);
         return this;
