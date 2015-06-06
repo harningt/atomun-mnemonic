@@ -80,11 +80,11 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setExtensions([ (ElectrumV2ExtensionIdentifier.MNEMONIC_VERSION_PREFIX): versionPrefix ])
+            builder.setExtensions([ (ElectrumV2ExtensionIdentifier.VERSION_PREFIX): versionPrefix ])
         then:
             noExceptionThrown()
         expect:
-            builder.buildUnit().getExtensionValue(ElectrumV2ExtensionIdentifier.MNEMONIC_VERSION_PREFIX) == versionPrefix
+            builder.buildUnit().getExtensionValue(ElectrumV2ExtensionIdentifier.VERSION_PREFIX) == versionPrefix
         where:
             versionPrefix << VersionPrefix.values()
     }
@@ -92,7 +92,7 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
         given:
         def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-        builder.setExtensions([ (ElectrumV2ExtensionIdentifier.MNEMONIC_CUSTOM_ENTROPY): customEntropy ])
+        builder.setExtensions([ (ElectrumV2ExtensionIdentifier.CUSTOM_ENTROPY): customEntropy ])
         then:
         thrown(IllegalArgumentException)
         where:
@@ -105,7 +105,7 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
         def builder = MnemonicBuilder.newBuilder(ALG)
         BigInteger customEntropy = BigInteger.probablePrime(entropyBitLength, RNG)
         when:
-        builder.setExtensions([ (ElectrumV2ExtensionIdentifier.MNEMONIC_CUSTOM_ENTROPY): customEntropy ])
+        builder.setExtensions([ (ElectrumV2ExtensionIdentifier.CUSTOM_ENTROPY): customEntropy ])
         then:
         noExceptionThrown()
         expect:
@@ -122,10 +122,10 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
         given:
         def builder = MnemonicBuilder.newBuilder(ALG)
         BigInteger customEntropy = BigInteger.probablePrime(8, RNG)
-        builder.setExtensions([ (ElectrumV2ExtensionIdentifier.MNEMONIC_CUSTOM_ENTROPY): customEntropy ])
+        builder.setExtensions([ (ElectrumV2ExtensionIdentifier.CUSTOM_ENTROPY): customEntropy ])
         def unit = builder.buildUnit()
         when:
-        unit.getExtensionValue(ElectrumV2ExtensionIdentifier.MNEMONIC_CUSTOM_ENTROPY)
+        unit.getExtensionValue(ElectrumV2ExtensionIdentifier.CUSTOM_ENTROPY)
         then:
         thrown(IllegalArgumentException)
     }

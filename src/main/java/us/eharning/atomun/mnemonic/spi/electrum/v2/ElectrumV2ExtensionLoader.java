@@ -40,7 +40,7 @@ class ElectrumV2ExtensionLoader implements Function<MnemonicExtensionIdentifier,
         Preconditions.checkArgument(input.canGet(), "Mnemonic extension is not readable");
 
         switch ((ElectrumV2ExtensionIdentifier) input) {
-        case MNEMONIC_VERSION_PREFIX:
+        case VERSION_PREFIX:
             return versionPrefix;
         default:
             return null;

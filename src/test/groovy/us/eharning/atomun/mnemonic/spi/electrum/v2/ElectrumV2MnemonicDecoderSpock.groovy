@@ -37,7 +37,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
             //unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
             unit.getSupportedExtensions().containsAll(GETTABLE_EXTENSIONS)
-            unit.getExtensionValue(ElectrumV2ExtensionIdentifier.MNEMONIC_VERSION_PREFIX) == testCase.versionPrefix
+            unit.getExtensionValue(ElectrumV2ExtensionIdentifier.VERSION_PREFIX) == testCase.versionPrefix
         where:
             testCase << ElectrumV2TestData.STANDARD_VECTORS
     }
@@ -49,7 +49,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
             //unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
             unit.getSupportedExtensions().containsAll(GETTABLE_EXTENSIONS)
-            unit.getExtensionValue(ElectrumV2ExtensionIdentifier.MNEMONIC_VERSION_PREFIX) == testCase.versionPrefix
+            unit.getExtensionValue(ElectrumV2ExtensionIdentifier.VERSION_PREFIX) == testCase.versionPrefix
         where:
             testCase << ElectrumV2TestData.LANGUAGE_VECTORS
     }
@@ -70,7 +70,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
             //unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
             unit.getSupportedExtensions().containsAll(GETTABLE_EXTENSIONS)
-            unit.getExtensionValue(ElectrumV2ExtensionIdentifier.MNEMONIC_VERSION_PREFIX) == testCase.versionPrefix
+            unit.getExtensionValue(ElectrumV2ExtensionIdentifier.VERSION_PREFIX) == testCase.versionPrefix
         where:
             testCase << ElectrumV2TestData.ALL_VECTORS
     }
@@ -84,7 +84,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
             //unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
             unit.getSupportedExtensions().containsAll(GETTABLE_EXTENSIONS)
-            unit.getExtensionValue(ElectrumV2ExtensionIdentifier.MNEMONIC_VERSION_PREFIX) == testCase.versionPrefix
+            unit.getExtensionValue(ElectrumV2ExtensionIdentifier.VERSION_PREFIX) == testCase.versionPrefix
         where:
             testCase << ElectrumV2TestData.ALL_VECTORS
     }

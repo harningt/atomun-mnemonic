@@ -90,7 +90,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
         }
         for (Map.Entry<MnemonicExtensionIdentifier, Object> entry: extensions.entrySet()) {
             switch ((ElectrumV2ExtensionIdentifier)entry.getKey()) {
-            case MNEMONIC_CUSTOM_ENTROPY:
+            case CUSTOM_ENTROPY:
                 if (!(entry.getValue() instanceof BigInteger)) {
                     throw new IllegalArgumentException("Found unexpected value type for extension: " + entry.getKey() + " " + entry.getValue().getClass());
                 }
@@ -207,12 +207,12 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             }
             /* DUMMY */
             Verify.verifyNotNull(extensions);
-            versionPrefix = (VersionPrefix) extensions.get(ElectrumV2ExtensionIdentifier.MNEMONIC_VERSION_PREFIX);
+            versionPrefix = (VersionPrefix) extensions.get(ElectrumV2ExtensionIdentifier.VERSION_PREFIX);
             if (null == versionPrefix) {
                 versionPrefix = DEFAULT_VERSION_PREFIX;
             }
-            if (extensions.containsKey(ElectrumV2ExtensionIdentifier.MNEMONIC_CUSTOM_ENTROPY))  {
-                customEntropy = (BigInteger) extensions.get(ElectrumV2ExtensionIdentifier.MNEMONIC_CUSTOM_ENTROPY);
+            if (extensions.containsKey(ElectrumV2ExtensionIdentifier.CUSTOM_ENTROPY))  {
+                customEntropy = (BigInteger) extensions.get(ElectrumV2ExtensionIdentifier.CUSTOM_ENTROPY);
             }
             dictionary = MnemonicUtility.getDictionary(wordListIdentifier);
         }

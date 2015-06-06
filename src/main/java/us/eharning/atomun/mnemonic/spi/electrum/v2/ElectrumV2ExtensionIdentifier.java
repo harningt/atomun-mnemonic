@@ -24,8 +24,8 @@ import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
  * @since 0.4.0
  */
 public enum ElectrumV2ExtensionIdentifier implements MnemonicExtensionIdentifier {
-    MNEMONIC_VERSION_PREFIX(true, true),
-    MNEMONIC_CUSTOM_ENTROPY(false, true)
+    VERSION_PREFIX(true, true),
+    CUSTOM_ENTROPY(false, true)
     ;
 
     private boolean canGet;
