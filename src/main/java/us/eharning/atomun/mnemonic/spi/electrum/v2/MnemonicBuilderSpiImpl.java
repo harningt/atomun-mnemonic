@@ -99,6 +99,9 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
                     throw new IllegalArgumentException("Found illegal value for extension: " + entry.getKey());
                 }
                 break;
+            default:
+                /* Never reached */
+                break;
             }
         }
     }
