@@ -29,6 +29,26 @@ import java.util.Set;
  */
 public class MoreMnemonicExtensionIdentifiers {
     /**
+     * Predicate to filter extension identifiers that you cen set.
+     */
+    public static final Predicate<MnemonicExtensionIdentifier> CAN_SET = new Predicate<MnemonicExtensionIdentifier>() {
+        @Override
+        public boolean apply(MnemonicExtensionIdentifier input) {
+            return input != null ? input.canSet() : false;
+        }
+    };
+
+    /**
+     * Predicate to filter extension identifiers that you cen get.
+     */
+    public static final Predicate<MnemonicExtensionIdentifier> CAN_GET = new Predicate<MnemonicExtensionIdentifier>() {
+        @Override
+        public boolean apply(MnemonicExtensionIdentifier input) {
+            return input != null ? input.canGet() : false;
+        }
+    };
+
+    /**
      * Obtains the extension identifiers from the set that canGet.
      *
      * @param mnemonicExtensionIdentifiers
@@ -37,12 +57,7 @@ public class MoreMnemonicExtensionIdentifiers {
      * @return filtered set of identifiers
      */
     public static Set<MnemonicExtensionIdentifier> canGet(Set<MnemonicExtensionIdentifier> mnemonicExtensionIdentifiers) {
-        return Sets.filter(mnemonicExtensionIdentifiers, new Predicate<MnemonicExtensionIdentifier>() {
-            @Override
-            public boolean apply(MnemonicExtensionIdentifier input) {
-                return input != null ? input.canGet() : false;
-            }
-        });
+        return Sets.filter(mnemonicExtensionIdentifiers, CAN_GET);
     }
 
     /**
@@ -66,12 +81,7 @@ public class MoreMnemonicExtensionIdentifiers {
      * @return filtered set of identifiers
      */
     public static Set<MnemonicExtensionIdentifier> canSet(Set<MnemonicExtensionIdentifier> mnemonicExtensionIdentifiers) {
-        return Sets.filter(mnemonicExtensionIdentifiers, new Predicate<MnemonicExtensionIdentifier>() {
-            @Override
-            public boolean apply(MnemonicExtensionIdentifier input) {
-                return input != null ? input.canSet() : false;
-            }
-        });
+        return Sets.filter(mnemonicExtensionIdentifiers, CAN_SET);
     }
 
     /**
