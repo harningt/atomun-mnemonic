@@ -94,6 +94,11 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
                 if (!(entry.getValue() instanceof BigInteger)) {
                     throw new IllegalArgumentException("Found unexpected value type for extension: " + entry.getKey() + " " + entry.getValue().getClass());
                 }
+                BigInteger customEntropy = (BigInteger) entry.getValue();
+                if (0 <= BigInteger.ZERO.compareTo(customEntropy)) {
+                    throw new IllegalArgumentException("Found illegal value for extension: " + entry.getKey());
+                }
+                break;
             }
         }
     }

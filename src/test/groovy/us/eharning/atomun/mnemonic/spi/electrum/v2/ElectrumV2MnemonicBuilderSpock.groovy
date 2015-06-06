@@ -88,6 +88,18 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
         where:
             versionPrefix << VersionPrefix.values()
     }
+    def "check encoding fails with illegal custom entropy"(BigInteger customEntropy) {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        when:
+        builder.setExtensions([ (ElectrumV2ExtensionIdentifier.MNEMONIC_CUSTOM_ENTROPY): customEntropy ])
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        customEntropy | _
+        BigInteger.ZERO | _
+        BigInteger.ONE.negate() | _
+    }
     def "check encoding passes with custom entropy"(int entropyBitLength) {
         given:
         def builder = MnemonicBuilder.newBuilder(ALG)
@@ -105,6 +117,17 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
         64 | _
         128 | _
         512 | _
+    }
+    def "check encoding passes with custom entropy but cannot retrieve"() {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        BigInteger customEntropy = BigInteger.probablePrime(8, RNG)
+        builder.setExtensions([ (ElectrumV2ExtensionIdentifier.MNEMONIC_CUSTOM_ENTROPY): customEntropy ])
+        def unit = builder.buildUnit()
+        when:
+        unit.getExtensionValue(ElectrumV2ExtensionIdentifier.MNEMONIC_CUSTOM_ENTROPY)
+        then:
+        thrown(IllegalArgumentException)
     }
     def "check encoding passes when no state set with safe defaults"() {
         given:
