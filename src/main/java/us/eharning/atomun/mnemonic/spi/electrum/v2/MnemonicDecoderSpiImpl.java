@@ -45,7 +45,7 @@ class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
     private static final Set<MnemonicExtensionIdentifier> SUPPORTED_READABLE_EXTENSIONS;
 
     static {
-        SUPPORTED_READABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.onlyCanGet(ElectrumV2ExtensionIdentifiers.values());
+        SUPPORTED_READABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.onlyCanGet(ElectrumV2ExtensionIdentifier.values());
     }
 
     /**

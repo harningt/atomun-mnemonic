@@ -23,14 +23,14 @@ import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
  *
  * @since 0.4.0
  */
-public enum ElectrumV2ExtensionIdentifiers implements MnemonicExtensionIdentifier {
+public enum ElectrumV2ExtensionIdentifier implements MnemonicExtensionIdentifier {
     MNEMONIC_VERSION_PREFIX(true, true)
     ;
 
     private boolean canGet;
     private boolean canSet;
 
-    ElectrumV2ExtensionIdentifiers(boolean canGet, boolean canSet) {
+    ElectrumV2ExtensionIdentifier(boolean canGet, boolean canSet) {
         this.canGet = canGet;
         this.canSet = canSet;
     }

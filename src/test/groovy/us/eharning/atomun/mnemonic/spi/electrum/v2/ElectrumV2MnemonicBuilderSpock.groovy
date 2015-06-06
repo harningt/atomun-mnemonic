@@ -77,11 +77,11 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setExtensions([ (ElectrumV2ExtensionIdentifiers.MNEMONIC_VERSION_PREFIX): versionPrefix ])
+            builder.setExtensions([ (ElectrumV2ExtensionIdentifier.MNEMONIC_VERSION_PREFIX): versionPrefix ])
         then:
             noExceptionThrown()
         expect:
-            builder.buildUnit().getExtensionValue(ElectrumV2ExtensionIdentifiers.MNEMONIC_VERSION_PREFIX) == versionPrefix
+            builder.buildUnit().getExtensionValue(ElectrumV2ExtensionIdentifier.MNEMONIC_VERSION_PREFIX) == versionPrefix
         where:
             versionPrefix << VersionPrefix.values()
 

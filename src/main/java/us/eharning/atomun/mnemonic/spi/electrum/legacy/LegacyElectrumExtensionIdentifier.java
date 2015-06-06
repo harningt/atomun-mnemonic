@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package us.eharning.atomun.mnemonic.spi.bip0039;
+package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 
 /**
- * Enumeration for BIP0039 extension identifiers.
+ * Enumeration for Legacy Electrum extension identifiers.
  *
  * @since 0.4.0
  */
-public enum BIP0039ExtensionIdentifiers implements MnemonicExtensionIdentifier {
+public enum LegacyElectrumExtensionIdentifier implements MnemonicExtensionIdentifier {
     ;
 
     @Override

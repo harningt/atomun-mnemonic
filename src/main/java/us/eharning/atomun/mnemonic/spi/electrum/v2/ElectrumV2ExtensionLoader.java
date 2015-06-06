@@ -36,10 +36,10 @@ class ElectrumV2ExtensionLoader implements Function<MnemonicExtensionIdentifier,
     @Override
     public Object apply(MnemonicExtensionIdentifier input) {
         Preconditions.checkNotNull(input);
-        Preconditions.checkArgument(input instanceof ElectrumV2ExtensionIdentifiers, "Mnemonic extension not supported");
+        Preconditions.checkArgument(input instanceof ElectrumV2ExtensionIdentifier, "Mnemonic extension not supported");
         Preconditions.checkArgument(input.canGet(), "Mnemonic extension is not readable");
 
-        switch ((ElectrumV2ExtensionIdentifiers) input) {
+        switch ((ElectrumV2ExtensionIdentifier) input) {
         case MNEMONIC_VERSION_PREFIX:
             return versionPrefix;
         default:

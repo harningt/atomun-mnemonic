@@ -48,7 +48,7 @@ import javax.annotation.concurrent.Immutable;
 class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi {
     private static final EntropyBuilderParameter DEFAULT_ENTROPY_PARAMETER = EntropyBuilderParameter.getRandom(128 / 8);
     private static final WordListBuilderParameter DEFAULT_WORDLIST_PARAMETER = WordListBuilderParameter.getWordList("english");
-    static final Set<? extends MnemonicExtensionIdentifier> KNOWN_EXTENSION_IDENTIFIERS = ImmutableSet.copyOf(EnumSet.allOf(ElectrumV2ExtensionIdentifiers.class));
+    static final Set<? extends MnemonicExtensionIdentifier> KNOWN_EXTENSION_IDENTIFIERS = ImmutableSet.copyOf(EnumSet.allOf(ElectrumV2ExtensionIdentifier.class));
 
     /**
      * Construct a new SPI with the given algorithm.
@@ -194,7 +194,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             }
             /* DUMMY */
             Verify.verifyNotNull(extensions);
-            versionPrefix = (VersionPrefix) extensions.get(ElectrumV2ExtensionIdentifiers.MNEMONIC_VERSION_PREFIX);
+            versionPrefix = (VersionPrefix) extensions.get(ElectrumV2ExtensionIdentifier.MNEMONIC_VERSION_PREFIX);
             if (null == versionPrefix) {
                 versionPrefix = DEFAULT_VERSION_PREFIX;
             }
