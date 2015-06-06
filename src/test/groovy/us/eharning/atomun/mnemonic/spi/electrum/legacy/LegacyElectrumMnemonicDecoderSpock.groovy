@@ -34,7 +34,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
             ["happen made spring knock heart middle suppose fish bought plain real ignore", "88c811176129b2882fc4737728195b87"],
             ["class group aside accept eat howl harm world ignorance brain count dude", "f9379762a6da83b4e40e31b682a6dd8d"]
     ]
-    static final Set<MnemonicExtensionIdentifier> GETTABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.onlyCanGet(LegacyElectrumExtensionIdentifier.values())
+    static final Set<MnemonicExtensionIdentifier> GETTABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.canGet(LegacyElectrumExtensionIdentifier.values())
 
 
     def "check #mnemonic string decodes to #encoded"(String mnemonic, String hex) {

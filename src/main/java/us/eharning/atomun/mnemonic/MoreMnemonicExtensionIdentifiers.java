@@ -36,7 +36,7 @@ public class MoreMnemonicExtensionIdentifiers {
      *
      * @return filtered set of identifiers
      */
-    public static Set<MnemonicExtensionIdentifier> onlyCanGet(Set<MnemonicExtensionIdentifier> mnemonicExtensionIdentifiers) {
+    public static Set<MnemonicExtensionIdentifier> canGet(Set<MnemonicExtensionIdentifier> mnemonicExtensionIdentifiers) {
         return Sets.filter(mnemonicExtensionIdentifiers, new Predicate<MnemonicExtensionIdentifier>() {
             @Override
             public boolean apply(MnemonicExtensionIdentifier input) {
@@ -53,8 +53,8 @@ public class MoreMnemonicExtensionIdentifiers {
      *
      * @return filtered set of identifiers
      */
-    public static Set<MnemonicExtensionIdentifier> onlyCanGet(MnemonicExtensionIdentifier... mnemonicExtensionIdentifiers) {
-        return onlyCanGet(ImmutableSet.copyOf(mnemonicExtensionIdentifiers));
+    public static Set<MnemonicExtensionIdentifier> canGet(MnemonicExtensionIdentifier... mnemonicExtensionIdentifiers) {
+        return canGet(ImmutableSet.copyOf(mnemonicExtensionIdentifiers));
     }
 
     /**
@@ -65,7 +65,7 @@ public class MoreMnemonicExtensionIdentifiers {
      *
      * @return filtered set of identifiers
      */
-    public static Set<MnemonicExtensionIdentifier> onlyCanSet(Set<MnemonicExtensionIdentifier> mnemonicExtensionIdentifiers) {
+    public static Set<MnemonicExtensionIdentifier> canSet(Set<MnemonicExtensionIdentifier> mnemonicExtensionIdentifiers) {
         return Sets.filter(mnemonicExtensionIdentifiers, new Predicate<MnemonicExtensionIdentifier>() {
             @Override
             public boolean apply(MnemonicExtensionIdentifier input) {
@@ -82,7 +82,7 @@ public class MoreMnemonicExtensionIdentifiers {
      *
      * @return filtered set of identifiers
      */
-    public static Set<MnemonicExtensionIdentifier> onlyCanSet(MnemonicExtensionIdentifier... mnemonicExtensionIdentifiers) {
-        return onlyCanSet(ImmutableSet.copyOf(mnemonicExtensionIdentifiers));
+    public static Set<MnemonicExtensionIdentifier> canSet(MnemonicExtensionIdentifier... mnemonicExtensionIdentifiers) {
+        return canSet(ImmutableSet.copyOf(mnemonicExtensionIdentifiers));
     }
 }
