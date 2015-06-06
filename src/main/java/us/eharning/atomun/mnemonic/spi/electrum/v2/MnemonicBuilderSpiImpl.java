@@ -82,11 +82,19 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
      * @throws IllegalArgumentException
      *         if the parameter contains unknown parameters.
      */
-    private static void checkExtensionNames(ExtensionBuilderParameter parameter) {
+    private static void checkExtensions(ExtensionBuilderParameter parameter) {
         Map<MnemonicExtensionIdentifier, Object> extensions = parameter.getExtensions();
         if (!KNOWN_EXTENSION_IDENTIFIERS.containsAll(extensions.keySet())) {
             Iterable<MnemonicExtensionIdentifier> unknownNames = Iterables.filter(extensions.keySet(), Predicates.not(Predicates.in(KNOWN_EXTENSION_IDENTIFIERS)));
             throw new IllegalArgumentException("Found unhandled extension names: " + Iterables.toString(unknownNames));
+        }
+        for (Map.Entry<MnemonicExtensionIdentifier, Object> entry: extensions.entrySet()) {
+            switch ((ElectrumV2ExtensionIdentifier)entry.getKey()) {
+            case MNEMONIC_CUSTOM_ENTROPY:
+                if (!(entry.getValue() instanceof BigInteger)) {
+                    throw new IllegalArgumentException("Found unexpected value type for extension: " + entry.getKey() + " " + entry.getValue().getClass());
+                }
+            }
         }
     }
 
@@ -147,7 +155,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             } else if (parameter instanceof WordListBuilderParameter) {
                 MnemonicUtility.getDictionary(((WordListBuilderParameter) parameter).getWordListIdentifier());
             } else if (parameter instanceof ExtensionBuilderParameter) {
-                checkExtensionNames((ExtensionBuilderParameter) parameter);
+                checkExtensions((ExtensionBuilderParameter) parameter);
             } else {
                 throw new IllegalArgumentException("Unsupported parameter type: " + parameter);
             }
@@ -197,6 +205,9 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             versionPrefix = (VersionPrefix) extensions.get(ElectrumV2ExtensionIdentifier.MNEMONIC_VERSION_PREFIX);
             if (null == versionPrefix) {
                 versionPrefix = DEFAULT_VERSION_PREFIX;
+            }
+            if (extensions.containsKey(ElectrumV2ExtensionIdentifier.MNEMONIC_CUSTOM_ENTROPY))  {
+                customEntropy = (BigInteger) extensions.get(ElectrumV2ExtensionIdentifier.MNEMONIC_CUSTOM_ENTROPY);
             }
             dictionary = MnemonicUtility.getDictionary(wordListIdentifier);
         }

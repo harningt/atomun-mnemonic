@@ -20,11 +20,14 @@ import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 
+import java.security.SecureRandom
+
 /**
  * Test sequence for the legacy Electrum mnemonic builder
  */
 class ElectrumV2MnemonicBuilderSpock extends Specification {
     static final MnemonicAlgorithm ALG = MnemonicAlgorithm.ElectrumV2
+    static final SecureRandom RNG = new SecureRandom()
 
     private static def RW_IDENTIFIER = new MnemonicExtensionIdentifier() {
         @Override
@@ -84,7 +87,24 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             builder.buildUnit().getExtensionValue(ElectrumV2ExtensionIdentifier.MNEMONIC_VERSION_PREFIX) == versionPrefix
         where:
             versionPrefix << VersionPrefix.values()
-
+    }
+    def "check encoding passes with custom entropy"(int entropyBitLength) {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        BigInteger customEntropy = BigInteger.probablePrime(entropyBitLength, RNG)
+        when:
+        builder.setExtensions([ (ElectrumV2ExtensionIdentifier.MNEMONIC_CUSTOM_ENTROPY): customEntropy ])
+        then:
+        noExceptionThrown()
+        expect:
+        new BigInteger(1, builder.buildUnit().entropy).remainder(customEntropy) == BigInteger.ZERO
+        where:
+        entropyBitLength | _
+        8 | _
+        16 | _
+        64 | _
+        128 | _
+        512 | _
     }
     def "check encoding passes when no state set with safe defaults"() {
         given:
