@@ -67,9 +67,8 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
      *         if the entropyLength is invalid
      */
     private static void checkEntropyLengthValid(int entropyLength) {
-        /* TODO: validate/define */
-        if (entropyLength <= 0 || entropyLength % 4 != 0) {
-            throw new IllegalArgumentException("entropyLength must be a positive multiple of 4");
+        if (entropyLength <= 0) {
+            throw new IllegalArgumentException("entropyLength must be a positive value");
         }
     }
 

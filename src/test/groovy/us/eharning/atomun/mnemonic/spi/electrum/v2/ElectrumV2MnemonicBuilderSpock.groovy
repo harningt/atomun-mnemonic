@@ -175,7 +175,7 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            try { builder.setEntropyLength(1) } catch(ignored) {}
+            try { builder.setEntropyLength(0) } catch(ignored) {}
             builder.build()
         then:
             thrown(IllegalStateException)
@@ -200,12 +200,6 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             _ | length
             _ | -1
             _ | 0
-            _ | 1
-            _ | 2
-            _ | 3
-            _ | 5
-            _ | 9
-            _ | 1022
     }
     def "check encoding fails for unknown extension properties"() {
         given:
@@ -224,6 +218,12 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             builder.build() != null
         where:
             _ | length
+            _ | 1
+            _ | 2
+            _ | 3
+            _ | 5
+            _ | 9
+            _ | 1022
             _ | 4 * 1
             _ | 4 * 9
             _ | 4 * 100
