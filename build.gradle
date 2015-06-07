@@ -4,10 +4,11 @@ plugins {
     id 'java'
     id 'groovy'
     id 'maven'
-    id 'org.ajoberstar.release-opinion' version '1.0.0'
-    id 'org.ajoberstar.defaults' version '0.5.2'
+    id 'org.ajoberstar.release-opinion' version '1.1.0'
+    id 'org.ajoberstar.defaults' version '0.5.3'
     id 'checkstyle'
     id 'findbugs'
+    id "org.standardout.versioneye" version "1.0.1"
 }
 
 group = 'us.eharning.atomun'
@@ -38,23 +39,22 @@ repositories {
 }
 
 dependencies {
-    findbugs 'com.google.code.findbugs:findbugs:3.0.0'
+    findbugs 'com.google.code.findbugs:findbugs:3.0.1'
 
     compile group: 'com.google.guava', name: 'guava', version: '18.0'
     compile 'com.google.code.findbugs:annotations:3.0.0'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
 
-    /* Benchmarks */
     compile 'com.tomgibara.crinch:crinch-bits:0.7.2'
 
-    testCompile 'org.codehaus.groovy:groovy:2.4.1'
+    testCompile 'org.codehaus.groovy:groovy:2.4.3'
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     testCompile 'net.trajano.caliper:caliper:1.2.1'
 }
 
 checkstyle {
-    /* Using checkstyle 6.1 as that is the maximum for the IntelliJ extensions */
-    toolVersion = '6.1'
+    /* Using checkstyle 6.6 as that is the maximum for the IntelliJ extensions */
+    toolVersion = '6.6'
     configFile = new File(rootDir, 'gradle/checkstyle/checkstyle.xml')
 }
 
@@ -66,6 +66,11 @@ javadoc {
     options.tags "todo:a:TODO:"
 }
 
+license {
+    exclude "**/*.json"
+    exclude "**/*.txt"
+}
+
 task runBenchmark(type: JavaExec, dependsOn: test) {
     main = 'us.eharning.atomun.mnemonic.IndexGeneratorBenchmark'
     classpath = sourceSets.test.runtimeClasspath
@@ -74,5 +79,5 @@ task runBenchmark(type: JavaExec, dependsOn: test) {
 apply from: "$rootDir/gradle/maven-publish.gradle"
 
 wrapper {
-    gradleVersion = '2.1'
+    gradleVersion = '2.4'
 }

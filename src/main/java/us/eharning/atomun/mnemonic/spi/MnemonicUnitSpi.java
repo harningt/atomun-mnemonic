@@ -16,9 +16,13 @@
 
 package us.eharning.atomun.mnemonic.spi;
 
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 
 import javax.annotation.CheckForNull;
@@ -63,13 +67,41 @@ public abstract class MnemonicUnitSpi {
      *
      * @return wrapped instance.
      *
-     * @since 0.1.0
+     * @since 0.4.0
      */
     @Nonnull
-    protected MnemonicUnit build(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<String, Object> extensions) {
+    protected MnemonicUnit build(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<MnemonicExtensionIdentifier, Object> extensions) {
         Verify.verifyNotNull(mnemonicSequence);
         Verify.verifyNotNull(extensions);
-        return builder.build(this, mnemonicSequence, entropy, seed, extensions);
+        return builder.build(this, mnemonicSequence, entropy, seed, extensions.keySet(), Functions.forMap(extensions, null));
+    }
+
+    /**
+     * Utility method to return a wrapped instance of this SPI.
+     *
+     * @param builder
+     *         instance maker.
+     * @param mnemonicSequence
+     *         represented sequence.
+     * @param entropy
+     *         derived entropy or null if on-demand.
+     * @param seed
+     *         derived seed or null if on-demand.
+     * @param supportedExtensions
+     *         set of supported extensions dependent on algorithm.
+     * @param extensionLoader
+     *         method to calculate a given extension's value.
+     *
+     * @return wrapped instance.
+     *
+     * @since 0.4.0
+     */
+    @Nonnull
+    protected MnemonicUnit build(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableSet<MnemonicExtensionIdentifier> supportedExtensions, @Nonnull Function<MnemonicExtensionIdentifier, Object> extensionLoader) {
+        Verify.verifyNotNull(mnemonicSequence);
+        Verify.verifyNotNull(supportedExtensions);
+        Verify.verifyNotNull(extensionLoader);
+        return builder.build(this, mnemonicSequence, entropy, seed, supportedExtensions, extensionLoader);
     }
 
     /**

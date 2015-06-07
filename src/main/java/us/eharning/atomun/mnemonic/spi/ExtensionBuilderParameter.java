@@ -17,7 +17,9 @@
 package us.eharning.atomun.mnemonic.spi;
 
 import com.google.common.annotations.Beta;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -31,7 +33,7 @@ import javax.annotation.concurrent.Immutable;
 @Beta
 @Immutable
 public class ExtensionBuilderParameter implements BuilderParameter {
-    private final ImmutableMap<String, Object> extensions;
+    private final ImmutableMap<MnemonicExtensionIdentifier, Object> extensions;
 
     /**
      * Construct an instance given the provided extension data.
@@ -39,7 +41,7 @@ public class ExtensionBuilderParameter implements BuilderParameter {
      * @param extensions
      *         data to configure the builder with.
      */
-    private ExtensionBuilderParameter(@Nonnull ImmutableMap<String, Object> extensions) {
+    private ExtensionBuilderParameter(@Nonnull ImmutableMap<MnemonicExtensionIdentifier, Object> extensions) {
         this.extensions = extensions;
     }
 
@@ -52,7 +54,11 @@ public class ExtensionBuilderParameter implements BuilderParameter {
      * @return wrapped extension parameter data.
      */
     @Nonnull
-    public static ExtensionBuilderParameter getExtensionsParameter(@Nonnull ImmutableMap<String, Object> extensions) {
+    public static ExtensionBuilderParameter getExtensionsParameter(@Nonnull ImmutableMap<MnemonicExtensionIdentifier, Object> extensions) {
+        /* Only throws out the 1st extension parameter that is not allowed to avoid extra memory space */
+        for (MnemonicExtensionIdentifier extensionIdentifier: extensions.keySet()) {
+            Preconditions.checkArgument(extensionIdentifier.canSet(), "Cannot set extension: %s", extensionIdentifier);
+        }
         return new ExtensionBuilderParameter(extensions);
     }
 
@@ -62,7 +68,7 @@ public class ExtensionBuilderParameter implements BuilderParameter {
      * @return configured extension data.
      */
     @Nonnull
-    public Map<String, Object> getExtensions() {
+    public Map<MnemonicExtensionIdentifier, Object> getExtensions() {
         return extensions;
     }
 }

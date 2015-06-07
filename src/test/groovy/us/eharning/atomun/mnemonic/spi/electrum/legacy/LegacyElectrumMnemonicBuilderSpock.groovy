@@ -15,16 +15,26 @@
  */
 package us.eharning.atomun.mnemonic.spi.electrum.legacy
 
+import com.google.common.base.Predicates
+import com.google.common.collect.ImmutableSet
+import com.google.common.collect.Iterables
+import spock.lang.IgnoreIf
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
+import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 import us.eharning.atomun.mnemonic.MnemonicUnit
+import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers
 
 /**
  * Test sequence for the legacy Electrum mnemonic builder
  */
 class LegacyElectrumMnemonicBuilderSpock extends Specification {
     static final MnemonicAlgorithm ALG = MnemonicAlgorithm.LegacyElectrum
+
+    static final Set<LegacyElectrumExtensionIdentifier> NON_GETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(LegacyElectrumExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_SET)))
+    static final Set<LegacyElectrumExtensionIdentifier> NON_SETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(LegacyElectrumExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_GET)))
+
     static String[][] pairs = [
             ["pleasure patience practice", "01234567"],
             ["pleasure patience practice offer jeans sister", "0123456789012345"],
@@ -32,6 +42,18 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
             ["happen made spring knock heart middle suppose fish bought plain real ignore", "88c811176129b2882fc4737728195b87"],
             ["class group aside accept eat howl harm world ignorance brain count dude", "f9379762a6da83b4e40e31b682a6dd8d"]
     ]
+
+    private static def RW_IDENTIFIER = new MnemonicExtensionIdentifier() {
+        @Override
+        boolean canGet() {
+            return true
+        }
+
+        @Override
+        boolean canSet() {
+            return true
+        }
+    }
 
     def "check word lists not supported"() {
         when:
@@ -70,6 +92,31 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         builder.build()
         then:
         noExceptionThrown()
+    }
+
+    @IgnoreIf({ NON_SETTABLE_EXTENSIONS.empty })
+    def "check non-settable values cause failure on set"(MnemonicExtensionIdentifier extensionIdentifier) {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        when:
+        builder.setExtensions([ (extensionIdentifier): new Object() ])
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        extensionIdentifier << NON_SETTABLE_EXTENSIONS
+    }
+
+    @IgnoreIf({ NON_GETTABLE_EXTENSIONS.empty })
+    def "check non-gettable values cause failure on retrieval"(MnemonicExtensionIdentifier extensionIdentifier) {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        def unit = builder.buildUnit()
+        when:
+        unit.getExtensionValue(extensionIdentifier)
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        extensionIdentifier << NON_GETTABLE_EXTENSIONS
     }
 
     def "check encoding fails when attempted entropyLength set fails"() {
@@ -139,7 +186,7 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         given:
         def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-        builder.setExtensions(["x": 1])
+        builder.setExtensions([(RW_IDENTIFIER): 1])
         then:
         thrown(IllegalArgumentException)
     }

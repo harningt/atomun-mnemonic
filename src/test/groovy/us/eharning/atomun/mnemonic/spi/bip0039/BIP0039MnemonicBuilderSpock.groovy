@@ -15,10 +15,16 @@
  */
 package us.eharning.atomun.mnemonic.spi.bip0039
 
+import com.google.common.base.Predicates
+import com.google.common.collect.ImmutableSet
+import com.google.common.collect.Iterables
+import spock.lang.IgnoreIf
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
+import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 import us.eharning.atomun.mnemonic.MnemonicUnit
+import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers
 
 import java.text.Normalizer
 
@@ -27,6 +33,21 @@ import java.text.Normalizer
  */
 class BIP0039MnemonicBuilderSpock extends Specification {
     static final MnemonicAlgorithm ALG = MnemonicAlgorithm.BIP0039
+
+    static final Set<BIP0039ExtensionIdentifier> NON_GETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(BIP0039ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_SET)))
+    static final Set<BIP0039ExtensionIdentifier> NON_SETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(BIP0039ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_GET)))
+
+    private static def RW_IDENTIFIER = new MnemonicExtensionIdentifier() {
+        @Override
+        boolean canGet() {
+            return true
+        }
+
+        @Override
+        boolean canSet() {
+            return true
+        }
+    }
 
     def "check word lists supported"() {
         given:
@@ -107,6 +128,31 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         noExceptionThrown()
     }
 
+    @IgnoreIf({ NON_SETTABLE_EXTENSIONS.empty })
+    def "check non-settable values cause failure on set"(MnemonicExtensionIdentifier extensionIdentifier) {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        when:
+        builder.setExtensions([ (extensionIdentifier): new Object() ])
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        extensionIdentifier << NON_SETTABLE_EXTENSIONS
+    }
+
+    @IgnoreIf({ NON_GETTABLE_EXTENSIONS.empty })
+    def "check non-gettable values cause failure on retrieval"(MnemonicExtensionIdentifier extensionIdentifier) {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        def unit = builder.buildUnit()
+        when:
+        unit.getExtensionValue(extensionIdentifier)
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        extensionIdentifier << NON_GETTABLE_EXTENSIONS
+    }
+
     def "check encoding fails when attempted entropyLength set fails"() {
         given:
         def builder = MnemonicBuilder.newBuilder(ALG)
@@ -174,7 +220,7 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         given:
         def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-        builder.setExtensions(["x": 1])
+        builder.setExtensions([(RW_IDENTIFIER): 1])
         then:
         thrown(IllegalArgumentException)
     }
