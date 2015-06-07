@@ -40,6 +40,15 @@ class ElectrumV2TestData {
                 return prefix.decodeHex();
             }
         }
+        public VersionPrefix getVersionPrefix() {
+            byte[] versionPrefixBytes = getPrefixBytes();
+            for (VersionPrefix prefix: VersionPrefix.values()) {
+                if (prefix.matches(versionPrefixBytes)) {
+                    return prefix;
+                }
+                return null;
+            }
+        }
         public byte[] getPrefixMask() {
             byte[] ret = new byte[(prefix.length() + 1) / 2];
             if (prefix.length() % 2 != 0) {

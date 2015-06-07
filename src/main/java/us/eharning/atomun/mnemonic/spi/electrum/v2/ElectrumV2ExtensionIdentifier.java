@@ -14,25 +14,45 @@
  * limitations under the License.
  */
 
-package us.eharning.atomun.mnemonic.spi.bip0039;
+package us.eharning.atomun.mnemonic.spi.electrum.v2;
 
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 
 /**
- * Enumeration for BIP0039 extension identifiers.
+ * Enumeration for Electrum V2 extension identifiers.
  *
  * @since 0.4.0
  */
-public enum BIP0039ExtensionIdentifiers implements MnemonicExtensionIdentifier {
+public enum ElectrumV2ExtensionIdentifier implements MnemonicExtensionIdentifier {
+    VERSION_PREFIX(true, true),
+    CUSTOM_ENTROPY(false, true)
     ;
 
-    @Override
-    public boolean canGet() {
-        return false;
+    private boolean canGet;
+    private boolean canSet;
+
+    ElectrumV2ExtensionIdentifier(boolean canGet, boolean canSet) {
+        this.canGet = canGet;
+        this.canSet = canSet;
     }
 
+    /**
+     * Whether or not this value can be read.
+     *
+     * @return true if it can only be retrieved from MnemonicUnit.
+     */
+    @Override
+    public boolean canGet() {
+        return canGet;
+    }
+
+    /**
+     * Whether or or not this value can be set.
+     *
+     * @return true if it can be set in MnemonicBuilder.
+     */
     @Override
     public boolean canSet() {
-        return false;
+        return canSet;
     }
 }

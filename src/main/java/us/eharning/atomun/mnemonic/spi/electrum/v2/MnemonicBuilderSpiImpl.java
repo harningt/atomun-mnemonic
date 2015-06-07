@@ -48,7 +48,7 @@ import javax.annotation.concurrent.Immutable;
 class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi {
     private static final EntropyBuilderParameter DEFAULT_ENTROPY_PARAMETER = EntropyBuilderParameter.getRandom(128 / 8);
     private static final WordListBuilderParameter DEFAULT_WORDLIST_PARAMETER = WordListBuilderParameter.getWordList("english");
-    static final Set<? extends MnemonicExtensionIdentifier> KNOWN_EXTENSION_IDENTIFIERS = ImmutableSet.copyOf(EnumSet.allOf(ElectrumV2ExtensionIdentifiers.class));
+    static final Set<? extends MnemonicExtensionIdentifier> KNOWN_EXTENSION_IDENTIFIERS = ImmutableSet.copyOf(EnumSet.allOf(ElectrumV2ExtensionIdentifier.class));
 
     /**
      * Construct a new SPI with the given algorithm.
@@ -82,11 +82,27 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
      * @throws IllegalArgumentException
      *         if the parameter contains unknown parameters.
      */
-    private static void checkExtensionNames(ExtensionBuilderParameter parameter) {
+    private static void checkExtensions(ExtensionBuilderParameter parameter) {
         Map<MnemonicExtensionIdentifier, Object> extensions = parameter.getExtensions();
         if (!KNOWN_EXTENSION_IDENTIFIERS.containsAll(extensions.keySet())) {
             Iterable<MnemonicExtensionIdentifier> unknownNames = Iterables.filter(extensions.keySet(), Predicates.not(Predicates.in(KNOWN_EXTENSION_IDENTIFIERS)));
             throw new IllegalArgumentException("Found unhandled extension names: " + Iterables.toString(unknownNames));
+        }
+        for (Map.Entry<MnemonicExtensionIdentifier, Object> entry: extensions.entrySet()) {
+            switch ((ElectrumV2ExtensionIdentifier)entry.getKey()) {
+            case CUSTOM_ENTROPY:
+                if (!(entry.getValue() instanceof BigInteger)) {
+                    throw new IllegalArgumentException("Found unexpected value type for extension: " + entry.getKey() + " " + entry.getValue().getClass());
+                }
+                BigInteger customEntropy = (BigInteger) entry.getValue();
+                if (0 <= BigInteger.ZERO.compareTo(customEntropy)) {
+                    throw new IllegalArgumentException("Found illegal value for extension: " + entry.getKey());
+                }
+                break;
+            default:
+                /* Never reached */
+                break;
+            }
         }
     }
 
@@ -147,7 +163,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             } else if (parameter instanceof WordListBuilderParameter) {
                 MnemonicUtility.getDictionary(((WordListBuilderParameter) parameter).getWordListIdentifier());
             } else if (parameter instanceof ExtensionBuilderParameter) {
-                checkExtensionNames((ExtensionBuilderParameter) parameter);
+                checkExtensions((ExtensionBuilderParameter) parameter);
             } else {
                 throw new IllegalArgumentException("Unsupported parameter type: " + parameter);
             }
@@ -194,9 +210,12 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             }
             /* DUMMY */
             Verify.verifyNotNull(extensions);
-            versionPrefix = (VersionPrefix) extensions.get(ElectrumV2ExtensionIdentifiers.MNEMONIC_VERSION_PREFIX);
+            versionPrefix = (VersionPrefix) extensions.get(ElectrumV2ExtensionIdentifier.VERSION_PREFIX);
             if (null == versionPrefix) {
                 versionPrefix = DEFAULT_VERSION_PREFIX;
+            }
+            if (extensions.containsKey(ElectrumV2ExtensionIdentifier.CUSTOM_ENTROPY))  {
+                customEntropy = (BigInteger) extensions.get(ElectrumV2ExtensionIdentifier.CUSTOM_ENTROPY);
             }
             dictionary = MnemonicUtility.getDictionary(wordListIdentifier);
         }

@@ -14,44 +14,25 @@
  * limitations under the License.
  */
 
-package us.eharning.atomun.mnemonic.spi.electrum.v2;
+package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 
 /**
- * Enumeration for Electrum V2 extension identifiers.
+ * Enumeration for Legacy Electrum extension identifiers.
  *
  * @since 0.4.0
  */
-public enum ElectrumV2ExtensionIdentifiers implements MnemonicExtensionIdentifier {
-    MNEMONIC_VERSION_PREFIX(true, true)
+public enum LegacyElectrumExtensionIdentifier implements MnemonicExtensionIdentifier {
     ;
 
-    private boolean canGet;
-    private boolean canSet;
-
-    ElectrumV2ExtensionIdentifiers(boolean canGet, boolean canSet) {
-        this.canGet = canGet;
-        this.canSet = canSet;
-    }
-
-    /**
-     * Whether or not this value can be read.
-     *
-     * @return true if it can only be retrieved from MnemonicUnit.
-     */
     @Override
     public boolean canGet() {
-        return canGet;
+        return false;
     }
 
-    /**
-     * Whether or or not this value can be set.
-     *
-     * @return true if it can be set in MnemonicBuilder.
-     */
     @Override
     public boolean canSet() {
-        return canSet;
+        return false;
     }
 }

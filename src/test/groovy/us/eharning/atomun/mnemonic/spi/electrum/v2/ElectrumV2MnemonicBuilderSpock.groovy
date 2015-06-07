@@ -15,16 +15,27 @@
  */
 package us.eharning.atomun.mnemonic.spi.electrum.v2
 
+import com.google.common.base.Predicates
+import com.google.common.collect.ImmutableSet
+import com.google.common.collect.Iterables
+import spock.lang.IgnoreIf
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
+import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers
+
+import java.security.SecureRandom
 
 /**
  * Test sequence for the legacy Electrum mnemonic builder
  */
 class ElectrumV2MnemonicBuilderSpock extends Specification {
     static final MnemonicAlgorithm ALG = MnemonicAlgorithm.ElectrumV2
+    static final SecureRandom RNG = new SecureRandom()
+
+    static final Set<ElectrumV2ExtensionIdentifier> NON_GETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(ElectrumV2ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_SET)))
+    static final Set<ElectrumV2ExtensionIdentifier> NON_SETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(ElectrumV2ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_GET)))
 
     private static def RW_IDENTIFIER = new MnemonicExtensionIdentifier() {
         @Override
@@ -77,14 +88,54 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)
         when:
-            builder.setExtensions([ (ElectrumV2ExtensionIdentifiers.MNEMONIC_VERSION_PREFIX): versionPrefix ])
+            builder.setExtensions([ (ElectrumV2ExtensionIdentifier.VERSION_PREFIX): versionPrefix ])
         then:
             noExceptionThrown()
         expect:
-            builder.buildUnit().getExtensionValue(ElectrumV2ExtensionIdentifiers.MNEMONIC_VERSION_PREFIX) == versionPrefix
+            builder.buildUnit().getExtensionValue(ElectrumV2ExtensionIdentifier.VERSION_PREFIX) == versionPrefix
         where:
             versionPrefix << VersionPrefix.values()
-
+    }
+    def "check encoding fails with illegal custom entropy"(BigInteger customEntropy) {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        when:
+        builder.setExtensions([ (ElectrumV2ExtensionIdentifier.CUSTOM_ENTROPY): customEntropy ])
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        customEntropy | _
+        BigInteger.ZERO | _
+        BigInteger.ONE.negate() | _
+    }
+    def "check encoding passes with custom entropy"(int entropyBitLength) {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        BigInteger customEntropy = BigInteger.probablePrime(entropyBitLength, RNG)
+        when:
+        builder.setExtensions([ (ElectrumV2ExtensionIdentifier.CUSTOM_ENTROPY): customEntropy ])
+        then:
+        noExceptionThrown()
+        expect:
+        new BigInteger(1, builder.buildUnit().entropy).remainder(customEntropy) == BigInteger.ZERO
+        where:
+        entropyBitLength | _
+        8 | _
+        16 | _
+        64 | _
+        128 | _
+        512 | _
+    }
+    def "check encoding passes with custom entropy but cannot retrieve"() {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        BigInteger customEntropy = BigInteger.probablePrime(8, RNG)
+        builder.setExtensions([ (ElectrumV2ExtensionIdentifier.CUSTOM_ENTROPY): customEntropy ])
+        def unit = builder.buildUnit()
+        when:
+        unit.getExtensionValue(ElectrumV2ExtensionIdentifier.CUSTOM_ENTROPY)
+        then:
+        thrown(IllegalArgumentException)
     }
     def "check encoding passes when no state set with safe defaults"() {
         given:
@@ -94,6 +145,32 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
         then:
             noExceptionThrown()
     }
+
+    @IgnoreIf({ NON_SETTABLE_EXTENSIONS.empty })
+    def "check non-settable values cause failure on set"(MnemonicExtensionIdentifier extensionIdentifier) {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        when:
+        builder.setExtensions([ (extensionIdentifier): new Object() ])
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        extensionIdentifier << NON_SETTABLE_EXTENSIONS
+    }
+
+    @IgnoreIf({ NON_GETTABLE_EXTENSIONS.empty })
+    def "check non-gettable values cause failure on retrieval"(MnemonicExtensionIdentifier extensionIdentifier) {
+        given:
+        def builder = MnemonicBuilder.newBuilder(ALG)
+        def unit = builder.buildUnit()
+        when:
+        unit.getExtensionValue(extensionIdentifier)
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        extensionIdentifier << NON_GETTABLE_EXTENSIONS
+    }
+
     def "check encoding fails when attempted entropyLength set fails"() {
         given:
             def builder = MnemonicBuilder.newBuilder(ALG)

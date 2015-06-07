@@ -30,7 +30,7 @@ import java.text.Normalizer
  */
 class BIP0039MnemonicDecoderSpock extends Specification {
     static final MnemonicAlgorithm ALG = MnemonicAlgorithm.BIP0039
-    static final Set<MnemonicExtensionIdentifier> GETTABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.onlyCanGet(BIP0039ExtensionIdentifiers.values())
+    static final Set<MnemonicExtensionIdentifier> GETTABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.canGet(BIP0039ExtensionIdentifier.values())
 
     def "check #mnemonic string decodes to #seed for standard vector"() {
         given:

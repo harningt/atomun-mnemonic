@@ -27,8 +27,7 @@ import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers
  */
 class ElectrumV2MnemonicDecoderSpock extends Specification {
     static final MnemonicAlgorithm ALG = MnemonicAlgorithm.ElectrumV2
-    static final Set<MnemonicExtensionIdentifier> GETTABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.onlyCanGet(ElectrumV2ExtensionIdentifiers.values())
-    static final VersionPrefix STANDARD_VERSION_PREFIX = VersionPrefix.STANDARD
+    static final Set<MnemonicExtensionIdentifier> GETTABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.canGet(ElectrumV2ExtensionIdentifier.values())
 
     def "check #mnemonic string decodes to matching values for standard vectors"() {
         given:
@@ -38,7 +37,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
             //unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
             unit.getSupportedExtensions().containsAll(GETTABLE_EXTENSIONS)
-            unit.getExtensionValue(ElectrumV2ExtensionIdentifiers.MNEMONIC_VERSION_PREFIX) == STANDARD_VERSION_PREFIX
+            unit.getExtensionValue(ElectrumV2ExtensionIdentifier.VERSION_PREFIX) == testCase.versionPrefix
         where:
             testCase << ElectrumV2TestData.STANDARD_VECTORS
     }
@@ -50,7 +49,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
             //unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
             unit.getSupportedExtensions().containsAll(GETTABLE_EXTENSIONS)
-            unit.getExtensionValue(ElectrumV2ExtensionIdentifiers.MNEMONIC_VERSION_PREFIX) == STANDARD_VERSION_PREFIX
+            unit.getExtensionValue(ElectrumV2ExtensionIdentifier.VERSION_PREFIX) == testCase.versionPrefix
         where:
             testCase << ElectrumV2TestData.LANGUAGE_VECTORS
     }
@@ -71,7 +70,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
             //unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
             unit.getSupportedExtensions().containsAll(GETTABLE_EXTENSIONS)
-            unit.getExtensionValue(ElectrumV2ExtensionIdentifiers.MNEMONIC_VERSION_PREFIX) == STANDARD_VERSION_PREFIX
+            unit.getExtensionValue(ElectrumV2ExtensionIdentifier.VERSION_PREFIX) == testCase.versionPrefix
         where:
             testCase << ElectrumV2TestData.ALL_VECTORS
     }
@@ -85,7 +84,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
             //unit.getSeed(testCase.passphrase) == testCase.seedBytes
             unit.getMnemonic() == testCase.mnemonic
             unit.getSupportedExtensions().containsAll(GETTABLE_EXTENSIONS)
-            unit.getExtensionValue(ElectrumV2ExtensionIdentifiers.MNEMONIC_VERSION_PREFIX) == STANDARD_VERSION_PREFIX
+            unit.getExtensionValue(ElectrumV2ExtensionIdentifier.VERSION_PREFIX) == testCase.versionPrefix
         where:
             testCase << ElectrumV2TestData.ALL_VECTORS
     }
