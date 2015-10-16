@@ -79,5 +79,5 @@ task runBenchmark(type: JavaExec, dependsOn: test) {
 apply from: "$rootDir/gradle/maven-publish.gradle"
 
 wrapper {
-    gradleVersion = '2.5'
+    gradleVersion = '2.7'
 }
