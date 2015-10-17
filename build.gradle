@@ -58,6 +58,14 @@ checkstyle {
     configFile = new File(rootDir, 'gradle/checkstyle/checkstyle.xml')
 }
 
+jacoco {
+    toolVersion = '0.7.5.201505241946'
+}
+
+sonarRunner {
+    toolVersion = '2.4'
+}
+
 findbugs {
     sourceSets = [ sourceSets.main ]
 }
