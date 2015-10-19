@@ -25,8 +25,8 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import us.eharning.atomun.core.crypto.PBKDF2;
 import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
-import us.eharning.atomun.mnemonic.spi.PBKDF2;
 import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
 
 import java.io.IOException;
