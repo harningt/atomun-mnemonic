@@ -16,8 +16,11 @@
 package us.eharning.atomun.mnemonic.spi.bip0039
 
 import com.google.common.base.Charsets
+import com.google.common.collect.ImmutableList
+import com.google.common.collect.Iterables
 import groovy.json.JsonSlurper
 import groovy.transform.Canonical
+import org.yaml.snakeyaml.Yaml
 
 import java.text.Normalizer
 
@@ -27,6 +30,7 @@ import java.text.Normalizer
 class BIP0039TestData {
     @Canonical
     static class MnemonicTestCase {
+        String groupLabel;
         String wordList;
         String mnemonic;
 
@@ -46,26 +50,36 @@ class BIP0039TestData {
         }
         public String bip32_xprv;
     }
-    private static final String TREZOR_OFFICIAL_PASSWORD = "TREZOR"
     public static final Iterable<MnemonicTestCase> TREZOR_OFFICIAL_VECTORS
     public static final Iterable<MnemonicTestCase> JP_VECTORS
 
-    private static Object parseResource(String resourceName) {
+    private static List<MnemonicTestCase> parseYamlResource(String resourceName) {
         InputStream input = BIP0039MnemonicBuilderSpock.class.classLoader.getResourceAsStream(resourceName)
-        return new JsonSlurper().parse(new InputStreamReader(input, Charsets.UTF_8));
-    }
-
-    static {
-        TREZOR_OFFICIAL_VECTORS = parseResource("us/eharning/atomun/mnemonic/spi/bip0039/BIP0039_TREZOR_VECTORS.json").collectMany {
-            String wordList = it.key
-            return it.value.collect { test ->
-                return [wordList: wordList, mnemonic: test[1], entropy: test[0], seed: test[2], passphrase: TREZOR_OFFICIAL_PASSWORD] as MnemonicTestCase
+        assert(input)
+        ImmutableList.Builder<MnemonicTestCase> caseBuilder = ImmutableList.builder()
+        new Yaml().loadAll(input).each {
+            String groupLabel = it.groupLabel
+            String wordList = it.wordList
+            String passphrase = it.passphrase
+            if (it.skip) {
+                return
+            }
+            it.cases.each {
+                MnemonicTestCase testCase = it as MnemonicTestCase
+                testCase.groupLabel = groupLabel
+                if (!testCase.wordList) {
+                    testCase.wordList = wordList
+                }
+                if (!testCase.passphrase) {
+                    testCase.passphrase = passphrase
+                }
+                caseBuilder.add(testCase)
             }
         }
-        JP_VECTORS = parseResource("us/eharning/atomun/mnemonic/spi/bip0039/BIP0039-test_JP.json").collect {
-            MnemonicTestCase testCase = it as MnemonicTestCase
-            testCase.wordList = "japanese"
-            return testCase
-        }
+        return caseBuilder.build()
+    }
+    static {
+        TREZOR_OFFICIAL_VECTORS = parseYamlResource("us/eharning/atomun/mnemonic/spi/bip0039/BIP0039_TREZOR_VECTORS.yaml")
+        JP_VECTORS = parseYamlResource("us/eharning/atomun/mnemonic/spi/bip0039/BIP0039-test_JP.yaml")
     }
 }
