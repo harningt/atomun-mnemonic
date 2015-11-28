@@ -2,6 +2,9 @@ language: java
 
 sudo: false
 
+env:
+    - TERM=dumb
+
 jdk:
     - openjdk7
 
@@ -12,11 +15,16 @@ cache:
 
 before_install:
     - test ${TRAVIS_SECURE_ENV_VARS} == true && openssl aes-256-cbc -K $encrypted_c48085a6192b_key -iv $encrypted_c48085a6192b_iv -in gradle/private.tar.gz.travis-enc -d | tar -xz -C $HOME || true
+    - pip install --user codecov
+
 install: ''
 script:
-    - TERM=dumb ./gradlew clean check
-after_success: |
-    test ${TRAVIS_SECURE_ENV_VARS} == true && test ${TRAVIS_BRANCH} = develop && test ${TRAVIS_PULL_REQUEST} = false && ./gradlew -P release.stage=SNAPSHOT -P sign=TRUE -P signing.secretKeyRingFile=$HOME/.gnupg/secring.gpg uploadArchives || false
+    - ./gradlew clean check
+
+after_success:
+    - test ${TRAVIS_SECURE_ENV_VARS} == true && test ${TRAVIS_BRANCH} = develop && test ${TRAVIS_PULL_REQUEST} = false && ./gradlew -P release.stage=SNAPSHOT -P sign=TRUE -P signing.secretKeyRingFile=$HOME/.gnupg/secring.gpg uploadArchives || false
+    - ./gradlew jacocoTestReport
+    - codecov
 
 notifications:
     webhooks:
