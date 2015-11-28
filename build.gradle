@@ -56,8 +56,8 @@ dependencies {
 }
 
 checkstyle {
-    /* Using checkstyle 6.11.2 as that is the maximum for the IntelliJ extensions */
-    toolVersion = '6.11.2'
+    /* Using checkstyle 6.12.1 as that is the maximum for the IntelliJ extensions */
+    toolVersion = '6.12.1'
     configFile = new File(rootDir, 'gradle/checkstyle/checkstyle.xml')
 }
 
