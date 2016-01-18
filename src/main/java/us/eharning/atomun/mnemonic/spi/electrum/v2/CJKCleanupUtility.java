@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class CJKCleanupUtility {
                 if (commentIndex >= 0) {
                     line = line.substring(0, commentIndex);
                 }
-                line = CharMatcher.WHITESPACE.trimFrom(line);
+                line = CharMatcher.whitespace().trimFrom(line);
                 if (line.isEmpty()) {
                     return true;
                 }
@@ -74,7 +74,7 @@ class CJKCleanupUtility {
 
     public String cleanup(String input) {
         /* Check for non-ascii range to short-circuit fast */
-        if (CharMatcher.ASCII.matchesAllOf(input)) {
+        if (CharMatcher.ascii().matchesAllOf(input)) {
             /* All ascii, skip */
             return input;
         }
