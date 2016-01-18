@@ -8,7 +8,7 @@ plugins {
     id 'org.ajoberstar.defaults' version '0.5.3'
     id 'checkstyle'
     id 'findbugs'
-    id "org.standardout.versioneye" version "1.0.1"
+    id "org.standardout.versioneye" version "1.1.1"
 }
 
 group = 'us.eharning.atomun'
@@ -43,7 +43,7 @@ dependencies {
 
     compile 'us.eharning.atomun:atomun-core:0.0.1'
 
-    compile group: 'com.google.guava', name: 'guava', version: '18.0'
+    compile group: 'com.google.guava', name: 'guava', version: '19.0'
     compile 'com.google.code.findbugs:annotations:3.0.1'
     compile 'com.google.code.findbugs:jsr305:3.0.1'
 
@@ -56,8 +56,8 @@ dependencies {
 }
 
 checkstyle {
-    /* Using checkstyle 6.12.1 as that is the maximum for the IntelliJ extensions */
-    toolVersion = '6.12.1'
+    /* Using checkstyle 6.14.1 as that is the maximum for the IntelliJ extensions */
+    toolVersion = '6.14.1'
     configFile = new File(rootDir, 'gradle/checkstyle/checkstyle.xml')
 }
 
