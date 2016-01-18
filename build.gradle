@@ -23,7 +23,11 @@ defaults {
     ]
 
     // used by license plugin
-    copyrightYears = '2014, 2015'
+    copyrightYears = '2014, 2015, 2016'
+}
+
+license {
+    skipExistingHeaders true
 }
 
 release {
