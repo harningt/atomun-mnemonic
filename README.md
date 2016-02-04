@@ -108,7 +108,7 @@ The algorithm is derived based on inspection of the Electrum source code.
 
 ### Runtime
 
- * Guava 18.0
+ * Guava 19.0
  * crinch-bits 0.7.2
 
 ### Test
