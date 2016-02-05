@@ -45,7 +45,7 @@ repositories {
 dependencies {
     findbugs 'com.google.code.findbugs:findbugs:3.0.1'
 
-    compile 'us.eharning.atomun:atomun-core:0.0.1'
+    compile 'us.eharning.atomun:atomun-core:0.0.2'
 
     compile group: 'com.google.guava', name: 'guava', version: '19.0'
     compile 'com.google.code.findbugs:annotations:3.0.1'
