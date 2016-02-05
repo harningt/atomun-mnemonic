@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
  * Static utility to handle encoding/decoding details of the legacy Electrum mnemonic format.
  */
 class LegacyElectrumMnemonicUtility {
-    private static final Splitter WORD_SPLITTER = Splitter.on(CharMatcher.WHITESPACE).trimResults().omitEmptyStrings();
+    private static final Splitter WORD_SPLITTER = Splitter.on(CharMatcher.whitespace()).trimResults().omitEmptyStrings();
     private static final BidirectionalDictionary DICTIONARY;
     private static final int N;
 

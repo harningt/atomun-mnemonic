@@ -8,7 +8,7 @@ plugins {
     id 'org.ajoberstar.defaults' version '0.5.3'
     id 'checkstyle'
     id 'findbugs'
-    id "org.standardout.versioneye" version "1.0.1"
+    id "org.standardout.versioneye" version "1.1.1"
 }
 
 group = 'us.eharning.atomun'
@@ -23,7 +23,11 @@ defaults {
     ]
 
     // used by license plugin
-    copyrightYears = '2014, 2015'
+    copyrightYears = '2014, 2015, 2016'
+}
+
+license {
+    skipExistingHeaders true
 }
 
 release {
@@ -41,9 +45,9 @@ repositories {
 dependencies {
     findbugs 'com.google.code.findbugs:findbugs:3.0.1'
 
-    compile 'us.eharning.atomun:atomun-core:0.0.1'
+    compile 'us.eharning.atomun:atomun-core:0.0.2'
 
-    compile group: 'com.google.guava', name: 'guava', version: '18.0'
+    compile group: 'com.google.guava', name: 'guava', version: '19.0'
     compile 'com.google.code.findbugs:annotations:3.0.1'
     compile 'com.google.code.findbugs:jsr305:3.0.1'
 
@@ -52,16 +56,24 @@ dependencies {
     testCompile 'org.codehaus.groovy:groovy:2.4.5'
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     testCompile 'net.trajano.caliper:caliper:1.2.1'
+    testCompile 'org.yaml:snakeyaml:1.16'
 }
 
 checkstyle {
-    /* Using checkstyle 6.11.2 as that is the maximum for the IntelliJ extensions */
-    toolVersion = '6.11.2'
+    /* Using checkstyle 6.15 as that is the maximum for the IntelliJ extensions */
+    toolVersion = '6.15'
     configFile = new File(rootDir, 'gradle/checkstyle/checkstyle.xml')
 }
 
 jacoco {
     toolVersion = '0.7.5.201505241946'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.destination "${buildDir}/jacocoHtml"
+    }
 }
 
 sonarRunner {
@@ -89,5 +101,5 @@ task runBenchmark(type: JavaExec, dependsOn: test) {
 apply from: "$rootDir/gradle/maven-publish.gradle"
 
 wrapper {
-    gradleVersion = '2.7'
+    gradleVersion = '2.10'
 }

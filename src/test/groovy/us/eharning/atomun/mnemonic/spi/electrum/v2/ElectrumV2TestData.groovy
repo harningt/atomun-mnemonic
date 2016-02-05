@@ -15,10 +15,10 @@
  */
 package us.eharning.atomun.mnemonic.spi.electrum.v2
 
-import com.google.common.base.Charsets
+import com.google.common.collect.ImmutableList
 import com.google.common.collect.Iterables
-import groovy.json.JsonSlurper
 import groovy.transform.Canonical
+import org.yaml.snakeyaml.Yaml
 import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicBuilderSpock
 
 /**
@@ -27,6 +27,7 @@ import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicBuilderSpock
 class ElectrumV2TestData {
     @Canonical
     static class MnemonicTestCase {
+        String groupLabel;
         String wordList;
         String mnemonic;
         String normalizedMnemonic;
@@ -73,6 +74,7 @@ class ElectrumV2TestData {
             return seed.decodeHex();
         }
     }
+    public static final Iterable<MnemonicTestCase> EN_VECTORS
     public static final Iterable<MnemonicTestCase> STANDARD_VECTORS
     public static final Iterable<MnemonicTestCase> LARGE_VECTORS
     public static final Iterable<MnemonicTestCase> CUSTOM_ENTROPY_VECTORS
@@ -82,34 +84,50 @@ class ElectrumV2TestData {
     public static final Iterable<MnemonicTestCase> LANGUAGE_VECTORS
     public static final Iterable<MnemonicTestCase> ALL_VECTORS
 
-    private static Object parseResource(String resourceName) {
+    private static List<MnemonicTestCase> parseYamlResource(String resourceName) {
         InputStream input = BIP0039MnemonicBuilderSpock.class.classLoader.getResourceAsStream(resourceName)
-        return new JsonSlurper().parse(new InputStreamReader(input, Charsets.UTF_8));
+        assert(input)
+        ImmutableList.Builder<MnemonicTestCase> caseBuilder = ImmutableList.builder()
+        new Yaml().loadAll(input).each {
+            String groupLabel = it.groupLabel
+            String wordList = it.wordList
+            String prefix = it.prefix
+            if (it.skip) {
+                return
+            }
+            it.cases.each {
+                MnemonicTestCase testCase = it as MnemonicTestCase
+                testCase.groupLabel = groupLabel
+                if (!testCase.wordList) {
+                    testCase.wordList = wordList
+                }
+                if (!testCase.prefix) {
+                    testCase.prefix = prefix
+                }
+                caseBuilder.add(testCase)
+            }
+        }
+        return caseBuilder.build()
     }
     static {
-        STANDARD_VECTORS = parseResource("us/eharning/atomun/mnemonic/spi/electrum/v2/test_simple_data.json").collect {
-            return it as MnemonicTestCase
-        }
-        LARGE_VECTORS = parseResource("us/eharning/atomun/mnemonic/spi/electrum/v2/test_large_entropy.json").collect {
-            return it as MnemonicTestCase
-        }
-        CUSTOM_ENTROPY_VECTORS = parseResource("us/eharning/atomun/mnemonic/spi/electrum/v2/test_custom_entropy_data.json").collect {
-            return it as MnemonicTestCase
-        }
-        ES_VECTORS = parseResource("us/eharning/atomun/mnemonic/spi/electrum/v2/test_spanish_data.json").collect {
-            return it as MnemonicTestCase
-        }
-        PT_VECTORS = parseResource("us/eharning/atomun/mnemonic/spi/electrum/v2/test_portuguese_data.json").collect {
-            return it as MnemonicTestCase
-        }
-        JP_VECTORS = parseResource("us/eharning/atomun/mnemonic/spi/electrum/v2/test_japanese_data.json").collect {
-            return it as MnemonicTestCase
-        }
+        EN_VECTORS = parseYamlResource("us/eharning/atomun/mnemonic/spi/electrum/v2/test_english_data.yaml")
+        STANDARD_VECTORS = Iterables.filter(EN_VECTORS, {
+            return it.groupLabel == "simple english"
+        })
+        LARGE_VECTORS = Iterables.filter(EN_VECTORS, {
+            return it.groupLabel == "large-entropy english"
+        })
+        CUSTOM_ENTROPY_VECTORS = Iterables.filter(EN_VECTORS, {
+            return it.groupLabel == "custom-entropy english"
+        })
+        ES_VECTORS = parseYamlResource("us/eharning/atomun/mnemonic/spi/electrum/v2/test_spanish_data.yaml")
+        PT_VECTORS = parseYamlResource("us/eharning/atomun/mnemonic/spi/electrum/v2/test_portuguese_data.yaml")
+        JP_VECTORS = parseYamlResource("us/eharning/atomun/mnemonic/spi/electrum/v2/test_japanese_data.yaml")
+
         LANGUAGE_VECTORS = Iterables.concat(ES_VECTORS, PT_VECTORS, JP_VECTORS)
+
         ALL_VECTORS = Iterables.concat(
-                STANDARD_VECTORS,
-                LARGE_VECTORS,
-                CUSTOM_ENTROPY_VECTORS,
+                EN_VECTORS,
                 ES_VECTORS,
                 PT_VECTORS,
                 JP_VECTORS
