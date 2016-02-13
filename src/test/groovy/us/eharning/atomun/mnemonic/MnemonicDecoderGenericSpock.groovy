@@ -29,8 +29,13 @@ class MnemonicDecoderGenericSpock extends Specification {
         thrown(UnsupportedOperationException)
     }
 
-    def "requesting a certainly invalid mnemonic results in empty list"() {
+    def "requesting a certainly invalid mnemonic results in empty list"(String mnemonic) {
         expect:
-        Iterables.isEmpty(MnemonicUnit.decodeMnemonic("123FAKE"))
+        Iterables.isEmpty(MnemonicUnit.decodeMnemonic(mnemonic))
+        where:
+        _ | mnemonic
+        _ | "123FAKE"
+        /* To at least meet the 3-word chunk limit for BIP0039 */
+        _ | "123 Fake Foux"
     }
 }

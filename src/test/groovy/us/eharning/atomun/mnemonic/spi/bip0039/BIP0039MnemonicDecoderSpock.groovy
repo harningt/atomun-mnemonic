@@ -147,8 +147,20 @@ class BIP0039MnemonicDecoderSpock extends Specification {
         thrown IllegalArgumentException
     }
 
+    def "mnemonic decoding with invalid dictionary words in a specific dictionary throw"() {
+        when:
+        MnemonicUnit.decodeMnemonic(ALG, "practice practice FAILURE", "english")
+        then:
+        thrown IllegalArgumentException
+    }
+
     def "unspecified mnemonic decoding with invalid dictionary words result in empty list"() {
         expect:
         Iterables.isEmpty(MnemonicUnit.decodeMnemonic("practice practice FAILURE"))
+    }
+
+    def "unspecified mnemonic decoding with invalid dictionary words in a specific dictionary result in empty list"() {
+        expect:
+        Iterables.isEmpty(MnemonicUnit.decodeMnemonic("practice practice FAILURE", "english"))
     }
 }
