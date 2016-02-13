@@ -17,7 +17,6 @@
 package us.eharning.atomun.mnemonic.spi.electrum.v2;
 
 import com.google.common.base.Predicates;
-import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.math.BigIntegerMath;
@@ -207,8 +206,6 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             if (null == extensions) {
                 extensions = Collections.emptyMap();
             }
-            /* DUMMY */
-            Verify.verifyNotNull(extensions);
             versionPrefix = (VersionPrefix) extensions.get(ElectrumV2ExtensionIdentifier.VERSION_PREFIX);
             if (null == versionPrefix) {
                 versionPrefix = DEFAULT_VERSION_PREFIX;

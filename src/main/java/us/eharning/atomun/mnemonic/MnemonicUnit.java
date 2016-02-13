@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package us.eharning.atomun.mnemonic;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
@@ -74,16 +75,12 @@ public final class MnemonicUnit {
      *         method to calculate a given extension's value.
      */
     private MnemonicUnit(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableSet<MnemonicExtensionIdentifier> supportedExtensions, @Nonnull Function<MnemonicExtensionIdentifier, Object> extensionLoader) {
-        Verify.verifyNotNull(spi);
-        Verify.verifyNotNull(mnemonicSequence);
-        Verify.verifyNotNull(supportedExtensions);
-        Verify.verifyNotNull(extensionLoader);
-        this.spi = spi;
-        this.mnemonicSequence = mnemonicSequence;
+        this.spi = checkNotNull(spi);
+        this.mnemonicSequence = checkNotNull(mnemonicSequence);
         this.entropy = entropy == null ? null : Arrays.copyOf(entropy, entropy.length);
         this.seed = seed == null ? null : Arrays.copyOf(seed, seed.length);
-        this.supportedExtensions = supportedExtensions;
-        this.extensionLoader = extensionLoader;
+        this.supportedExtensions = checkNotNull(supportedExtensions);
+        this.extensionLoader = checkNotNull(extensionLoader);
     }
 
     /**
