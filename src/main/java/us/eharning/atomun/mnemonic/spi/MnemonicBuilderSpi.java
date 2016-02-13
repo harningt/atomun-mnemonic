@@ -72,7 +72,6 @@ public abstract class MnemonicBuilderSpi {
 
     /**
      * Encode this instance to a wrapped mnemonic unit.
-     * The default implementation performs a naive generation without optimisation.
      *
      * @param builder
      *         instance to construct MnemonicUnit with.
@@ -84,17 +83,7 @@ public abstract class MnemonicBuilderSpi {
      * @since 0.2.0
      */
     @Nonnull
-    public MnemonicUnit generateMnemonicUnit(@Nonnull MnemonicUnit.Builder builder, BuilderParameter... parameters) {
-        String mnemonicSequence = generateMnemonic(parameters);
-        /* Check for word list since that can be input. */
-        String wordListIdentifier = null;
-        for (BuilderParameter parameter : parameters) {
-            if (parameter instanceof WordListBuilderParameter) {
-                wordListIdentifier = ((WordListBuilderParameter) parameter).getWordListIdentifier();
-            }
-        }
-        return MnemonicUnit.decodeMnemonic(getAlgorithm(), mnemonicSequence, wordListIdentifier);
-    }
+    public abstract MnemonicUnit generateMnemonicUnit(@Nonnull MnemonicUnit.Builder builder, BuilderParameter... parameters);
 
     /**
      * Validate the builder parameters.
