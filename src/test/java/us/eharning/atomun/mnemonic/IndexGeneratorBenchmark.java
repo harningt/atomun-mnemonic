@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import com.tomgibara.crinch.bits.BitReader;
 import com.tomgibara.crinch.bits.BitVector;
 import com.tomgibara.crinch.bits.ByteArrayBitReader;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -32,6 +33,7 @@ import javax.annotation.Nonnull;
 /**
  * Benchmark tool for mnemonic index generation methods (aligned 11-bit reading).
  */
+@SuppressFBWarnings("PREDICTABLE_RANDOM")
 class IndexGeneratorBenchmark {
     private static final byte[] INPUT = new byte[128 / 8];
     private static final byte[] CHECKSUM = new byte[256 / 8];

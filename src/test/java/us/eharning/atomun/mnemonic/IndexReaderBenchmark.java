@@ -25,6 +25,7 @@ import com.tomgibara.crinch.bits.BitVector;
 import com.tomgibara.crinch.bits.BitWriter;
 import com.tomgibara.crinch.bits.ByteArrayBitReader;
 import com.tomgibara.crinch.bits.ByteArrayBitWriter;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -35,6 +36,7 @@ import javax.annotation.Nonnull;
 /**
  * Benchmark tool for mnemonic index generation methods (aligned 11-bit reading).
  */
+@SuppressFBWarnings("PREDICTABLE_RANDOM")
 class IndexReaderBenchmark {
     private static final int DICTIONARY_SIZE = 2048;
     private static final int[] INPUT = new int[(128 + 10) / 11];
