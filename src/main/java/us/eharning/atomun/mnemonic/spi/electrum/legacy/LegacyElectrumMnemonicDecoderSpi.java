@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class LegacyElectrumMnemonicDecoderSpi extends MnemonicDecoderSpi {
     @Nonnull
     @Override
     public MnemonicUnit decode(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
-        if (null != wordListIdentifier && !wordListIdentifier.isEmpty()) {
+        if (null != wordListIdentifier) {
             /* There are no custom word lists for legacy Electrum mnemonic system. */
             throw new UnsupportedOperationException("No custom wordListIdentifiers allowed");
         }

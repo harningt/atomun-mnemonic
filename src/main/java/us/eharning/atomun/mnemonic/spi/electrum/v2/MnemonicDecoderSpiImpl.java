@@ -134,7 +134,7 @@ class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
         }
         List<String> mnemonicWordList = MnemonicUtility.getNormalizedWordList(mnemonicSequence);
         Dictionary dictionary;
-        if (null == wordListIdentifier || wordListIdentifier.isEmpty()) {
+        if (null == wordListIdentifier) {
             dictionary = detectWordList(mnemonicWordList);
             if (null == dictionary) {
                 throw new IllegalArgumentException("Could not detect dictionary for words");
