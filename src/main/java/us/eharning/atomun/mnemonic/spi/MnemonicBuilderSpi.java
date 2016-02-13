@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package us.eharning.atomun.mnemonic.spi;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.annotations.Beta;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
@@ -32,6 +34,7 @@ import javax.annotation.concurrent.Immutable;
 @Beta
 @Immutable
 public abstract class MnemonicBuilderSpi {
+    @Nonnull
     private final MnemonicAlgorithm algorithm;
 
     /**
@@ -40,8 +43,8 @@ public abstract class MnemonicBuilderSpi {
      * @param algorithm
      *         implemented mnemonic algorithm.
      */
-    protected MnemonicBuilderSpi(MnemonicAlgorithm algorithm) {
-        this.algorithm = algorithm;
+    protected MnemonicBuilderSpi(@Nonnull MnemonicAlgorithm algorithm) {
+        this.algorithm = checkNotNull(algorithm);
     }
 
     /**
@@ -49,6 +52,7 @@ public abstract class MnemonicBuilderSpi {
      *
      * @return implemented mnemonic algorithm.
      */
+    @Nonnull
     public MnemonicAlgorithm getAlgorithm() {
         return algorithm;
     }
