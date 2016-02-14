@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.tomgibara.crinch.bits.BitWriter;
 import com.tomgibara.crinch.bits.ByteArrayBitWriter;
-import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.ElectrumMnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
@@ -53,7 +53,7 @@ class MnemonicUnitSpiImpl extends MnemonicUnitSpi {
      *         instance to match mnemonic words against.
      */
     public MnemonicUnitSpiImpl(@Nonnull Dictionary dictionary) {
-        super(MnemonicAlgorithm.ElectrumV2);
+        super(ElectrumMnemonicAlgorithm.ElectrumV2);
         this.dictionary = dictionary;
     }
 

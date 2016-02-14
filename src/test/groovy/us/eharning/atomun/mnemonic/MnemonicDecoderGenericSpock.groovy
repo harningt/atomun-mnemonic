@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic
 
 import com.google.common.collect.Iterables
-import groovy.transform.NotYetImplemented
 import spock.lang.Specification
 
 /**
  * Generic decoding handler test.
  */
 class MnemonicDecoderGenericSpock extends Specification {
-    /* Awaiting MnemonicAlgorithm to not be an enum */
-    @NotYetImplemented
     def "requesting a unlisted algorithm results in failure"() {
         when:
-        def someUnlistedAlgorithm
+        def someUnlistedAlgorithm = new MnemonicAlgorithm() {}
         MnemonicUnit.decodeMnemonic(someUnlistedAlgorithm, "TEST")
         then:
         thrown(UnsupportedOperationException)

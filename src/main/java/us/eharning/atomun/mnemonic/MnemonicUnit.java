@@ -20,15 +20,11 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
 import us.eharning.atomun.mnemonic.spi.MnemonicServiceProvider;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
-import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
-import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
-import us.eharning.atomun.mnemonic.spi.electrum.v2.ElectrumV2MnemonicService;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -111,7 +107,7 @@ public final class MnemonicUnit {
         checkNotNull(mnemonicSequence);
         ImmutableList.Builder<MnemonicUnit> unitListBuilder = ImmutableList.builder();
         for (MnemonicServiceProvider serviceProvider : MnemonicServices.getServiceProviders()) {
-            for (MnemonicAlgorithm algorithm : MnemonicAlgorithm.values()) {
+            for (MnemonicAlgorithm algorithm : MnemonicServices.getRegisteredAlgorithms()) {
                 MnemonicDecoderSpi system = serviceProvider.getMnemonicDecoder(algorithm);
                 if (null == system) {
                     continue;
@@ -165,6 +161,9 @@ public final class MnemonicUnit {
     public static MnemonicUnit decodeMnemonic(@Nonnull MnemonicAlgorithm mnemonicAlgorithm, @Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
         checkNotNull(mnemonicAlgorithm);
         checkNotNull(mnemonicSequence);
+        if (!MnemonicServices.getRegisteredAlgorithms().contains(mnemonicAlgorithm)) {
+            throw new UnsupportedOperationException("Unregistered algorithm: " + mnemonicAlgorithm);
+        }
         for (MnemonicServiceProvider serviceProvider : MnemonicServices.getServiceProviders()) {
             MnemonicDecoderSpi system = serviceProvider.getMnemonicDecoder(mnemonicAlgorithm);
             if (null == system) {

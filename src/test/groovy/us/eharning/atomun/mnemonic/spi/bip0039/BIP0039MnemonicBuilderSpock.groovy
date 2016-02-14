@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.bip0039
 
 import com.google.common.base.Predicates
@@ -20,6 +21,7 @@ import com.google.common.collect.ImmutableSet
 import com.google.common.collect.Iterables
 import spock.lang.IgnoreIf
 import spock.lang.Specification
+import us.eharning.atomun.mnemonic.BIPMnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
@@ -32,7 +34,7 @@ import java.text.Normalizer
  * Test sequence for the legacy Electrum mnemonic builder
  */
 class BIP0039MnemonicBuilderSpock extends Specification {
-    static final MnemonicAlgorithm ALG = MnemonicAlgorithm.BIP0039
+    static final MnemonicAlgorithm ALG = BIPMnemonicAlgorithm.BIP0039
 
     static final Set<BIP0039ExtensionIdentifier> NON_GETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(BIP0039ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_SET)))
     static final Set<BIP0039ExtensionIdentifier> NON_SETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(BIP0039ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_GET)))

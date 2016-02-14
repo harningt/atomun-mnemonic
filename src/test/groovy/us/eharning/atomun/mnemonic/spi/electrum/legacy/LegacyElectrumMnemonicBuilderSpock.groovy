@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.electrum.legacy
 
 import com.google.common.base.Predicates
@@ -20,6 +21,7 @@ import com.google.common.collect.ImmutableSet
 import com.google.common.collect.Iterables
 import spock.lang.IgnoreIf
 import spock.lang.Specification
+import us.eharning.atomun.mnemonic.ElectrumMnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
@@ -30,7 +32,7 @@ import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers
  * Test sequence for the legacy Electrum mnemonic builder
  */
 class LegacyElectrumMnemonicBuilderSpock extends Specification {
-    static final MnemonicAlgorithm ALG = MnemonicAlgorithm.LegacyElectrum
+    static final MnemonicAlgorithm ALG = ElectrumMnemonicAlgorithm.LegacyElectrum
 
     static final Set<LegacyElectrumExtensionIdentifier> NON_GETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(LegacyElectrumExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_SET)))
     static final Set<LegacyElectrumExtensionIdentifier> NON_SETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(LegacyElectrumExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_GET)))

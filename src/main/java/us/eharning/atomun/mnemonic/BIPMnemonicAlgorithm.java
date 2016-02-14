@@ -17,14 +17,15 @@
 package us.eharning.atomun.mnemonic;
 
 /**
- * Interface representing a given supported algorithm.
- * <p>
- *     Expect equality to be used for comparison.
- * </p>
+ * Enumeration of possible BIP-sourced mnemonic algorithms.
  *
- * @see BIPMnemonicAlgorithm for BIP supported algorithms.
- * @see ElectrumMnemonicAlgorithm for Electrum supported algorithms.
  * @since 0.7.0
  */
-public interface MnemonicAlgorithm {
+public enum BIPMnemonicAlgorithm implements MnemonicAlgorithm {
+    /**
+     * Identifier for BIP-0039 specified mnemonic algorithm.
+     *
+     * @since 0.7.0
+     */
+    BIP0039
 }

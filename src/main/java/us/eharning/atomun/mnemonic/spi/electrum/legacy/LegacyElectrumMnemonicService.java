@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
+import us.eharning.atomun.mnemonic.ElectrumMnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi;
 import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
@@ -48,7 +49,7 @@ public class LegacyElectrumMnemonicService extends MnemonicServiceProvider {
     @CheckForNull
     @Override
     public MnemonicBuilderSpi getMnemonicBuilder(@Nonnull MnemonicAlgorithm algorithm) {
-        if (algorithm != MnemonicAlgorithm.LegacyElectrum) {
+        if (algorithm != ElectrumMnemonicAlgorithm.LegacyElectrum) {
             return null;
         }
         return BUILDER_SPI;
@@ -67,7 +68,7 @@ public class LegacyElectrumMnemonicService extends MnemonicServiceProvider {
     @CheckForNull
     @Override
     public MnemonicDecoderSpi getMnemonicDecoder(@Nonnull MnemonicAlgorithm algorithm) {
-        if (algorithm != MnemonicAlgorithm.LegacyElectrum) {
+        if (algorithm != ElectrumMnemonicAlgorithm.LegacyElectrum) {
             return null;
         }
         return DECODER_SPI;

@@ -23,6 +23,7 @@ import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
 import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
 import us.eharning.atomun.mnemonic.spi.electrum.v2.ElectrumV2MnemonicService;
 
+import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
@@ -31,7 +32,15 @@ import javax.annotation.Nonnull;
  * @since 0.7.0
  */
 @Beta
-final class MnemonicServices {
+public final class MnemonicServices {
+    /**
+     * List of current registered algorithms.
+     */
+    private static final ImmutableSet<MnemonicAlgorithm> REGISTERED_ALGORITHMS = ImmutableSet.<MnemonicAlgorithm>builder()
+            .add(BIPMnemonicAlgorithm.values())
+            .add(ElectrumMnemonicAlgorithm.values())
+            .build();
+
     /**
      * List of current service providers.
      */
@@ -45,6 +54,18 @@ final class MnemonicServices {
      * Prevent external construction since it is a utility class.
      */
     private MnemonicServices() {
+    }
+
+    /**
+     * Obtain a set of registered algorithms.
+     *
+     * @return set containing all registered algorithms.
+     *
+     * @since 0.7.0
+     */
+    @Nonnull
+    public static Set<MnemonicAlgorithm> getRegisteredAlgorithms() {
+        return REGISTERED_ALGORITHMS;
     }
 
     /**

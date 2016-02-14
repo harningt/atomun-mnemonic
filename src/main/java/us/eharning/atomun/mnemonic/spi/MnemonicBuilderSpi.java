@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.annotations.Beta;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.MnemonicServices;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 
 import javax.annotation.Nonnull;
@@ -45,6 +46,9 @@ public abstract class MnemonicBuilderSpi {
      */
     protected MnemonicBuilderSpi(@Nonnull MnemonicAlgorithm algorithm) {
         this.algorithm = checkNotNull(algorithm);
+        if (!MnemonicServices.getRegisteredAlgorithms().contains(algorithm)) {
+            throw new UnsupportedOperationException("Unregistered algorithm: " + algorithm);
+        }
     }
 
     /**

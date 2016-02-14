@@ -16,19 +16,15 @@
 
 package us.eharning.atomun.mnemonic
 
-import groovy.transform.NotYetImplemented
 import spock.lang.Specification
-
 
 /**
  * Generic building test.
  */
 class MnemonicBuilderGenericSpock extends Specification {
-    /* Awaiting MnemonicAlgorithm to not be an enum */
-    @NotYetImplemented
     def "requesting a unlisted algorithm results in failure"() {
         when:
-        def someUnlistedAlgorithm
+        def someUnlistedAlgorithm = new MnemonicAlgorithm() {}
         MnemonicBuilder.newBuilder(someUnlistedAlgorithm)
         then:
         thrown(UnsupportedOperationException)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
-import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.BIPMnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BuilderParameter;
 import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
@@ -41,7 +41,7 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
      * Construct a new SPI with the given algorithm.
      */
     protected BIP0039MnemonicBuilderSpi() {
-        super(MnemonicAlgorithm.BIP0039);
+        super(BIPMnemonicAlgorithm.BIP0039);
     }
 
     /**

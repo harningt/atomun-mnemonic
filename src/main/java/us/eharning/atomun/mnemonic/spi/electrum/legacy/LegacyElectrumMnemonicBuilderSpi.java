@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package us.eharning.atomun.mnemonic.spi.electrum.legacy;
 
-import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.ElectrumMnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BuilderParameter;
 import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
@@ -36,7 +36,7 @@ class LegacyElectrumMnemonicBuilderSpi extends MnemonicBuilderSpi {
      * Construct a new SPI with the given algorithm.
      */
     protected LegacyElectrumMnemonicBuilderSpi() {
-        super(MnemonicAlgorithm.LegacyElectrum);
+        super(ElectrumMnemonicAlgorithm.LegacyElectrum);
     }
 
     /**

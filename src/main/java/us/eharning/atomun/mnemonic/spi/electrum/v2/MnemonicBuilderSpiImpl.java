@@ -20,7 +20,7 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.math.BigIntegerMath;
-import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.ElectrumMnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.BuilderParameter;
@@ -53,7 +53,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
      * Construct a new SPI with the given algorithm.
      */
     protected MnemonicBuilderSpiImpl() {
-        super(MnemonicAlgorithm.ElectrumV2);
+        super(ElectrumMnemonicAlgorithm.ElectrumV2);
     }
 
     /**

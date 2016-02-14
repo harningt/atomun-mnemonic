@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.bip0039
 
 import com.google.common.collect.Iterables
 import spock.lang.Specification
+import us.eharning.atomun.mnemonic.BIPMnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
@@ -29,7 +31,7 @@ import java.text.Normalizer
  * Test around the legacy Electrum mnemonic decoder system.
  */
 class BIP0039MnemonicDecoderSpock extends Specification {
-    static final MnemonicAlgorithm ALG = MnemonicAlgorithm.BIP0039
+    static final MnemonicAlgorithm ALG = BIPMnemonicAlgorithm.BIP0039
     static final Set<MnemonicExtensionIdentifier> GETTABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.canGet(BIP0039ExtensionIdentifier.values())
 
     def "check #mnemonic string decodes to #seed for standard vector"() {

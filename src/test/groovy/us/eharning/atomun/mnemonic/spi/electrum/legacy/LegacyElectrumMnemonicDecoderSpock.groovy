@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.electrum.legacy
 
 import com.google.common.collect.Iterables
 import spock.lang.Specification
+import us.eharning.atomun.mnemonic.ElectrumMnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 import us.eharning.atomun.mnemonic.MnemonicUnit
@@ -26,7 +28,7 @@ import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers
  * Test around the legacy Electrum mnemonic decoder system.
  */
 class LegacyElectrumMnemonicDecoderSpock extends Specification {
-    static final MnemonicAlgorithm ALG = MnemonicAlgorithm.LegacyElectrum
+    static final MnemonicAlgorithm ALG = ElectrumMnemonicAlgorithm.LegacyElectrum
     static String[][] pairs = [
             ["pleasure patience practice", "01234567"],
             ["pleasure patience practice offer jeans sister", "0123456789012345"],

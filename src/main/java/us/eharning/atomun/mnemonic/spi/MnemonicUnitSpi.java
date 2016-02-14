@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
+import us.eharning.atomun.mnemonic.MnemonicServices;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 
 import javax.annotation.CheckForNull;
@@ -48,7 +49,11 @@ public abstract class MnemonicUnitSpi {
      *
      * @since 0.2.0
      */
-    protected MnemonicUnitSpi(MnemonicAlgorithm algorithm) {
+    protected MnemonicUnitSpi(@Nonnull MnemonicAlgorithm algorithm) {
+        checkNotNull(algorithm);
+        if (!MnemonicServices.getRegisteredAlgorithms().contains(algorithm)) {
+            throw new UnsupportedOperationException("Unregistered algorithm: " + algorithm);
+        }
         this.algorithm = algorithm;
     }
 
