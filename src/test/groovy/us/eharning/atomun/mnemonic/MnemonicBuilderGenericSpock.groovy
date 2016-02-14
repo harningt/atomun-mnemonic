@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic
 
+import groovy.transform.NotYetImplemented
 import spock.lang.Specification
 
 
@@ -22,10 +24,20 @@ import spock.lang.Specification
  * Generic building test.
  */
 class MnemonicBuilderGenericSpock extends Specification {
-    def "requesting an unlisted algorithm results in failure"() {
+    /* Awaiting MnemonicAlgorithm to not be an enum */
+    @NotYetImplemented
+    def "requesting a unlisted algorithm results in failure"() {
+        when:
+        def someUnlistedAlgorithm
+        MnemonicBuilder.newBuilder(someUnlistedAlgorithm)
+        then:
+        thrown(UnsupportedOperationException)
+    }
+
+    def "requesting a null algorithm results in failure"() {
         when:
         MnemonicBuilder.newBuilder(null)
         then:
-        thrown(UnsupportedOperationException)
+        thrown(NullPointerException)
     }
 }

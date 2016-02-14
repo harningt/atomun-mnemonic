@@ -16,17 +16,28 @@
 package us.eharning.atomun.mnemonic
 
 import com.google.common.collect.Iterables
+import groovy.transform.NotYetImplemented
 import spock.lang.Specification
 
 /**
  * Generic decoding handler test.
  */
 class MnemonicDecoderGenericSpock extends Specification {
-    def "requesting an unlisted algorithm results in failure"() {
+    /* Awaiting MnemonicAlgorithm to not be an enum */
+    @NotYetImplemented
+    def "requesting a unlisted algorithm results in failure"() {
         when:
-        MnemonicUnit.decodeMnemonic((MnemonicAlgorithm) null, "TEST")
+        def someUnlistedAlgorithm
+        MnemonicUnit.decodeMnemonic(someUnlistedAlgorithm, "TEST")
         then:
         thrown(UnsupportedOperationException)
+    }
+
+    def "requesting a null algorithm results in failure"() {
+        when:
+        MnemonicUnit.decodeMnemonic(null, "TEST")
+        then:
+        thrown(NullPointerException)
     }
 
     def "requesting a certainly invalid mnemonic results in empty list"(String mnemonic) {

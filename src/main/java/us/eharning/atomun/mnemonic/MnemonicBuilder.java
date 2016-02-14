@@ -16,6 +16,9 @@
 
 package us.eharning.atomun.mnemonic;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import us.eharning.atomun.mnemonic.spi.BuilderParameter;
@@ -39,12 +42,6 @@ import javax.annotation.concurrent.NotThreadSafe;
  */
 @NotThreadSafe
 public final class MnemonicBuilder {
-    private static final ImmutableList<MnemonicServiceProvider> SERVICE_PROVIDERS = ImmutableList.of(
-            new LegacyElectrumMnemonicService(),
-            new BIP0039MnemonicService(),
-            new ElectrumV2MnemonicService()
-    );
-
     /**
      * Implementation instance.
      */
@@ -64,7 +61,7 @@ public final class MnemonicBuilder {
      * @param spi
      *         implementation provider.
      */
-    private MnemonicBuilder(@Nonnull MnemonicBuilderSpi spi) {
+    MnemonicBuilder(@Nonnull MnemonicBuilderSpi spi) {
         this.newSpi = spi;
     }
 
@@ -80,7 +77,8 @@ public final class MnemonicBuilder {
      */
     @Nonnull
     public static MnemonicBuilder newBuilder(@Nonnull MnemonicAlgorithm algorithm) {
-        for (MnemonicServiceProvider provider : SERVICE_PROVIDERS) {
+        checkNotNull(algorithm);
+        for (MnemonicServiceProvider provider : MnemonicServices.getServiceProviders()) {
             MnemonicBuilderSpi spi = provider.getMnemonicBuilder(algorithm);
             if (null != spi) {
                 return new MnemonicBuilder(spi);
