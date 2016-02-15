@@ -16,9 +16,7 @@
 
 package us.eharning.atomun.mnemonic.spi.bip0039
 
-import com.google.common.base.Predicates
 import com.google.common.collect.ImmutableSet
-import com.google.common.collect.Iterables
 import spock.lang.IgnoreIf
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.BIPMnemonicAlgorithm
@@ -26,7 +24,6 @@ import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 import us.eharning.atomun.mnemonic.MnemonicUnit
-import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers
 
 import java.text.Normalizer
 
@@ -36,8 +33,8 @@ import java.text.Normalizer
 class BIP0039MnemonicBuilderSpock extends Specification {
     static final MnemonicAlgorithm ALG = BIPMnemonicAlgorithm.BIP0039
 
-    static final Set<BIP0039ExtensionIdentifier> NON_GETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(BIP0039ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_SET)))
-    static final Set<BIP0039ExtensionIdentifier> NON_SETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(BIP0039ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_GET)))
+    static final Set<MnemonicExtensionIdentifier> NON_GETTABLE_EXTENSIONS = ImmutableSet.of() //ImmutableSet.copyOf(Iterables.filter(Arrays.asList(BIP0039ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_SET)))
+    static final Set<MnemonicExtensionIdentifier> NON_SETTABLE_EXTENSIONS = ImmutableSet.of() //ImmutableSet.copyOf(Iterables.filter(Arrays.asList(BIP0039ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_GET)))
 
     private static def RW_IDENTIFIER = new MnemonicExtensionIdentifier() {
         @Override

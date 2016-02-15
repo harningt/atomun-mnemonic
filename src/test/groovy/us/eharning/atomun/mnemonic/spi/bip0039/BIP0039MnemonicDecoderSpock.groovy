@@ -16,6 +16,7 @@
 
 package us.eharning.atomun.mnemonic.spi.bip0039
 
+import com.google.common.collect.ImmutableSet
 import com.google.common.collect.Iterables
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.BIPMnemonicAlgorithm
@@ -23,7 +24,6 @@ import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 import us.eharning.atomun.mnemonic.MnemonicUnit
-import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers
 
 import java.text.Normalizer
 
@@ -32,7 +32,7 @@ import java.text.Normalizer
  */
 class BIP0039MnemonicDecoderSpock extends Specification {
     static final MnemonicAlgorithm ALG = BIPMnemonicAlgorithm.BIP0039
-    static final Set<MnemonicExtensionIdentifier> GETTABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.canGet(BIP0039ExtensionIdentifier.values())
+    static final Set<MnemonicExtensionIdentifier> GETTABLE_EXTENSIONS = ImmutableSet.of() //MoreMnemonicExtensionIdentifiers.canGet(BIP0039ExtensionIdentifier.values())
 
     def "check #mnemonic string decodes to #seed for standard vector"() {
         given:
