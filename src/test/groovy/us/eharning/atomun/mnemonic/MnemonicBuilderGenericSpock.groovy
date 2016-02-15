@@ -18,6 +18,8 @@ package us.eharning.atomun.mnemonic
 
 import spock.lang.Specification
 
+import java.lang.reflect.Field
+
 /**
  * Generic building test.
  */
@@ -35,5 +37,26 @@ class MnemonicBuilderGenericSpock extends Specification {
         MnemonicBuilder.newBuilder(null)
         then:
         thrown(NullPointerException)
+    }
+
+    static Object getFinalStatic(Class<?> clazz, String fieldName) throws Exception {
+        Field field = clazz.getDeclaredField(fieldName)
+        field.setAccessible(true);
+
+        return field.get(null);
+    }
+
+    def "requesting an algorithm not known by any providers results in failure"() {
+        /* Requires reflection hack due to all known algorithms having a provider */
+        setup:
+        def providerSet = getFinalStatic(MnemonicServices, "SERVICE_PROVIDERS_MUTABLE")
+        def backup = providerSet.toArray()
+        providerSet.clear()
+        when:
+        MnemonicBuilder.newBuilder(BIPMnemonicAlgorithm.BIP0039)
+        then:
+        thrown(UnsupportedOperationException)
+        cleanup:
+        providerSet.addAll(backup)
     }
 }

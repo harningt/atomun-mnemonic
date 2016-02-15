@@ -17,13 +17,16 @@
 package us.eharning.atomun.mnemonic;
 
 import com.google.common.annotations.Beta;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import us.eharning.atomun.mnemonic.spi.MnemonicServiceProvider;
 import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
 import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
 import us.eharning.atomun.mnemonic.spi.electrum.v2.ElectrumV2MnemonicService;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import javax.annotation.Nonnull;
 
 /**
@@ -33,22 +36,40 @@ import javax.annotation.Nonnull;
  */
 @Beta
 public final class MnemonicServices {
+    /*
+     * Uses a CopyOnWriteArraySet due to small element count and infrequent
+     * mutation. If larger sets to be used, then an atomic-reference +
+     * immutable set may be better (since it offers ln(n) search).
+     */
+
     /**
      * List of current registered algorithms.
      */
-    private static final ImmutableSet<MnemonicAlgorithm> REGISTERED_ALGORITHMS = ImmutableSet.<MnemonicAlgorithm>builder()
-            .add(BIPMnemonicAlgorithm.values())
-            .add(ElectrumMnemonicAlgorithm.values())
-            .build();
+    private static final Set<MnemonicAlgorithm> REGISTERED_ALGORITHMS;
+    private static final Set<MnemonicAlgorithm> REGISTERED_ALGORITHMS_MUTABLE;
+
+    static {
+        REGISTERED_ALGORITHMS_MUTABLE = new CopyOnWriteArraySet<>(ImmutableList.<MnemonicAlgorithm>builder()
+                .add(BIPMnemonicAlgorithm.values())
+                .add(ElectrumMnemonicAlgorithm.values())
+                .build());
+        REGISTERED_ALGORITHMS = Collections.unmodifiableSet(REGISTERED_ALGORITHMS_MUTABLE);
+    }
 
     /**
      * List of current service providers.
      */
-    private static final ImmutableSet<MnemonicServiceProvider> SERVICE_PROVIDERS = ImmutableSet.of(
-            new LegacyElectrumMnemonicService(),
-            new BIP0039MnemonicService(),
-            new ElectrumV2MnemonicService()
-    );
+    private static final Set<MnemonicServiceProvider> SERVICE_PROVIDERS;
+    private static final Set<MnemonicServiceProvider> SERVICE_PROVIDERS_MUTABLE;
+
+    static {
+        SERVICE_PROVIDERS_MUTABLE = new CopyOnWriteArraySet<>(Arrays.asList(
+                new LegacyElectrumMnemonicService(),
+                new BIP0039MnemonicService(),
+                new ElectrumV2MnemonicService()
+        ));
+        SERVICE_PROVIDERS = Collections.unmodifiableSet(SERVICE_PROVIDERS_MUTABLE);
+    }
 
     /**
      * Prevent external construction since it is a utility class.

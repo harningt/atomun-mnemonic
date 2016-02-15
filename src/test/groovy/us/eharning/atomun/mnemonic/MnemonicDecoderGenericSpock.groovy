@@ -19,6 +19,8 @@ package us.eharning.atomun.mnemonic
 import com.google.common.collect.Iterables
 import spock.lang.Specification
 
+import java.lang.reflect.Field
+
 /**
  * Generic decoding handler test.
  */
@@ -33,7 +35,7 @@ class MnemonicDecoderGenericSpock extends Specification {
 
     def "requesting a null algorithm results in failure"() {
         when:
-        MnemonicUnit.decodeMnemonic(null, "TEST")
+        MnemonicUnit.decodeMnemonic((MnemonicAlgorithm)null, "TEST")
         then:
         thrown(NullPointerException)
     }
@@ -46,5 +48,26 @@ class MnemonicDecoderGenericSpock extends Specification {
         _ | "123FAKE"
         /* To at least meet the 3-word chunk limit for BIP0039 */
         _ | "123 Fake Foux"
+    }
+
+    static Object getFinalStatic(Class<?> clazz, String fieldName) throws Exception {
+        Field field = clazz.getDeclaredField(fieldName)
+        field.setAccessible(true);
+
+        return field.get(null);
+    }
+
+    def "requesting an algorithm not known by any providers results in failure"() {
+        /* Requires reflection hack due to all known algorithms having a provider */
+        setup:
+        def providerSet = getFinalStatic(MnemonicServices, "SERVICE_PROVIDERS_MUTABLE")
+        def backup = providerSet.toArray()
+        providerSet.clear()
+        when:
+        MnemonicUnit.decodeMnemonic(BIPMnemonicAlgorithm.BIP0039, "")
+        then:
+        thrown(UnsupportedOperationException)
+        cleanup:
+        providerSet.addAll(backup)
     }
 }
