@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package us.eharning.atomun.mnemonic
+package us.eharning.atomun.mnemonic.spi
 
 import spock.lang.Specification
-import us.eharning.atomun.mnemonic.spi.BuilderParameter
-import us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi
+import us.eharning.atomun.mnemonic.MnemonicAlgorithm
+import us.eharning.atomun.mnemonic.MnemonicServices
 
 import javax.annotation.Nonnull
+import javax.annotation.Nullable
 
 /**
  * Builder SPI tests
  */
-class MnemonicBuilderSpiSpecification extends Specification {
-    class DummySpi extends MnemonicBuilderSpi {
+class MnemonicUnitSpiSpecification extends Specification {
+    class DummySpi extends MnemonicUnitSpi {
         /**
          * Construct a new SPI as if it were any passed-in algorithm.
          */
@@ -35,17 +35,12 @@ class MnemonicBuilderSpiSpecification extends Specification {
         }
 
         @Override
-        String generateMnemonic(BuilderParameter... parameters) {
+        byte[] getEntropy(@Nonnull CharSequence mnemonicSequence) {
             throw new UnsupportedOperationException()
         }
 
         @Override
-        MnemonicUnit generateMnemonicUnit(@Nonnull MnemonicUnit.Builder builder, BuilderParameter... parameters) {
-            throw new UnsupportedOperationException()
-        }
-
-        @Override
-        void validate(BuilderParameter... parameters) {
+        byte[] getSeed(@Nonnull CharSequence mnemonicSequence, @Nullable CharSequence password) {
             throw new UnsupportedOperationException()
         }
     }
