@@ -81,6 +81,10 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             builder.build()
         then:
             noExceptionThrown()
+        when:
+        builder.buildUnit()
+        then:
+        noExceptionThrown()
         where:
             wordList    | _
             "english"   | _
@@ -148,6 +152,10 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             builder.build()
         then:
             noExceptionThrown()
+        when:
+        builder.buildUnit()
+        then:
+        noExceptionThrown()
     }
 
     @IgnoreIf({ NON_SETTABLE_EXTENSIONS.empty })
@@ -183,6 +191,10 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             builder.build()
         then:
             thrown(IllegalStateException)
+        when:
+        builder.buildUnit()
+        then:
+        thrown(IllegalStateException)
     }
     def "check encoding fails when attempted entropy set fails"() {
         given:
@@ -192,6 +204,10 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             builder.build()
         then:
             thrown(IllegalStateException)
+        when:
+        builder.buildUnit()
+        then:
+        thrown(IllegalStateException)
     }
     def "check encoding fails for invalid entropyLength values"() {
         given:
@@ -220,6 +236,7 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             builder.setEntropyLength(length)
         then:
             builder.build() != null
+        builder.buildUnit() != null
         where:
             _ | length
             _ | 1

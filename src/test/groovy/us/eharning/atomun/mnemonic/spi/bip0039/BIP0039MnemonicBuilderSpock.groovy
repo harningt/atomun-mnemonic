@@ -118,11 +118,15 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         testCase << BIP0039TestData.JP_VECTORS
     }
 
-    def "check encoding paases when no state set with safe defaults"() {
+    def "check encoding passes when no state set with safe defaults"() {
         given:
         def builder = MnemonicBuilder.newBuilder(ALG)
         when:
         builder.build()
+        then:
+        noExceptionThrown()
+        when:
+        builder.buildUnit()
         then:
         noExceptionThrown()
     }
@@ -163,6 +167,10 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         builder.build()
         then:
         thrown(IllegalStateException)
+        when:
+        builder.buildUnit()
+        then:
+        thrown(IllegalStateException)
     }
 
     def "check encoding fails when attempted entropy set fails"() {
@@ -174,6 +182,10 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         } catch (ignored) {
         }
         builder.build()
+        then:
+        thrown(IllegalStateException)
+        when:
+        builder.buildUnit()
         then:
         thrown(IllegalStateException)
     }
@@ -231,6 +243,7 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         builder.setEntropyLength(length)
         then:
         builder.build() != null
+        builder.buildUnit() != null
         where:
         _ | length
         _ | 4 * 1

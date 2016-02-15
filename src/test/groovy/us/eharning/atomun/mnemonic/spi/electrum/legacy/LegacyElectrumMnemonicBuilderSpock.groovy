@@ -91,6 +91,10 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         builder.build()
         then:
         noExceptionThrown()
+        when:
+        builder.buildUnit()
+        then:
+        noExceptionThrown()
     }
 
     @IgnoreIf({ NON_SETTABLE_EXTENSIONS.empty })
@@ -129,6 +133,10 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         builder.build()
         then:
         thrown(IllegalStateException)
+        when:
+        builder.buildUnit()
+        then:
+        thrown(IllegalStateException)
     }
 
     def "check encoding fails when attempted entropy set fails"() {
@@ -140,6 +148,10 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         } catch (ignored) {
         }
         builder.build()
+        then:
+        thrown(IllegalStateException)
+        when:
+        builder.buildUnit()
         then:
         thrown(IllegalStateException)
     }
@@ -197,6 +209,7 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         builder.setEntropyLength(length)
         then:
         builder.build() != null
+        builder.buildUnit() != null
         where:
         _ | length
         _ | 4 * 1
