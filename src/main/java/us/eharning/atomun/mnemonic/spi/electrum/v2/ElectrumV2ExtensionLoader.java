@@ -20,6 +20,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.api.electrum.v2.ElectrumV2ExtensionIdentifier;
+import us.eharning.atomun.mnemonic.api.electrum.v2.VersionPrefix;
 
 import javax.annotation.Nullable;
 

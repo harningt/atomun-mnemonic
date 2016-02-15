@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package us.eharning.atomun.mnemonic.spi.electrum.v2
+package us.eharning.atomun.mnemonic.api.electrum.v2
 
 import spock.lang.Specification
 

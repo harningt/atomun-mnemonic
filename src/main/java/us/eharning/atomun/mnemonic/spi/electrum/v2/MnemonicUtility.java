@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import us.eharning.atomun.core.crypto.PBKDF2;
+import us.eharning.atomun.mnemonic.api.electrum.v2.VersionPrefix;
 import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
 import us.eharning.atomun.mnemonic.utility.dictionary.DictionaryIdentifier;
 import us.eharning.atomun.mnemonic.utility.dictionary.DictionarySource;
