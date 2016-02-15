@@ -31,6 +31,7 @@ import us.eharning.atomun.mnemonic.api.electrum.v2.ElectrumV2ExtensionIdentifier
 class ElectrumV2MnemonicDecoderSpock extends Specification {
     static final MnemonicAlgorithm ALG = ElectrumMnemonicAlgorithm.ElectrumV2
     static final Set<MnemonicExtensionIdentifier> GETTABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.canGet(ElectrumV2ExtensionIdentifier.values())
+    static final Set<MnemonicExtensionIdentifier> SETTABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.canSet(ElectrumV2ExtensionIdentifier.values())
 
     def "check #mnemonic string decodes to matching values for standard vectors"() {
         given:
