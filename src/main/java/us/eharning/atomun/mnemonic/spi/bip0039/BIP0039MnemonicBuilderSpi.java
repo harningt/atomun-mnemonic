@@ -18,11 +18,11 @@ package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
-import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.BuilderParameter;
 import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
 import us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi;
 import us.eharning.atomun.mnemonic.spi.WordListBuilderParameter;
+import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -129,7 +129,7 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
      * @return space-delimited sequence of mnemonic words.
      */
     @Nonnull
-    private static String generateMnemonicSequence(@Nonnull byte[] entropy, @Nonnull BidirectionalDictionary dictionary) {
+    private static String generateMnemonicSequence(@Nonnull byte[] entropy, @Nonnull Dictionary dictionary) {
         int[] indexArray = BIP0039MnemonicIndexGenerator.generateIndices(entropy);
         StringBuilder mnemonicSentence = new StringBuilder();
         for (int i = 0; i < indexArray.length; i++) {
@@ -157,7 +157,7 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
     public String generateMnemonic(BuilderParameter... parameters) {
         byte[] entropy = getParameterEntropy(parameters);
         String wordListIdentifier = getParameterWordListIdentifier(parameters);
-        BidirectionalDictionary dictionary = BIP0039MnemonicUtility.getDictionary(wordListIdentifier);
+        Dictionary dictionary = BIP0039MnemonicUtility.getDictionary(wordListIdentifier);
         return generateMnemonicSequence(entropy, dictionary);
     }
 
@@ -178,10 +178,10 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
     public MnemonicUnit generateMnemonicUnit(@Nonnull MnemonicUnit.Builder builder, BuilderParameter... parameters) {
         byte[] entropy = getParameterEntropy(parameters);
         String wordListIdentifier = getParameterWordListIdentifier(parameters);
-        BidirectionalDictionary dictionary = BIP0039MnemonicUtility.getDictionary(wordListIdentifier);
+        Dictionary dictionary = BIP0039MnemonicUtility.getDictionary(wordListIdentifier);
         String mnemonicSequence = generateMnemonicSequence(entropy, dictionary);
 
-        BIP0039MnemonicUnitSpi spi = BIP0039MnemonicDecoderSpi.getMnemonicUnitSpi(dictionary);
+        BIP0039MnemonicUnitSpi spi = BIP0039MnemonicDecoderSpi.getMnemonicUnitSpi(dictionary.getIdentifier());
         return spi.build(builder, mnemonicSequence, entropy);
     }
 

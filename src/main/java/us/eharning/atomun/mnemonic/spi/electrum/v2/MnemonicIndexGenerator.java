@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package us.eharning.atomun.mnemonic.spi.electrum.v2;
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
 import com.tomgibara.crinch.bits.ByteArrayBitReader;
-import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
+import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ class MnemonicIndexGenerator {
      * @return array of integer indices into dictionary.
      */
     @Nonnull
-    public static int[] generateIndices(@Nonnull BigInteger entropy, BidirectionalDictionary wordList) {
+    public static int[] generateIndices(@Nonnull BigInteger entropy, Dictionary wordList) {
         Preconditions.checkNotNull(entropy);
 
         /* If the word list is a power of 2, we can use bit-shifting for the math */
@@ -71,7 +71,7 @@ class MnemonicIndexGenerator {
      * @return array of integer indices into dictionary.
      */
     @Nonnull
-    public static int[] generateIndicesWithDivision(@Nonnull BigInteger entropy, BidirectionalDictionary wordList) {
+    public static int[] generateIndicesWithDivision(@Nonnull BigInteger entropy, Dictionary wordList) {
         Preconditions.checkNotNull(entropy);
 
         /*
@@ -101,7 +101,7 @@ class MnemonicIndexGenerator {
      * @return array of integer indices into dictionary.
      */
     @Nonnull
-    public static int[] generateIndicesWithBitShift(@Nonnull BigInteger entropy, BidirectionalDictionary wordList) {
+    public static int[] generateIndicesWithBitShift(@Nonnull BigInteger entropy, Dictionary wordList) {
         Preconditions.checkNotNull(entropy);
 
         final int wordListSize = wordList.getSize();

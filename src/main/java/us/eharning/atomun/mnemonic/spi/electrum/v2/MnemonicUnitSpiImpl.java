@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import com.tomgibara.crinch.bits.ByteArrayBitWriter;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
-import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
+import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
 
 import java.math.BigInteger;
 import java.text.Normalizer;
@@ -44,7 +44,7 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 class MnemonicUnitSpiImpl extends MnemonicUnitSpi {
-    private final BidirectionalDictionary dictionary;
+    private final Dictionary dictionary;
 
     /**
      * Construct a electrum v2 decoder SPI instance for the given dictionary.
@@ -52,7 +52,7 @@ class MnemonicUnitSpiImpl extends MnemonicUnitSpi {
      * @param dictionary
      *         instance to match mnemonic words against.
      */
-    public MnemonicUnitSpiImpl(@Nonnull BidirectionalDictionary dictionary) {
+    public MnemonicUnitSpiImpl(@Nonnull Dictionary dictionary) {
         super(MnemonicAlgorithm.ElectrumV2);
         this.dictionary = dictionary;
     }
@@ -68,7 +68,7 @@ class MnemonicUnitSpiImpl extends MnemonicUnitSpi {
      * @return sequence of bytes based on word list.
      */
     @Nonnull
-    private static byte[] mnemonicToBytes(@Nonnull BidirectionalDictionary dictionary, @Nonnull List<String> mnemonicWordList) {
+    private static byte[] mnemonicToBytes(@Nonnull Dictionary dictionary, @Nonnull List<String> mnemonicWordList) {
         if (fast_is_pow2(dictionary.getSize())) {
             byte[] result = mnemonicToBytesWithBitshift(dictionary, mnemonicWordList);
             byte[] checkResult = mnemonicToBytesWithMultiplication(dictionary, mnemonicWordList);
@@ -92,7 +92,7 @@ class MnemonicUnitSpiImpl extends MnemonicUnitSpi {
      * @return sequence of bytes based on word list.
      */
     @Nonnull
-    private static byte[] mnemonicToBytesWithBitshift(@Nonnull BidirectionalDictionary dictionary, @Nonnull List<String> mnemonicWordList) {
+    private static byte[] mnemonicToBytesWithBitshift(@Nonnull Dictionary dictionary, @Nonnull List<String> mnemonicWordList) {
         Converter<String, Integer> reverseConverter = dictionary.reverse();
 
         final int wordListSize = dictionary.getSize();
@@ -155,7 +155,7 @@ class MnemonicUnitSpiImpl extends MnemonicUnitSpi {
      * @return sequence of bytes based on word list.
      */
     @Nonnull
-    private static byte[] mnemonicToBytesWithMultiplication(@Nonnull BidirectionalDictionary dictionary, @Nonnull List<String> mnemonicWordList) {
+    private static byte[] mnemonicToBytesWithMultiplication(@Nonnull Dictionary dictionary, @Nonnull List<String> mnemonicWordList) {
         Converter<String, Integer> reverseConverter = dictionary.reverse();
 
         BigInteger total = BigInteger.ZERO;
