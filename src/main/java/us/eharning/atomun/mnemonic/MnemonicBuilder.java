@@ -56,7 +56,7 @@ public final class MnemonicBuilder {
      * @param spi
      *         implementation provider.
      */
-    MnemonicBuilder(@Nonnull MnemonicBuilderSpi spi) {
+    private MnemonicBuilder(@Nonnull MnemonicBuilderSpi spi) {
         this.newSpi = spi;
     }
 

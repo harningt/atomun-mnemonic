@@ -66,7 +66,7 @@ public final class MnemonicUnit {
      * @param extensionLoader
      *         method to calculate a given extension's value.
      */
-    MnemonicUnit(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableSet<MnemonicExtensionIdentifier> supportedExtensions, @Nonnull Function<MnemonicExtensionIdentifier, Object> extensionLoader) {
+    private MnemonicUnit(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableSet<MnemonicExtensionIdentifier> supportedExtensions, @Nonnull Function<MnemonicExtensionIdentifier, Object> extensionLoader) {
         this.spi = checkNotNull(spi);
         this.mnemonicSequence = checkNotNull(mnemonicSequence);
         this.entropy = entropy == null ? null : Arrays.copyOf(entropy, entropy.length);

@@ -35,11 +35,13 @@ class MnemonicBuilderSpiSpecification extends Specification {
             super(algorithm)
         }
 
+        @Nonnull
         @Override
         String generateMnemonic(BuilderParameter... parameters) {
             throw new UnsupportedOperationException()
         }
 
+        @Nonnull
         @Override
         MnemonicUnit generateMnemonicUnit(@Nonnull MnemonicUnit.Builder builder, BuilderParameter... parameters) {
             throw new UnsupportedOperationException()

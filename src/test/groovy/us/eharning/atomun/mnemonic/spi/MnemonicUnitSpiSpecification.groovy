@@ -39,6 +39,7 @@ class MnemonicUnitSpiSpecification extends Specification {
             throw new UnsupportedOperationException()
         }
 
+        @Nonnull
         @Override
         byte[] getSeed(@Nonnull CharSequence mnemonicSequence, @Nullable CharSequence password) {
             throw new UnsupportedOperationException()
