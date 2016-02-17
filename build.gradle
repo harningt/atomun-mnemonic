@@ -59,6 +59,7 @@ dependencies {
     testCompile 'net.trajano.caliper:caliper:1.2.1'
     testCompile 'net.trajano.commons:commons-testing:2.1.0'
     testCompile 'org.yaml:snakeyaml:1.16'
+    testCompile 'org.jooq:joor:0.9.5'
 }
 
 checkstyle {
