@@ -56,6 +56,7 @@ dependencies {
     testCompile 'org.codehaus.groovy:groovy:2.4.5'
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     testCompile 'net.trajano.caliper:caliper:1.2.1'
+    testCompile 'net.trajano.commons:commons-testing:2.1.0'
     testCompile 'org.yaml:snakeyaml:1.16'
 }
 
