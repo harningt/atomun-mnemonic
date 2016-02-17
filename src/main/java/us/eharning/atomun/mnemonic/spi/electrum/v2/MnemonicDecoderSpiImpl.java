@@ -20,6 +20,7 @@ import com.google.common.base.Converter;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers;
+import us.eharning.atomun.mnemonic.api.electrum.v2.ElectrumV2ExtensionIdentifier;
 import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
 import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
 

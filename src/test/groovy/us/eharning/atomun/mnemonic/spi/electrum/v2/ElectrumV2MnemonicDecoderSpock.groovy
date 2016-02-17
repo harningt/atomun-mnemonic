@@ -23,6 +23,7 @@ import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 import us.eharning.atomun.mnemonic.MnemonicUnit
 import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers
+import us.eharning.atomun.mnemonic.api.electrum.v2.ElectrumV2ExtensionIdentifier
 
 /**
  * Test around the legacy Electrum mnemonic decoder system.
