@@ -33,7 +33,6 @@ import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
 
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -273,12 +272,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             if (MnemonicUtility.isOldSeed(mnemonicSequence)) {
                 return null;
             }
-            byte[] seedVersionData;
-            try {
-                seedVersionData = MnemonicUtility.getSeedVersionBytes(mnemonicSequence);
-            } catch (GeneralSecurityException e) {
-                return null;
-            }
+            byte[] seedVersionData = MnemonicUtility.getSeedVersionBytes(mnemonicSequence);
             if (!versionPrefix.matches(seedVersionData)) {
                 return null;
             }

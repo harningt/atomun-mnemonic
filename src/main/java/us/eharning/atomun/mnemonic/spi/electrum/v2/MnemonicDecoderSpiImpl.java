@@ -25,7 +25,6 @@ import us.eharning.atomun.mnemonic.api.electrum.v2.VersionPrefix;
 import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
 import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
 
-import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -118,12 +117,7 @@ class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
         if (MnemonicUtility.isOldSeed(mnemonicSequence)) {
             throw new IllegalArgumentException("Mnemonic does not have the expected seed version");
         }
-        byte[] seedVersionData;
-        try {
-            seedVersionData = MnemonicUtility.getSeedVersionBytes(mnemonicSequence);
-        } catch (GeneralSecurityException e) {
-            throw new RuntimeException("Failed to calculate the seed version data", e);
-        }
+        byte[] seedVersionData = MnemonicUtility.getSeedVersionBytes(mnemonicSequence);
         VersionPrefix versionPrefix = null;
         for (VersionPrefix testVersionPrefix: VersionPrefix.values()) {
             if (testVersionPrefix.matches(seedVersionData)) {
