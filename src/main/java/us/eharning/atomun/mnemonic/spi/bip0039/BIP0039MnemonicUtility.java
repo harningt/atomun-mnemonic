@@ -106,7 +106,6 @@ class BIP0039MnemonicUtility {
      * @throws java.lang.Error
      *         if the digest cannot be found or input is bad (should not happen).
      */
-    @Nonnull
     static void sha256digest(@Nonnull byte[] data, int dataStart, int dataLength, @Nonnull byte[] output, int outputStart) {
         MessageDigest digest;
         try {

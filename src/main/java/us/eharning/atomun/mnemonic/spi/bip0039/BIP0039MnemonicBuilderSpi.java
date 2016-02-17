@@ -40,7 +40,7 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
     /**
      * Construct a new SPI with the given algorithm.
      */
-    protected BIP0039MnemonicBuilderSpi() {
+    BIP0039MnemonicBuilderSpi() {
         super(BIPMnemonicAlgorithm.BIP0039);
     }
 

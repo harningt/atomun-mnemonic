@@ -121,7 +121,7 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
      */
     @Nonnull
     @Override
-    public MnemonicUnit decode(MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
+    public MnemonicUnit decode(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
         List<String> mnemonicWordList = BIP0039MnemonicUtility.getNormalizedWordList(mnemonicSequence);
         /* Verify word list has an appropriate length */
         if (mnemonicWordList.size() % 3 != 0) {
