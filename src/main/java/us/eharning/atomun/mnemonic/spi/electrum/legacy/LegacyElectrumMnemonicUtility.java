@@ -22,9 +22,10 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
+import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
+import us.eharning.atomun.mnemonic.utility.dictionary.DictionaryIdentifier;
+import us.eharning.atomun.mnemonic.utility.dictionary.DictionarySource;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import javax.annotation.Nonnull;
 
@@ -33,17 +34,7 @@ import javax.annotation.Nonnull;
  */
 class LegacyElectrumMnemonicUtility {
     private static final Splitter WORD_SPLITTER = Splitter.on(CharMatcher.whitespace()).trimResults().omitEmptyStrings();
-    private static final BidirectionalDictionary DICTIONARY;
-    private static final int N;
-
-    static {
-        try {
-            DICTIONARY = new BidirectionalDictionary(LegacyElectrumMnemonicUtility.class.getResource("dictionary.txt"), "english");
-        } catch (IOException e) {
-            throw new Error("Failed to read dictionary.txt for initialization", e);
-        }
-        N = DICTIONARY.getSize();
-    }
+    private static final DictionaryIdentifier DICTIONARY_IDENTIFIER = DictionaryIdentifier.getIdentifier("english", "us/eharning/atomun/mnemonic/spi/electrum/legacy/dictionary.txt");
 
     /**
      * Simple modular math hack to deal with signed/unsigned integer issues and java.
@@ -105,6 +96,8 @@ class LegacyElectrumMnemonicUtility {
      */
     @Nonnull
     static String toMnemonic(@Nonnull byte[] entropy) {
+        final Dictionary dictionary = DictionarySource.getDictionary(DICTIONARY_IDENTIFIER);
+        final int N = dictionary.getSize();
         int entropyIndex = 0;
         ArrayList<String> encoded = Lists.newArrayList();
         encoded.ensureCapacity(entropy.length / 8 * 3);
@@ -114,9 +107,9 @@ class LegacyElectrumMnemonicUtility {
             int w1 = (int) (subValue % N);
             int w2 = (int) (subValue / N + w1) % N;
             int w3 = (int) (subValue / N / N + w2) % N;
-            encoded.add(DICTIONARY.convert(w1));
-            encoded.add(DICTIONARY.convert(w2));
-            encoded.add(DICTIONARY.convert(w3));
+            encoded.add(dictionary.convert(w1));
+            encoded.add(dictionary.convert(w2));
+            encoded.add(dictionary.convert(w3));
         }
         return Joiner.on(' ').join(encoded);
     }
@@ -131,10 +124,13 @@ class LegacyElectrumMnemonicUtility {
      */
     @Nonnull
     static byte[] toEntropy(@Nonnull CharSequence mnemonicSequence) {
+        final Dictionary dictionary = DictionarySource.getDictionary(DICTIONARY_IDENTIFIER);
+        final int N = dictionary.getSize();
+
         String[] mnemonicWords = Iterables.toArray(WORD_SPLITTER.split(mnemonicSequence), String.class);
         byte[] entropy = new byte[mnemonicWords.length * 4 / 3];
         int entropyIndex = 0;
-        Converter<String, Integer> reverseDictionary = DICTIONARY.reverse();
+        Converter<String, Integer> reverseDictionary = dictionary.reverse();
         if (mnemonicWords.length % 3 != 0) {
             throw new IllegalArgumentException("Mnemonic sequence is not a multiple of 3");
         }

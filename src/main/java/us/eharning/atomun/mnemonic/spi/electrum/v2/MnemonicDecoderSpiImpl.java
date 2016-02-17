@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import com.google.common.base.Converter;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers;
-import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
+import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
 
 import java.security.GeneralSecurityException;
 import java.util.List;
@@ -57,9 +57,9 @@ class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
      * @return a dictionary instance if found, else null.
      */
     @CheckForNull
-    private static BidirectionalDictionary detectWordList(@Nonnull List<String> mnemonicWordList) {
+    private static Dictionary detectWordList(@Nonnull List<String> mnemonicWordList) {
         /* Need to autodetect the word list from the sequence. */
-        for (BidirectionalDictionary availableDictionary : MnemonicUtility.getDictionaries()) {
+        for (Dictionary availableDictionary : MnemonicUtility.getDictionaries()) {
             /* Check that all the words are in the dictionary and if so, found */
             if (verifyDictionary(availableDictionary, mnemonicWordList)) {
                 return availableDictionary;
@@ -78,7 +78,7 @@ class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
      *
      * @return true if dictionary contains all words in mnemonicWordList.
      */
-    private static boolean verifyDictionary(@Nonnull BidirectionalDictionary dictionary, @Nonnull List<String> mnemonicWordList) {
+    private static boolean verifyDictionary(@Nonnull Dictionary dictionary, @Nonnull List<String> mnemonicWordList) {
         Converter<String, Integer> reverseDictionary = dictionary.reverse();
         /* Due to inability for converters to return null as a valid response, need to catch thrown exception */
         try {
@@ -133,7 +133,7 @@ class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
             throw new IllegalArgumentException("Mnemonic does not have the expected seed version");
         }
         List<String> mnemonicWordList = MnemonicUtility.getNormalizedWordList(mnemonicSequence);
-        BidirectionalDictionary dictionary;
+        Dictionary dictionary;
         if (null == wordListIdentifier || wordListIdentifier.isEmpty()) {
             dictionary = detectWordList(mnemonicWordList);
             if (null == dictionary) {
@@ -164,7 +164,7 @@ class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
      * @return mnemonic unit.
      */
     @Nonnull
-    static MnemonicUnit getMnemonicUnit(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nonnull BidirectionalDictionary dictionary, @Nonnull VersionPrefix versionPrefix) {
+    static MnemonicUnit getMnemonicUnit(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nonnull Dictionary dictionary, @Nonnull VersionPrefix versionPrefix) {
         String wordListIdentifier = dictionary.getWordListIdentifier();
         MnemonicUnitSpiImpl unit = WORD_LIST_SPI.get(wordListIdentifier);
         if (null == unit) {

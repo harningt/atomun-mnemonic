@@ -16,6 +16,8 @@
 
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Charsets;
 import com.google.common.base.Converter;
 import com.google.common.collect.ImmutableMap;
@@ -24,8 +26,10 @@ import com.tomgibara.crinch.bits.ByteArrayBitWriter;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
-import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
+import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
+import us.eharning.atomun.mnemonic.utility.dictionary.DictionaryIdentifier;
+import us.eharning.atomun.mnemonic.utility.dictionary.DictionarySource;
 
 import java.text.Normalizer;
 import java.util.List;
@@ -38,17 +42,18 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
-    private final BidirectionalDictionary dictionary;
+    @Nonnull
+    private final DictionaryIdentifier dictionaryIdentifier;
 
     /**
      * Construct a BIP0039 decoder SPI instance for the given dictionary.
      *
-     * @param dictionary
-     *         instance to match mnemonic words against.
+     * @param dictionaryIdentifier
+     *         identifier for the dictionary to use.
      */
-    public BIP0039MnemonicUnitSpi(@Nonnull BidirectionalDictionary dictionary) {
+    public BIP0039MnemonicUnitSpi(@Nonnull DictionaryIdentifier dictionaryIdentifier) {
         super(MnemonicAlgorithm.BIP0039);
-        this.dictionary = dictionary;
+        this.dictionaryIdentifier = checkNotNull(dictionaryIdentifier);
     }
 
     /**
@@ -62,7 +67,7 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
      * @return sequence of bytes based on word list.
      */
     @Nonnull
-    private static byte[] mnemonicToBytes(@Nonnull BidirectionalDictionary dictionary, @Nonnull List<String> mnemonicWordList) {
+    private static byte[] mnemonicToBytes(@Nonnull Dictionary dictionary, @Nonnull List<String> mnemonicWordList) {
         /* Each word represents 11 bits of entropy (2^11 => 2048 words) */
         int mnemonicSentenceBitCount = mnemonicWordList.size() * 11;
         int mnemonicSentenceByteCount = (mnemonicSentenceBitCount + 7) / 8;
@@ -158,6 +163,8 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
     @Nonnull
     @Override
     public byte[] getEntropy(@Nonnull CharSequence mnemonicSequence) {
+        Dictionary dictionary = DictionarySource.getDictionary(dictionaryIdentifier);
+
         List<String> mnemonicWordList = BIP0039MnemonicUtility.getNormalizedWordList(mnemonicSequence);
         int mnemonicSentenceBitCount = mnemonicWordList.size() * 11;
         byte[] mnemonicSentenceBytes = mnemonicToBytes(dictionary, mnemonicWordList);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,23 +19,19 @@ package us.eharning.atomun.mnemonic.spi.electrum.v2;
 import com.google.common.base.Charsets;
 import com.google.common.base.Converter;
 import com.google.common.base.Function;
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import us.eharning.atomun.core.crypto.PBKDF2;
-import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
-import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
+import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
+import us.eharning.atomun.mnemonic.utility.dictionary.DictionaryIdentifier;
+import us.eharning.atomun.mnemonic.utility.dictionary.DictionarySource;
 
-import java.io.IOException;
-import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.text.Normalizer;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,23 +48,14 @@ class MnemonicUtility {
             "portuguese",
             "spanish"
     );
-    private static final ConcurrentMap<String, BidirectionalDictionary> dictionaries = new ConcurrentHashMap<>();
-    private static final BidirectionalDictionary LEGACY_DICTIONARY;
+    private static final DictionaryIdentifier LEGACY_DICTIONARY_IDENTIFIER
+            = DictionaryIdentifier.getIdentifier("english", "us/eharning/atomun/mnemonic/spi/electrum/legacy/dictionary.txt");
     private static final int PBKDF_ROUNDS = 2048;
     private static final String PBKDF_MAC = "HmacSHA512";
     private static final int PBKDF_SEED_OUTPUT = 64;
     private static Pattern DIACRITICAL_MATCH = Pattern.compile("[\\p{M}]+");
     private static Pattern WHITESPACE_MATCH = Pattern.compile("[\\p{Space}\u3000]");
     private static CJKCleanupUtility cleanupUtility = new CJKCleanupUtility();
-
-    static {
-        try {
-            LEGACY_DICTIONARY = new BidirectionalDictionary(LegacyElectrumMnemonicService.class.getResource("dictionary.txt"), "english");
-        } catch (IOException e) {
-            throw new Error("Failed to read dictionary.txt for initialization", e);
-        }
-    }
-
 
     /**
      * Utility method to obtain a dictionary given the wordListIdentifier.
@@ -82,22 +69,9 @@ class MnemonicUtility {
      *         If the word list cannot be found/loaded.
      */
     @Nonnull
-    static BidirectionalDictionary getDictionary(@Nonnull String wordListIdentifier) {
-        BidirectionalDictionary dictionary = dictionaries.get(wordListIdentifier);
-        if (null == dictionary) {
-            URL dictionaryLocation = MnemonicUtility.class.getResource(wordListIdentifier + ".txt");
-            if (dictionaryLocation == null) {
-                throw new IllegalArgumentException("Unknown wordListIdentifier requested");
-            }
-            try {
-                dictionary = new BidirectionalDictionary(dictionaryLocation, wordListIdentifier);
-            } catch (IOException e) {
-                throw new IllegalArgumentException("Inaccessible wordListIdentifier requested");
-            }
-            /* Use the value found in the map just in case 2 created to prevent multiple copies */
-            dictionary = MoreObjects.firstNonNull(dictionaries.putIfAbsent(wordListIdentifier, dictionary), dictionary);
-        }
-        return dictionary;
+    static Dictionary getDictionary(@Nonnull String wordListIdentifier) {
+        DictionaryIdentifier identifier = DictionaryIdentifier.getIdentifier(wordListIdentifier, "us/eharning/atomun/mnemonic/spi/electrum/v2/" + wordListIdentifier + ".txt");
+        return DictionarySource.getDictionary(identifier);
     }
 
     /**
@@ -152,11 +126,11 @@ class MnemonicUtility {
      * @return iterable that contains known dictionaries.
      */
     @Nonnull
-    static Iterable<BidirectionalDictionary> getDictionaries() {
-        Iterable<BidirectionalDictionary> dictionaryIterable = Iterables.transform(KNOWN_DICTIONARIES, new Function<String, BidirectionalDictionary>() {
+    static Iterable<Dictionary> getDictionaries() {
+        Iterable<Dictionary> dictionaryIterable = Iterables.transform(KNOWN_DICTIONARIES, new Function<String, Dictionary>() {
             @Nullable
             @Override
-            public BidirectionalDictionary apply(String input) {
+            public Dictionary apply(String input) {
                 if (null == input) {
                     return null;
                 }
@@ -254,7 +228,8 @@ class MnemonicUtility {
             /* Not a multiple of 3 words, not an old seed */
             return false;
         }
-        Converter<String, Integer> reverse = LEGACY_DICTIONARY.reverse();
+        Dictionary legacyDictionary = DictionarySource.getDictionary(LEGACY_DICTIONARY_IDENTIFIER);
+        Converter<String, Integer> reverse = legacyDictionary.reverse();
         try {
             for (String word : words) {
                 reverse.convert(word);

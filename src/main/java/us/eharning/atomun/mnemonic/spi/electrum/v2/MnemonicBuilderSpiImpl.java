@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ import com.google.common.math.BigIntegerMath;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
-import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.BuilderParameter;
 import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
 import us.eharning.atomun.mnemonic.spi.ExtensionBuilderParameter;
 import us.eharning.atomun.mnemonic.spi.WordListBuilderParameter;
+import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
 
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -174,7 +174,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
 
         private int entropyLengthBytes = -1;
         private String wordListIdentifier = null;
-        private BidirectionalDictionary dictionary;
+        private Dictionary dictionary;
         private VersionPrefix versionPrefix = null;
 
         private BigInteger customEntropy = BigInteger.ONE;
@@ -299,7 +299,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             }
         }
 
-        private String encodeSeed(BidirectionalDictionary dictionary, BigInteger value) {
+        private String encodeSeed(Dictionary dictionary, BigInteger value) {
             int[] indexArray = MnemonicIndexGenerator.generateIndices(value, dictionary);
             StringBuilder mnemonicSentence = new StringBuilder();
             for (int i = 0; i < indexArray.length; i++) {

@@ -18,8 +18,10 @@ package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Converter;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
-import us.eharning.atomun.mnemonic.spi.BidirectionalDictionary;
 import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
+import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
+import us.eharning.atomun.mnemonic.utility.dictionary.DictionaryIdentifier;
+import us.eharning.atomun.mnemonic.utility.dictionary.DictionarySource;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,19 +41,19 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
     private static final ConcurrentMap<String, BIP0039MnemonicUnitSpi> WORD_LIST_SPI = new ConcurrentHashMap<>();
 
     /**
-     * Obtain the mnemonic unit SPI for the given wordListIdentifier and dictionary.
+     * Obtain the mnemonic unit SPI for the given dictionary identifier.
      *
-     * @param dictionary
+     * @param dictionaryIdentifier
      *         instance base to use.
      *
      * @return provider instance.
      */
     @Nonnull
-    static BIP0039MnemonicUnitSpi getMnemonicUnitSpi(@Nonnull BidirectionalDictionary dictionary) {
-        BIP0039MnemonicUnitSpi unit = WORD_LIST_SPI.get(dictionary.getWordListIdentifier());
+    static BIP0039MnemonicUnitSpi getMnemonicUnitSpi(@Nonnull DictionaryIdentifier dictionaryIdentifier) {
+        BIP0039MnemonicUnitSpi unit = WORD_LIST_SPI.get(dictionaryIdentifier.getName());
         if (null == unit) {
-            unit = new BIP0039MnemonicUnitSpi(dictionary);
-            WORD_LIST_SPI.putIfAbsent(dictionary.getWordListIdentifier(), unit);
+            unit = new BIP0039MnemonicUnitSpi(dictionaryIdentifier);
+            WORD_LIST_SPI.putIfAbsent(dictionaryIdentifier.getName(), unit);
         }
         return unit;
     }
@@ -65,9 +67,11 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
      * @return a dictionary instance if found, else null.
      */
     @CheckForNull
-    private static BidirectionalDictionary detectWordList(@Nonnull List<String> mnemonicWordList) {
+    private static Dictionary detectWordList(@Nonnull List<String> mnemonicWordList) {
         /* Need to autodetect the word list from the sequence. */
-        for (BidirectionalDictionary availableDictionary : BIP0039MnemonicUtility.getDictionaries()) {
+        for (DictionaryIdentifier identifier : BIP0039MnemonicUtility.getDictionaries()) {
+            Dictionary availableDictionary = DictionarySource.getDictionary(identifier);
+
             /* Check that all the words are in the dictionary and if so, found */
             if (verifyDictionary(availableDictionary, mnemonicWordList)) {
                 return availableDictionary;
@@ -86,7 +90,7 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
      *
      * @return true if dictionary contains all words in mnemonicWordList.
      */
-    private static boolean verifyDictionary(@Nonnull BidirectionalDictionary dictionary, @Nonnull List<String> mnemonicWordList) {
+    private static boolean verifyDictionary(@Nonnull Dictionary dictionary, @Nonnull List<String> mnemonicWordList) {
         Converter<String, Integer> reverseDictionary = dictionary.reverse();
         /* Due to inability for converters to return null as a valid response, need to catch thrown exception */
         try {
@@ -123,7 +127,7 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
         if (mnemonicWordList.size() % 3 != 0) {
             throw new IllegalArgumentException("Word list of the wrong length");
         }
-        BidirectionalDictionary dictionary;
+        Dictionary dictionary;
         if (null == wordListIdentifier || wordListIdentifier.isEmpty()) {
             dictionary = detectWordList(mnemonicWordList);
             if (null == dictionary) {
@@ -136,7 +140,7 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
             }
         }
 
-        BIP0039MnemonicUnitSpi unit = getMnemonicUnitSpi(dictionary);
+        BIP0039MnemonicUnitSpi unit = getMnemonicUnitSpi(dictionary.getIdentifier());
 
         byte[] entropy = unit.getEntropy(mnemonicSequence);
         return unit.build(builder, mnemonicSequence, entropy);

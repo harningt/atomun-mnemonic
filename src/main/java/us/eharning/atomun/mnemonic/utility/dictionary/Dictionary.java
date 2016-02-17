@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package us.eharning.atomun.mnemonic.spi;
+package us.eharning.atomun.mnemonic.utility.dictionary;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Charsets;
@@ -23,11 +25,10 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.io.ByteSource;
 import com.google.common.io.LineProcessor;
-import com.google.common.io.Resources;
 
 import java.io.IOException;
-import java.net.URL;
 import java.text.Normalizer;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -40,24 +41,24 @@ import javax.annotation.concurrent.Immutable;
  */
 @Beta
 @Immutable
-public class BidirectionalDictionary extends Converter<Integer, String> {
+public class Dictionary extends Converter<Integer, String> {
     private final ImmutableList<String> indexToWordMap;
     private final ImmutableMap<String, Integer> wordToIndexMap;
-    private final String wordListIdentifier;
+    private final DictionaryIdentifier identifier;
 
     /**
      * Construct an instance by loading words from a list.
      *
      * @param wordList
      *         list of words to generate the dictionary from.
-     * @param wordListIdentifier
-     *         associated word list identifier.
+     * @param identifier
+     *         associated dictionary identifier.
      *
      * @since 0.1.0
      */
-    public BidirectionalDictionary(@Nonnull List<String> wordList, @Nonnull String wordListIdentifier) {
-        this.wordListIdentifier = wordListIdentifier;
-        indexToWordMap = ImmutableList.copyOf(wordList);
+    Dictionary(@Nonnull List<String> wordList, @Nonnull DictionaryIdentifier identifier) {
+        this.identifier = checkNotNull(identifier);
+        indexToWordMap = ImmutableList.copyOf(checkNotNull(wordList));
         ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
         for (int i = 0; i < indexToWordMap.size(); i++) {
             builder.put(indexToWordMap.get(i), i);
@@ -68,24 +69,24 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
     /**
      * Construct an instance by reading a resource as UTF-8 and line-splitting.
      *
-     * @param dictionaryLocation
-     *         resource location to generate the dictionary from.
-     * @param wordListIdentifier
-     *         associated word list identifier.
+     * @param dictionaryDataSource
+     *         reference to source of data for dictionary.
+     * @param identifier
+     *         associated dictionary identifier.
      *
      * @throws IOException
      *         on an I/O error reading the resource.
-     * @since 0.1.0
+     * @since 0.7.0
      */
-    public BidirectionalDictionary(@Nonnull URL dictionaryLocation, @Nonnull String wordListIdentifier) throws IOException {
-        this(resourceToLines(dictionaryLocation), wordListIdentifier);
+    Dictionary(@Nonnull ByteSource dictionaryDataSource, @Nonnull DictionaryIdentifier identifier) {
+        this(resourceToLines(dictionaryDataSource), identifier);
     }
 
     /**
      * Utility method to convert a resource URL into a list of lines.
      *
-     * @param resource
-     *         location to generate the line list from.
+     * @param dataSource
+     *         source to generate the line list from.
      *
      * @return list of lines.
      *
@@ -93,7 +94,7 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
      *         on I/O error reading from the resource.
      */
     @Nonnull
-    private static ImmutableList<String> resourceToLines(@Nonnull URL resource) throws IOException {
+    private static ImmutableList<String> resourceToLines(@Nonnull ByteSource dataSource) {
         LineProcessor<ImmutableList<String>> lineProcess = new LineProcessor<ImmutableList<String>>() {
             final ImmutableList.Builder<String> result = ImmutableList.builder();
 
@@ -114,7 +115,11 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
                 return result.build();
             }
         };
-        return Resources.readLines(resource, Charsets.UTF_8, lineProcess);
+        try {
+            return dataSource.asCharSource(Charsets.UTF_8).readLines(lineProcess);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Input source was bad", e);
+        }
     }
 
     @Override
@@ -126,15 +131,15 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
             return false;
         }
         /* NOTE: Skipping wordToIndexMap due to invariants */
-        BidirectionalDictionary thatDictionary = (BidirectionalDictionary) that;
+        Dictionary thatDictionary = (Dictionary) that;
         return Objects.equal(indexToWordMap, thatDictionary.indexToWordMap)
-                && Objects.equal(wordListIdentifier, thatDictionary.wordListIdentifier);
+                && Objects.equal(identifier, thatDictionary.identifier);
     }
 
     @Override
     public int hashCode() {
         /* NOTE: Skipping wordToIndexMap due to invariants */
-        return Objects.hashCode(indexToWordMap, wordListIdentifier);
+        return Objects.hashCode(indexToWordMap, identifier);
     }
 
     /**
@@ -149,10 +154,8 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
     @Nonnull
     @Override
     protected String doForward(@Nonnull Integer integer) {
-        String result = indexToWordMap.get(integer);
-        Preconditions.checkArgument(null != result, "Unknown dictionary index");
-        //noinspection ConstantConditions
-        return result;
+        Preconditions.checkArgument(integer >= 0 && integer < indexToWordMap.size(), "Unknown dictionary index %s", integer);
+        return indexToWordMap.get(integer);
     }
 
     /**
@@ -180,6 +183,17 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
     }
 
     /**
+     * Obtain the identifier of this dictionary.
+     *
+     * @return identifier.
+     *
+     * @since 0.7.0
+     */
+    public DictionaryIdentifier getIdentifier() {
+        return identifier;
+    }
+
+    /**
      * Obtains the wordListIdentifier of the dictionary.
      *
      * @return wordListIdentifier.
@@ -188,7 +202,7 @@ public class BidirectionalDictionary extends Converter<Integer, String> {
      */
     @Nonnull
     public String getWordListIdentifier() {
-        return wordListIdentifier;
+        return identifier.getName();
     }
 
     /**
