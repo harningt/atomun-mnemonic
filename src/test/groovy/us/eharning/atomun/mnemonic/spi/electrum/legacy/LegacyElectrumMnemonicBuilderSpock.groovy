@@ -16,6 +16,7 @@
 
 package us.eharning.atomun.mnemonic.spi.electrum.legacy
 
+import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSet
 import spock.lang.IgnoreIf
 import spock.lang.Specification
@@ -24,11 +25,15 @@ import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 import us.eharning.atomun.mnemonic.MnemonicUnit
+import us.eharning.atomun.mnemonic.spi.BuilderParameter
+import us.eharning.atomun.mnemonic.spi.ExtensionBuilderParameter
+import us.eharning.atomun.mnemonic.spi.WordListBuilderParameter
 
 /**
  * Test sequence for the legacy Electrum mnemonic builder
  */
 class LegacyElectrumMnemonicBuilderSpock extends Specification {
+    static final LegacyElectrumMnemonicBuilderSpi spi = new LegacyElectrumMnemonicBuilderSpi()
     static final MnemonicAlgorithm ALG = ElectrumMnemonicAlgorithm.LegacyElectrum
 
     static final Set<MnemonicExtensionIdentifier> NON_GETTABLE_EXTENSIONS = ImmutableSet.of() //ImmutableSet.copyOf(Iterables.filter(Arrays.asList(LegacyElectrumExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_SET)))
@@ -235,5 +240,26 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         builder.setEntropyLength(4)
         then:
         noExceptionThrown()
+    }
+
+    def "attempting to generate a mnemonic with an unknown invalid parameter will fail"() {
+        when:
+        spi.generateMnemonic(new BuilderParameter() {})
+        then:
+        thrown(UnsupportedOperationException)
+    }
+
+    def "attempting to generate a mnemonic with an extension invalid parameter will fail"() {
+        when:
+        spi.generateMnemonic(ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.of()))
+        then:
+        thrown(UnsupportedOperationException)
+    }
+
+    def "attempting to generate a mnemonic with an wordList invalid parameter will fail"() {
+        when:
+        spi.generateMnemonic(WordListBuilderParameter.getWordList("english"))
+        then:
+        thrown(UnsupportedOperationException)
     }
 }

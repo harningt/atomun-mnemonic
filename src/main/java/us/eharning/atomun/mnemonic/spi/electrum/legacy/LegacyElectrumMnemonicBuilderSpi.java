@@ -29,13 +29,13 @@ import javax.annotation.concurrent.Immutable;
  * Service provider for the legacy Electrum mnemonic format.
  */
 @Immutable
-class LegacyElectrumMnemonicBuilderSpi extends MnemonicBuilderSpi {
+final class LegacyElectrumMnemonicBuilderSpi extends MnemonicBuilderSpi {
     private static final EntropyBuilderParameter DEFAULT_ENTROPY_PARAMETER = EntropyBuilderParameter.getRandom(128 / 8);
 
     /**
      * Construct a new SPI with the given algorithm.
      */
-    protected LegacyElectrumMnemonicBuilderSpi() {
+    LegacyElectrumMnemonicBuilderSpi() {
         super(ElectrumMnemonicAlgorithm.LegacyElectrum);
     }
 
