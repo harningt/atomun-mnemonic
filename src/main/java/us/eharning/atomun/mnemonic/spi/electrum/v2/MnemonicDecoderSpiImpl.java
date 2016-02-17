@@ -41,8 +41,6 @@ import javax.annotation.concurrent.Immutable;
 class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
     private static final ConcurrentMap<String, MnemonicUnitSpiImpl> WORD_LIST_SPI = new ConcurrentHashMap<>();
 
-    private static final byte[] STANDARD_PREFIX = new byte[] { 0x01 };
-    private static final byte[] STANDARD_PREFIX_MASK = new byte[] { (byte)0xFF };
     private static final Set<MnemonicExtensionIdentifier> SUPPORTED_READABLE_EXTENSIONS;
 
     static {

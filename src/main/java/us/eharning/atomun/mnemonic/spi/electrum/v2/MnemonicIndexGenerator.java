@@ -29,7 +29,13 @@ import javax.annotation.Nonnull;
 /**
  * Utility class for electrum v2 wrapping different types of index generators.
  */
-class MnemonicIndexGenerator {
+final class MnemonicIndexGenerator {
+    /**
+     * Private unused constructor to mark as utility class.
+     */
+    private MnemonicIndexGenerator() {
+    }
+
     /**
      * Take the input entropy and output an array of word indices.
      *

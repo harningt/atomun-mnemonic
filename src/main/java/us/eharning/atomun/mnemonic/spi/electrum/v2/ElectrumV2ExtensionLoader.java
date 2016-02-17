@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
  * Closure encapsulating the extension => value conversion process.
  */
 class ElectrumV2ExtensionLoader implements Function<MnemonicExtensionIdentifier, Object> {
-    private VersionPrefix versionPrefix;
+    private final VersionPrefix versionPrefix;
 
     ElectrumV2ExtensionLoader(VersionPrefix versionPrefix) {
         this.versionPrefix = versionPrefix;
@@ -45,6 +45,7 @@ class ElectrumV2ExtensionLoader implements Function<MnemonicExtensionIdentifier,
         case VERSION_PREFIX:
             return versionPrefix;
         default:
+            /* Should never encounter - although code requires */
             return null;
         }
     }

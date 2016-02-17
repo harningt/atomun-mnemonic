@@ -41,8 +41,8 @@ public enum ElectrumV2ExtensionIdentifier implements MnemonicExtensionIdentifier
     CUSTOM_ENTROPY(false, true)
     ;
 
-    private boolean canGet;
-    private boolean canSet;
+    private final boolean canGet;
+    private final boolean canSet;
 
     ElectrumV2ExtensionIdentifier(boolean canGet, boolean canSet) {
         this.canGet = canGet;
