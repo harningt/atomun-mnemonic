@@ -122,7 +122,7 @@ final class MnemonicUtility {
      *
      * @return 64-byte seed value
      *
-     * @throws Error
+     * @throws RuntimeException
      *         if the Mac cannot be found (should not happen).
      */
     @Nonnull

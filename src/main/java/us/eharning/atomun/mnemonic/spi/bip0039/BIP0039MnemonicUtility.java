@@ -136,7 +136,7 @@ final class BIP0039MnemonicUtility {
      *
      * @return 64-byte seed value
      *
-     * @throws java.lang.Error
+     * @throws RuntimeException
      *         if the Mac cannot be found (should not happen).
      */
     @Nonnull
