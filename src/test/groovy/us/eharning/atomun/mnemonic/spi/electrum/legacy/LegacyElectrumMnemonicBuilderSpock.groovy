@@ -16,8 +16,10 @@
 
 package us.eharning.atomun.mnemonic.spi.electrum.legacy
 
+import com.google.common.base.Throwables
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSet
+import org.joor.Reflect
 import spock.lang.IgnoreIf
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.ElectrumMnemonicAlgorithm
@@ -242,24 +244,41 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         noExceptionThrown()
     }
 
-    def "attempting to generate a mnemonic with an unknown invalid parameter will fail"() {
+    def "attempting to generate a mnemonic with #name parameter will fail"(String name, BuilderParameter parameter) {
         when:
-        spi.generateMnemonic(new BuilderParameter() {})
+        spi.generateMnemonic(parameter)
         then:
-        thrown(UnsupportedOperationException)
+        thrown(IllegalArgumentException)
+        where:
+        name        | parameter
+        "unknown item" | new BuilderParameter() {}
+        "extension invalid" | ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.of())
+        "word list" | WordListBuilderParameter.getWordList("english")
     }
 
-    def "attempting to generate a mnemonic with an extension invalid parameter will fail"() {
+    def "attempting to validate a sequence with #name parameter will fail"(String name, BuilderParameter parameter) {
         when:
-        spi.generateMnemonic(ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.of()))
+        spi.validate(parameter)
         then:
-        thrown(UnsupportedOperationException)
+        thrown(IllegalArgumentException)
+        where:
+        name        | parameter
+        "unknown item" | new BuilderParameter() {}
+        "extension invalid" | ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.of())
+        "word list" | WordListBuilderParameter.getWordList("english")
     }
 
-    def "attempting to generate a mnemonic with an wordList invalid parameter will fail"() {
+    def "attempting to internally get entropy with #name parameter will fail"(String name, BuilderParameter parameter) {
         when:
-        spi.generateMnemonic(WordListBuilderParameter.getWordList("english"))
+        /* NOTE: Using a null on the end to prevent treating the parameter array as a var-arg */
+        Reflect.on(spi).call("getParameterEntropy", [([parameter ] as BuilderParameter[])] as Object[])
         then:
-        thrown(UnsupportedOperationException)
+        def e = thrown(Throwable)
+        Throwables.getRootCause(e) instanceof IllegalArgumentException
+        where:
+        name        | parameter
+        "unknown item" | new BuilderParameter() {}
+        "extension invalid" | ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.of())
+        "word list" | WordListBuilderParameter.getWordList("english")
     }
 }

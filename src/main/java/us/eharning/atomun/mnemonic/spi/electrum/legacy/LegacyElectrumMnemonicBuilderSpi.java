@@ -72,7 +72,7 @@ final class LegacyElectrumMnemonicBuilderSpi extends MnemonicBuilderSpi {
             if (parameter instanceof EntropyBuilderParameter) {
                 entropy = ((EntropyBuilderParameter) parameter).getEntropy();
             } else {
-                throw new UnsupportedOperationException("Unsupported parameter type: " + parameter);
+                throw new IllegalArgumentException("Unsupported parameter type: " + parameter);
             }
         }
         if (null == entropy) {
