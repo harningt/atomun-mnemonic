@@ -28,6 +28,8 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import us.eharning.atomun.core.crypto.PBKDF2;
 import us.eharning.atomun.mnemonic.api.electrum.v2.VersionPrefix;
@@ -41,8 +43,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Utility class to support electrum v2 mnemonics.
@@ -62,6 +62,8 @@ final class MnemonicUtility {
     private static final Pattern DIACRITICAL_MATCH = Pattern.compile("[\\p{M}]+");
     private static final Pattern WHITESPACE_MATCH = Pattern.compile("[\\p{Space}\u3000]");
     private static final CJKCleanupUtility cleanupUtility = new CJKCleanupUtility();
+    public static final byte[] SEED_VERSION_KEY = "Seed version".getBytes(Charsets.US_ASCII);
+    public static final HashFunction SEED_VERSION_MAC = Hashing.hmacSha512(SEED_VERSION_KEY);
 
     /**
      * Private unused constructor to mark as utility class.
@@ -201,15 +203,7 @@ final class MnemonicUtility {
      */
     static byte[] getSeedVersionBytes(CharSequence seed) {
         String normalizedSeed = MnemonicUtility.normalizeSeed(seed);
-        byte[] seedBytes = normalizedSeed.getBytes(Charsets.UTF_8);
-        try {
-            Mac mac = Mac.getInstance("HmacSHA512");
-            mac.init(new SecretKeySpec("Seed version".getBytes(Charsets.US_ASCII), "HmacSHA512"));
-            return mac.doFinal(seedBytes);
-        } catch (GeneralSecurityException e) {
-            /* Rethrow this (generally) impossible case */
-            throw Throwables.propagate(e);
-        }
+        return SEED_VERSION_MAC.hashString(normalizedSeed, Charsets.UTF_8).asBytes();
     }
 
     /**
