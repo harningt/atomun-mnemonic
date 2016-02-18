@@ -109,7 +109,7 @@ class BIP0039MnemonicBuilderSpi extends MnemonicBuilderSpi {
             } else if (parameter instanceof WordListBuilderParameter) {
                 wordListIdentifier = ((WordListBuilderParameter) parameter).getWordListIdentifier();
             } else {
-                throw new UnsupportedOperationException("Unsupported parameter type: " + parameter);
+                throw new IllegalArgumentException("Unsupported parameter type: " + parameter);
             }
         }
         if (null == wordListIdentifier) {
