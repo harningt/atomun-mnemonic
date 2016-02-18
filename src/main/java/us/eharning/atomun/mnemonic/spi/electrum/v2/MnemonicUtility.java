@@ -16,6 +16,9 @@
 
 package us.eharning.atomun.mnemonic.spi.electrum.v2;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Verify.verifyNotNull;
+
 import com.google.common.base.Charsets;
 import com.google.common.base.Converter;
 import com.google.common.base.Function;
@@ -25,6 +28,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import us.eharning.atomun.core.crypto.PBKDF2;
 import us.eharning.atomun.mnemonic.api.electrum.v2.VersionPrefix;
 import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
@@ -95,12 +99,12 @@ final class MnemonicUtility {
         /* Normalize after splitting due to wide spaces getting normalized into space+widener */
         List<String> mnemonicWordList = Splitter.onPattern(" |\u3000").splitToList(mnemonicSequence);
         return Lists.transform(mnemonicWordList, new Function<String, String>() {
+            @SuppressFBWarnings("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
             @Nullable
             @Override
             public String apply(@Nullable String input) {
-                if (null == input) {
-                    return null;
-                }
+                /* splitters do not return null elements */
+                checkNotNull(input);
                 return Normalizer.normalize(input, Normalizer.Form.NFKD);
             }
         });
@@ -124,7 +128,8 @@ final class MnemonicUtility {
         try {
             return PBKDF2.pbkdf2(PBKDF_MAC, mnemonicSequenceBytes, passwordBytes, PBKDF_ROUNDS, PBKDF_SEED_OUTPUT);
         } catch (GeneralSecurityException e) {
-            throw new Error(e);
+            /* Rethrow this (generally) impossible case */
+            throw Throwables.propagate(e);
         }
     }
 
@@ -136,12 +141,12 @@ final class MnemonicUtility {
     @Nonnull
     static Iterable<Dictionary> getDictionaries() {
         Iterable<Dictionary> dictionaryIterable = Iterables.transform(KNOWN_DICTIONARIES, new Function<String, Dictionary>() {
+            @SuppressFBWarnings("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
             @Nullable
             @Override
             public Dictionary apply(String input) {
-                if (null == input) {
-                    return null;
-                }
+                /* KNOWN_DICTIONARIES cannot contain null */
+                verifyNotNull(input);
                 try {
                     return getDictionary(input);
                 } catch (Throwable ignored) {
@@ -231,7 +236,7 @@ final class MnemonicUtility {
      *
      * @return true if the seed can be interpreted as a legacy format.
      */
-    public static boolean isOldSeed(CharSequence seed) {
+    static boolean isOldSeed(CharSequence seed) {
         List<String> words = Splitter.on(WHITESPACE_MATCH).splitToList(seed);
         if (words.size() % 3 != 0) {
             /* Not a multiple of 3 words, not an old seed */

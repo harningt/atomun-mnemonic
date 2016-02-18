@@ -16,8 +16,14 @@
 
 package us.eharning.atomun.mnemonic.spi.electrum.v2
 
+import com.google.common.base.Function
+import com.google.common.collect.Iterables
 import net.trajano.commons.testing.UtilityClassTestUtil
+import org.joor.Reflect
 import spock.lang.Specification
+import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary
+import us.eharning.atomun.mnemonic.utility.dictionary.DictionaryIdentifier
+import us.eharning.atomun.mnemonic.utility.dictionary.DictionarySource
 
 /**
  * Test sequence for the Electrum mnemonic utility classes
@@ -35,5 +41,18 @@ class ElectrumV2UtilityChecks extends Specification {
         UtilityClassTestUtil.assertUtilityClassWellDefined(MnemonicUtility)
         then:
         noExceptionThrown()
+    }
+
+    def "MnemonicUtility absorbs dictionary load failures"() {
+        setup:
+        def oldLoader = Reflect.on(DictionarySource).get("loader")
+        Reflect.on(DictionarySource).set("loader", {
+            throw new IllegalArgumentException("Unknown dictionary")
+        } as Function<DictionaryIdentifier, Dictionary>)
+        expect:
+        Iterables.isEmpty(MnemonicUtility.dictionaries)
+        cleanup:
+        Reflect.on(DictionarySource).set("loader", oldLoader)
+
     }
 }
