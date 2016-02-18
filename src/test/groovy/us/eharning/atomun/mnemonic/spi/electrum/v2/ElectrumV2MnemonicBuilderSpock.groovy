@@ -19,6 +19,7 @@ package us.eharning.atomun.mnemonic.spi.electrum.v2
 import com.google.common.base.Predicates
 import com.google.common.collect.ImmutableSet
 import com.google.common.collect.Iterables
+import org.joor.Reflect
 import spock.lang.IgnoreIf
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.ElectrumMnemonicAlgorithm
@@ -28,6 +29,7 @@ import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers
 import us.eharning.atomun.mnemonic.api.electrum.v2.ElectrumV2ExtensionIdentifier
 import us.eharning.atomun.mnemonic.api.electrum.v2.VersionPrefix
+import us.eharning.atomun.mnemonic.spi.BuilderParameter
 
 import java.security.SecureRandom
 
@@ -35,6 +37,7 @@ import java.security.SecureRandom
  * Test sequence for the legacy Electrum mnemonic builder
  */
 class ElectrumV2MnemonicBuilderSpock extends Specification {
+    static final MnemonicBuilderSpiImpl spi = new MnemonicBuilderSpiImpl()
     static final MnemonicAlgorithm ALG = ElectrumMnemonicAlgorithm.ElectrumV2
     static final SecureRandom RNG = new SecureRandom()
 
@@ -257,5 +260,36 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             builder.setEntropyLength(4)
         then:
             noExceptionThrown()
+    }
+
+    def "attempting to generate a mnemonic with #name parameter will fail"(String name, BuilderParameter parameter) {
+        when:
+        spi.generateMnemonic(parameter)
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        name        | parameter
+        "unknown item" | new BuilderParameter() {}
+        //"extension invalid" | ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.of())
+    }
+
+    def "attempting to validate a sequence with #name parameter will fail"(String name, BuilderParameter parameter) {
+        when:
+        spi.validate(parameter)
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        name        | parameter
+        "unknown item" | new BuilderParameter() {}
+        //"extension invalid" | ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.of())
+    }
+
+    def "internal builder will reject a sequence using old dictionary sequences"() {
+        given:
+        def parameters = [[] as BuilderParameter[]] as Object[]
+        def builderInstance = Reflect.on("us.eharning.atomun.mnemonic.spi.electrum.v2.MnemonicBuilderSpiImpl\$BuilderInstance").create(parameters)
+        String mnemonicSequence = "pleasure patience practice"
+        expect:
+        builderInstance.call("deriveMnemonicUnit", null, mnemonicSequence).get() == null
     }
 }
