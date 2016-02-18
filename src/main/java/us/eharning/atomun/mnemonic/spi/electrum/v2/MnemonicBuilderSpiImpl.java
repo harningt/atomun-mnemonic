@@ -181,7 +181,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
         private BigInteger nonce;
         private BigInteger customGeneratedEntropy;
 
-        public BuilderInstance(BuilderParameter[] parameters) {
+        BuilderInstance(BuilderParameter[] parameters) {
             Map<MnemonicExtensionIdentifier, Object> extensions = null;
             for (BuilderParameter parameter : parameters) {
                 if (null == parameter) {
@@ -253,7 +253,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             customGeneratedEntropy = customEntropy.multiply(generatedEntropy);
         }
 
-        public String generateMnemonic() {
+        String generateMnemonic() {
             prepareRandomData();
             while (true) {
                 BigInteger value = customGeneratedEntropy.add(nonce);
@@ -279,7 +279,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             return MnemonicDecoderSpiImpl.getMnemonicUnit(builder, mnemonicSequence, dictionary, versionPrefix);
         }
 
-        public MnemonicUnit generateMnemonicUnit(MnemonicUnit.Builder builder) {
+        MnemonicUnit generateMnemonicUnit(MnemonicUnit.Builder builder) {
             prepareRandomData();
             while (true) {
                 BigInteger value = customGeneratedEntropy.add(nonce);
