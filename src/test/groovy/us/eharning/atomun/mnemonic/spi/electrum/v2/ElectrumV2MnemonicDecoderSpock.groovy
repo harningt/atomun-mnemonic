@@ -17,6 +17,7 @@
 package us.eharning.atomun.mnemonic.spi.electrum.v2
 
 import com.google.common.collect.Iterables
+import com.google.common.collect.Lists
 import spock.lang.Specification
 import us.eharning.atomun.mnemonic.ElectrumMnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
@@ -32,6 +33,14 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
     static final MnemonicAlgorithm ALG = ElectrumMnemonicAlgorithm.ElectrumV2
     static final Set<MnemonicExtensionIdentifier> GETTABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.canGet(ElectrumV2ExtensionIdentifier.values())
     static final Set<MnemonicExtensionIdentifier> SETTABLE_EXTENSIONS = MoreMnemonicExtensionIdentifiers.canSet(ElectrumV2ExtensionIdentifier.values())
+
+    /*
+     * List of strings found to match the version prefix list but
+     * not be valid in any other way.
+     */
+    static final List<String> VALID_VERSION_INVALID_DICT = [
+            "48"
+    ]
 
     def "check #mnemonic string decodes to matching values for standard vectors"() {
         given:
@@ -122,4 +131,38 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
         expect:
             Iterables.isEmpty(MnemonicUnit.decodeMnemonic("practice practice FAILURE"))
     }
+
+    def "mnemonic decoding with invalid dictionary words with valid versionPrefix fails"() {
+        when:
+        MnemonicUnit.decodeMnemonic(ALG, mnemonicString)
+        then:
+        thrown IllegalArgumentException
+        where:
+        mnemonicString << VALID_VERSION_INVALID_DICT
+    }
+
+    def "unspecified mnemonic decoding with invalid dictionary words with valid versionPrefix results in empty list"() {
+        expect:
+        Iterables.isEmpty(MnemonicUnit.decodeMnemonic(mnemonicString))
+        where:
+        mnemonicString << VALID_VERSION_INVALID_DICT
+    }
+
+    /* Specifically to broaden branch coverage */
+    def "mnemonic decoding with invalid dictionary words with valid versionPrefix w/ english fails"() {
+        when:
+        MnemonicUnit.decodeMnemonic(ALG, mnemonicString, "english")
+        then:
+        thrown IllegalArgumentException
+        where:
+        mnemonicString << VALID_VERSION_INVALID_DICT
+    }
+
+    def "unspecified mnemonic decoding with invalid dictionary words with valid versionPrefix w/ english results in empty list"() {
+        expect:
+        Iterables.isEmpty(MnemonicUnit.decodeMnemonic(mnemonicString, "english"))
+        where:
+        mnemonicString << VALID_VERSION_INVALID_DICT
+    }
+
 }
