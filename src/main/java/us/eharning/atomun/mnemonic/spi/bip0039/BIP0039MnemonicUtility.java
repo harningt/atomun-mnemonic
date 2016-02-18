@@ -32,8 +32,6 @@ import us.eharning.atomun.mnemonic.utility.dictionary.DictionaryIdentifier;
 import us.eharning.atomun.mnemonic.utility.dictionary.DictionarySource;
 
 import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -72,58 +70,6 @@ final class BIP0039MnemonicUtility {
     static Dictionary getDictionary(@Nonnull String wordListIdentifier) {
         DictionaryIdentifier identifier = DictionaryIdentifier.getIdentifier(wordListIdentifier, "us/eharning/atomun/mnemonic/spi/bip0039/" + wordListIdentifier + ".txt");
         return DictionarySource.getDictionary(identifier);
-    }
-
-    /**
-     * Simple utility to calculate the SHA-256 digest.
-     *
-     * @param data
-     *         value to digest.
-     *
-     * @return sha256-digest of data.
-     *
-     * @throws java.lang.Error
-     *         if the digest cannot be found (should not happen).
-     */
-    @Nonnull
-    static byte[] sha256digest(@Nonnull byte[] data) {
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            /* Rethrow this (generally) impossible case */
-            throw Throwables.propagate(e);
-        }
-        return digest.digest(data);
-    }
-
-    /**
-     * Simple utility to calculate the SHA-256 digest.
-     *
-     * @param data
-     *         value to digest a portion of.
-     * @param dataStart
-     *         index into data for where to begin digest.
-     * @param dataLength
-     *         number of bytes to digest.
-     * @param output
-     *         array to write result into.
-     * @param outputStart
-     *         index into output to begin writing result.
-     *
-     * @throws java.lang.Error
-     *         if the digest cannot be found or input is bad (should not happen).
-     */
-    static void sha256digest(@Nonnull byte[] data, int dataStart, int dataLength, @Nonnull byte[] output, int outputStart) {
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("SHA-256");
-            digest.update(data, dataStart, dataLength);
-            digest.digest(output, outputStart, 256 / 8);
-        } catch (GeneralSecurityException e) {
-            /* Rethrow this (generally) impossible case */
-            throw Throwables.propagate(e);
-        }
     }
 
     /**

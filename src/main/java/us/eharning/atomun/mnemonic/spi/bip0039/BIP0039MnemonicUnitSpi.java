@@ -21,6 +21,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.base.Charsets;
 import com.google.common.base.Converter;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 import com.tomgibara.crinch.bits.BitWriter;
 import com.tomgibara.crinch.bits.ByteArrayBitWriter;
 import us.eharning.atomun.mnemonic.BIPMnemonicAlgorithm;
@@ -121,7 +123,8 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
     private static boolean verifyEntropyMatch(byte[] entropy, byte[] mnemonicSentenceBytes, int mnemonicSentenceBitCount) {
         int checksumBitCount = mnemonicSentenceBitCount / 32;
         // Take the digest of the entropy.
-        byte[] hash = BIP0039MnemonicUtility.sha256digest(entropy);
+        HashCode hashCode = Hashing.sha256().hashBytes(entropy);
+        byte[] hash = hashCode.asBytes();
 
         /* TODO: Optimize hash check to use masks to bulk check. */
         for (int i = 0; i < checksumBitCount; ++i) {

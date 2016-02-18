@@ -17,6 +17,8 @@
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Preconditions;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 import com.tomgibara.crinch.bits.BitReader;
 import com.tomgibara.crinch.bits.ByteArrayBitReader;
 
@@ -46,7 +48,8 @@ final class BIP0039MnemonicIndexGenerator {
         byte[] joined = new byte[entropy.length + 256 / 8];
 
         System.arraycopy(entropy, 0, joined, 0, entropy.length);
-        BIP0039MnemonicUtility.sha256digest(joined, 0, entropy.length, joined, entropy.length);
+        HashCode hash = Hashing.sha256().hashBytes(joined, 0, entropy.length);
+        hash.writeBytesTo(joined, entropy.length, 256 / 8);
 
         /* Convert the length to bits for purpose of BIP0039 specification match-up */
         int entropyBitCount = entropy.length * 8;
