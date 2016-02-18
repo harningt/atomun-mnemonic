@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.electrum.v2
 
 import com.google.common.base.Predicates
 import com.google.common.collect.ImmutableSet
 import com.google.common.collect.Iterables
+import org.joor.Reflect
 import spock.lang.IgnoreIf
 import spock.lang.Specification
+import us.eharning.atomun.mnemonic.ElectrumMnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers
+import us.eharning.atomun.mnemonic.api.electrum.v2.ElectrumV2ExtensionIdentifier
+import us.eharning.atomun.mnemonic.api.electrum.v2.VersionPrefix
+import us.eharning.atomun.mnemonic.spi.BuilderParameter
 
 import java.security.SecureRandom
 
@@ -31,7 +37,8 @@ import java.security.SecureRandom
  * Test sequence for the legacy Electrum mnemonic builder
  */
 class ElectrumV2MnemonicBuilderSpock extends Specification {
-    static final MnemonicAlgorithm ALG = MnemonicAlgorithm.ElectrumV2
+    static final MnemonicBuilderSpiImpl spi = new MnemonicBuilderSpiImpl()
+    static final MnemonicAlgorithm ALG = ElectrumMnemonicAlgorithm.ElectrumV2
     static final SecureRandom RNG = new SecureRandom()
 
     static final Set<ElectrumV2ExtensionIdentifier> NON_GETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(ElectrumV2ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_SET)))
@@ -77,6 +84,10 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             builder.build()
         then:
             noExceptionThrown()
+        when:
+        builder.buildUnit()
+        then:
+        noExceptionThrown()
         where:
             wordList    | _
             "english"   | _
@@ -144,6 +155,10 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             builder.build()
         then:
             noExceptionThrown()
+        when:
+        builder.buildUnit()
+        then:
+        noExceptionThrown()
     }
 
     @IgnoreIf({ NON_SETTABLE_EXTENSIONS.empty })
@@ -179,6 +194,10 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             builder.build()
         then:
             thrown(IllegalStateException)
+        when:
+        builder.buildUnit()
+        then:
+        thrown(IllegalStateException)
     }
     def "check encoding fails when attempted entropy set fails"() {
         given:
@@ -188,6 +207,10 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             builder.build()
         then:
             thrown(IllegalStateException)
+        when:
+        builder.buildUnit()
+        then:
+        thrown(IllegalStateException)
     }
     def "check encoding fails for invalid entropyLength values"() {
         given:
@@ -216,6 +239,7 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             builder.setEntropyLength(length)
         then:
             builder.build() != null
+        builder.buildUnit() != null
         where:
             _ | length
             _ | 1
@@ -236,5 +260,36 @@ class ElectrumV2MnemonicBuilderSpock extends Specification {
             builder.setEntropyLength(4)
         then:
             noExceptionThrown()
+    }
+
+    def "attempting to generate a mnemonic with #name parameter will fail"(String name, BuilderParameter parameter) {
+        when:
+        spi.generateMnemonic(parameter)
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        name        | parameter
+        "unknown item" | new BuilderParameter() {}
+        //"extension invalid" | ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.of())
+    }
+
+    def "attempting to validate a sequence with #name parameter will fail"(String name, BuilderParameter parameter) {
+        when:
+        spi.validate(parameter)
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        name        | parameter
+        "unknown item" | new BuilderParameter() {}
+        //"extension invalid" | ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.of())
+    }
+
+    def "internal builder will reject a sequence using old dictionary sequences"() {
+        given:
+        def parameters = [[] as BuilderParameter[]] as Object[]
+        def builderInstance = Reflect.on("us.eharning.atomun.mnemonic.spi.electrum.v2.MnemonicBuilderSpiImpl\$BuilderInstance").create(parameters)
+        String mnemonicSequence = "pleasure patience practice"
+        expect:
+        builderInstance.call("deriveMnemonicUnit", null, mnemonicSequence).get() == null
     }
 }

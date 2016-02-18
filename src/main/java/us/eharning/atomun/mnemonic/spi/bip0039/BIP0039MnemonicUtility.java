@@ -21,6 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -41,7 +42,7 @@ import javax.annotation.Nullable;
 /**
  * Utility class to support BIP0039 mnemonics.
  */
-class BIP0039MnemonicUtility {
+final class BIP0039MnemonicUtility {
     private static final List<String> KNOWN_DICTIONARIES = ImmutableList.of(
             "english",
             "japanese"
@@ -49,6 +50,12 @@ class BIP0039MnemonicUtility {
     private static final int PBKDF_ROUNDS = 2048;
     private static final String PBKDF_MAC = "HmacSHA512";
     private static final int PBKDF_SEED_OUTPUT = 64;
+
+    /**
+     * Private unused constructor to mark as utility class.
+     */
+    private BIP0039MnemonicUtility() {
+    }
 
     /**
      * Utility method to obtain a dictionary given the wordListIdentifier.
@@ -84,7 +91,8 @@ class BIP0039MnemonicUtility {
         try {
             digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            throw new Error(e);
+            /* Rethrow this (generally) impossible case */
+            throw Throwables.propagate(e);
         }
         return digest.digest(data);
     }
@@ -106,7 +114,6 @@ class BIP0039MnemonicUtility {
      * @throws java.lang.Error
      *         if the digest cannot be found or input is bad (should not happen).
      */
-    @Nonnull
     static void sha256digest(@Nonnull byte[] data, int dataStart, int dataLength, @Nonnull byte[] output, int outputStart) {
         MessageDigest digest;
         try {
@@ -114,7 +121,8 @@ class BIP0039MnemonicUtility {
             digest.update(data, dataStart, dataLength);
             digest.digest(output, outputStart, 256 / 8);
         } catch (GeneralSecurityException e) {
-            throw new Error(e);
+            /* Rethrow this (generally) impossible case */
+            throw Throwables.propagate(e);
         }
     }
 
@@ -136,7 +144,8 @@ class BIP0039MnemonicUtility {
         try {
             return PBKDF2.pbkdf2(PBKDF_MAC, mnemonicSequenceBytes, passwordBytes, PBKDF_ROUNDS, PBKDF_SEED_OUTPUT);
         } catch (GeneralSecurityException e) {
-            throw new Error(e);
+            /* Rethrow this (generally) impossible case */
+            throw Throwables.propagate(e);
         }
     }
 
@@ -168,19 +177,19 @@ class BIP0039MnemonicUtility {
      *
      * @param mnemonicSequence space-separated list of words to split/normalize.
      *
-     * @return list of noralized words.
+     * @return list of normalized words.
      */
     @Nonnull
     public static List<String> getNormalizedWordList(@Nonnull CharSequence mnemonicSequence) {
         /* Normalize after splitting due to wide spaces getting normalized into space+widener */
         List<String> mnemonicWordList = Splitter.onPattern(" |\u3000").splitToList(mnemonicSequence);
         return Lists.transform(mnemonicWordList, new Function<String, String>() {
+            @SuppressFBWarnings("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
             @Nullable
             @Override
             public String apply(@Nullable String input) {
-                if (null == input) {
-                    return null;
-                }
+                /* splitters do not return null elements */
+                checkNotNull(input);
                 return Normalizer.normalize(input, Normalizer.Form.NFKD);
             }
         });

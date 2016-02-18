@@ -16,15 +16,21 @@
 
 package us.eharning.atomun.mnemonic.spi.electrum.v2;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Verify.verifyNotNull;
+
 import com.google.common.base.Charsets;
 import com.google.common.base.Converter;
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import us.eharning.atomun.core.crypto.PBKDF2;
+import us.eharning.atomun.mnemonic.api.electrum.v2.VersionPrefix;
 import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
 import us.eharning.atomun.mnemonic.utility.dictionary.DictionaryIdentifier;
 import us.eharning.atomun.mnemonic.utility.dictionary.DictionarySource;
@@ -41,7 +47,7 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Utility class to support electrum v2 mnemonics.
  */
-class MnemonicUtility {
+final class MnemonicUtility {
     private static final List<String> KNOWN_DICTIONARIES = ImmutableList.of(
             "english",
             "japanese",
@@ -53,9 +59,15 @@ class MnemonicUtility {
     private static final int PBKDF_ROUNDS = 2048;
     private static final String PBKDF_MAC = "HmacSHA512";
     private static final int PBKDF_SEED_OUTPUT = 64;
-    private static Pattern DIACRITICAL_MATCH = Pattern.compile("[\\p{M}]+");
-    private static Pattern WHITESPACE_MATCH = Pattern.compile("[\\p{Space}\u3000]");
-    private static CJKCleanupUtility cleanupUtility = new CJKCleanupUtility();
+    private static final Pattern DIACRITICAL_MATCH = Pattern.compile("[\\p{M}]+");
+    private static final Pattern WHITESPACE_MATCH = Pattern.compile("[\\p{Space}\u3000]");
+    private static final CJKCleanupUtility cleanupUtility = new CJKCleanupUtility();
+
+    /**
+     * Private unused constructor to mark as utility class.
+     */
+    private MnemonicUtility() {
+    }
 
     /**
      * Utility method to obtain a dictionary given the wordListIdentifier.
@@ -83,16 +95,16 @@ class MnemonicUtility {
      * @return list of normalized words.
      */
     @Nonnull
-    public static List<String> getNormalizedWordList(@Nonnull CharSequence mnemonicSequence) {
+    static List<String> getNormalizedWordList(@Nonnull CharSequence mnemonicSequence) {
         /* Normalize after splitting due to wide spaces getting normalized into space+widener */
         List<String> mnemonicWordList = Splitter.onPattern(" |\u3000").splitToList(mnemonicSequence);
         return Lists.transform(mnemonicWordList, new Function<String, String>() {
+            @SuppressFBWarnings("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
             @Nullable
             @Override
             public String apply(@Nullable String input) {
-                if (null == input) {
-                    return null;
-                }
+                /* splitters do not return null elements */
+                checkNotNull(input);
                 return Normalizer.normalize(input, Normalizer.Form.NFKD);
             }
         });
@@ -116,7 +128,8 @@ class MnemonicUtility {
         try {
             return PBKDF2.pbkdf2(PBKDF_MAC, mnemonicSequenceBytes, passwordBytes, PBKDF_ROUNDS, PBKDF_SEED_OUTPUT);
         } catch (GeneralSecurityException e) {
-            throw new Error(e);
+            /* Rethrow this (generally) impossible case */
+            throw Throwables.propagate(e);
         }
     }
 
@@ -128,12 +141,12 @@ class MnemonicUtility {
     @Nonnull
     static Iterable<Dictionary> getDictionaries() {
         Iterable<Dictionary> dictionaryIterable = Iterables.transform(KNOWN_DICTIONARIES, new Function<String, Dictionary>() {
+            @SuppressFBWarnings("NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE")
             @Nullable
             @Override
             public Dictionary apply(String input) {
-                if (null == input) {
-                    return null;
-                }
+                /* KNOWN_DICTIONARIES cannot contain null */
+                verifyNotNull(input);
                 try {
                     return getDictionary(input);
                 } catch (Throwable ignored) {
@@ -174,7 +187,7 @@ class MnemonicUtility {
      *
      * @return true if the seed can be interpreted as the v2 format but not the legacy format.
      */
-    public static boolean isValidGeneratedSeed(CharSequence seed, VersionPrefix versionPrefix) {
+    static boolean isValidGeneratedSeed(CharSequence seed, VersionPrefix versionPrefix) {
         return !isOldSeed(seed) && isNewSeed(seed, versionPrefix);
     }
 
@@ -186,12 +199,17 @@ class MnemonicUtility {
      *
      * @return byte array with the seed version bytes value
      */
-    public static byte[] getSeedVersionBytes(CharSequence seed) throws GeneralSecurityException {
+    static byte[] getSeedVersionBytes(CharSequence seed) {
         String normalizedSeed = MnemonicUtility.normalizeSeed(seed);
         byte[] seedBytes = normalizedSeed.getBytes(Charsets.UTF_8);
-        Mac mac = Mac.getInstance("HmacSHA512");
-        mac.init(new SecretKeySpec("Seed version".getBytes(Charsets.US_ASCII), "HmacSHA512"));
-        return mac.doFinal(seedBytes);
+        try {
+            Mac mac = Mac.getInstance("HmacSHA512");
+            mac.init(new SecretKeySpec("Seed version".getBytes(Charsets.US_ASCII), "HmacSHA512"));
+            return mac.doFinal(seedBytes);
+        } catch (GeneralSecurityException e) {
+            /* Rethrow this (generally) impossible case */
+            throw Throwables.propagate(e);
+        }
     }
 
     /**
@@ -204,14 +222,10 @@ class MnemonicUtility {
      *
      * @return true if the seed can be interpreted as the v2 format.
      */
-    public static boolean isNewSeed(CharSequence seed, VersionPrefix versionPrefix) {
-        try {
-            byte[] macBytes = getSeedVersionBytes(seed);
+    private static boolean isNewSeed(CharSequence seed, VersionPrefix versionPrefix) {
+        byte[] macBytes = getSeedVersionBytes(seed);
 
-            return versionPrefix.matches(macBytes);
-        } catch (GeneralSecurityException e) {
-            return false;
-        }
+        return versionPrefix.matches(macBytes);
     }
 
     /**
@@ -222,7 +236,7 @@ class MnemonicUtility {
      *
      * @return true if the seed can be interpreted as a legacy format.
      */
-    public static boolean isOldSeed(CharSequence seed) {
+    static boolean isOldSeed(CharSequence seed) {
         List<String> words = Splitter.on(WHITESPACE_MATCH).splitToList(seed);
         if (words.size() % 3 != 0) {
             /* Not a multiple of 3 words, not an old seed */

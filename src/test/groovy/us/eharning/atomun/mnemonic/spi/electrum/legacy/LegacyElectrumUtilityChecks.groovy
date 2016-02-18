@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package us.eharning.atomun.mnemonic;
+package us.eharning.atomun.mnemonic.spi.electrum.legacy
+
+import net.trajano.commons.testing.UtilityClassTestUtil
+import spock.lang.Specification
 
 /**
- * Interface representing a given supported algorithm.
- * <p>
- *     Expect equality to be used for comparison.
- * </p>
- *
- * @see BIPMnemonicAlgorithm for BIP supported algorithms.
- * @see ElectrumMnemonicAlgorithm for Electrum supported algorithms.
- * @since 0.7.0
+ * Test sequence for the Electrum mnemonic utility classes
  */
-public interface MnemonicAlgorithm {
+class LegacyElectrumUtilityChecks extends Specification {
+    def "LegacyElectrumMnemonicUtility is a utility class"() {
+        when:
+        UtilityClassTestUtil.assertUtilityClassWellDefined(LegacyElectrumMnemonicUtility)
+        then:
+        noExceptionThrown()
+    }
+
+    def "LegacyElectrumMnemonicUtility fails to initialize when dictionary is not present"() {
+    }
 }

@@ -80,13 +80,12 @@ class CJKCleanupUtility {
         }
         /* Split into words and join specially */
         StringBuilder cleanBuilder = new StringBuilder(input.length());
-        String previousWord = null;
         Iterator<String> splitIterator = Splitter.on(' ').split(input).iterator();
         /* All one unit - no space removal necessary */
         if (!splitIterator.hasNext()) {
             return input;
         }
-        previousWord = splitIterator.next();
+        String previousWord = splitIterator.next();
         cleanBuilder.append(previousWord);
         while (splitIterator.hasNext()) {
             String nextWord = splitIterator.next();

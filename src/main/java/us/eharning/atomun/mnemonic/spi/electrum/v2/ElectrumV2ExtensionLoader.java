@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package us.eharning.atomun.mnemonic.spi.electrum.v2;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
+import us.eharning.atomun.mnemonic.api.electrum.v2.ElectrumV2ExtensionIdentifier;
+import us.eharning.atomun.mnemonic.api.electrum.v2.VersionPrefix;
 
 import javax.annotation.Nullable;
 
@@ -26,7 +28,7 @@ import javax.annotation.Nullable;
  * Closure encapsulating the extension => value conversion process.
  */
 class ElectrumV2ExtensionLoader implements Function<MnemonicExtensionIdentifier, Object> {
-    private VersionPrefix versionPrefix;
+    private final VersionPrefix versionPrefix;
 
     ElectrumV2ExtensionLoader(VersionPrefix versionPrefix) {
         this.versionPrefix = versionPrefix;
@@ -43,6 +45,7 @@ class ElectrumV2ExtensionLoader implements Function<MnemonicExtensionIdentifier,
         case VERSION_PREFIX:
             return versionPrefix;
         default:
+            /* Should never encounter - although code requires */
             return null;
         }
     }

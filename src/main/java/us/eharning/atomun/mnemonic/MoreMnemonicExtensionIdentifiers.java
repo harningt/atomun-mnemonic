@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,14 +27,20 @@ import java.util.Set;
  *
  * @since 0.4.0
  */
-public class MoreMnemonicExtensionIdentifiers {
+public final class MoreMnemonicExtensionIdentifiers {
+    /**
+     * Prevent external construction since it is a utility class.
+     */
+    private MoreMnemonicExtensionIdentifiers() {
+    }
+
     /**
      * Predicate to filter extension identifiers that you cen set.
      */
     public static final Predicate<MnemonicExtensionIdentifier> CAN_SET = new Predicate<MnemonicExtensionIdentifier>() {
         @Override
         public boolean apply(MnemonicExtensionIdentifier input) {
-            return input != null ? input.canSet() : false;
+            return input != null && input.canSet();
         }
     };
 
@@ -44,7 +50,7 @@ public class MoreMnemonicExtensionIdentifiers {
     public static final Predicate<MnemonicExtensionIdentifier> CAN_GET = new Predicate<MnemonicExtensionIdentifier>() {
         @Override
         public boolean apply(MnemonicExtensionIdentifier input) {
-            return input != null ? input.canGet() : false;
+            return input != null && input.canGet();
         }
     };
 

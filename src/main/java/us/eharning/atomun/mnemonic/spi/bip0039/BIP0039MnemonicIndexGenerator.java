@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,13 @@ import javax.annotation.Nonnull;
 /**
  * Utility class for BIP0039 index generators.
  */
-class BIP0039MnemonicIndexGenerator {
+final class BIP0039MnemonicIndexGenerator {
+    /**
+     * Private constructor to indicate no instances should be created.
+     */
+    private BIP0039MnemonicIndexGenerator() {
+    }
+
     /**
      * Take the input entropy and output an array of word indices.
      *

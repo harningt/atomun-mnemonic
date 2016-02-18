@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,14 +121,14 @@ class BIP0039MnemonicDecoderSpi extends MnemonicDecoderSpi {
      */
     @Nonnull
     @Override
-    public MnemonicUnit decode(MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
+    public MnemonicUnit decode(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
         List<String> mnemonicWordList = BIP0039MnemonicUtility.getNormalizedWordList(mnemonicSequence);
         /* Verify word list has an appropriate length */
         if (mnemonicWordList.size() % 3 != 0) {
             throw new IllegalArgumentException("Word list of the wrong length");
         }
         Dictionary dictionary;
-        if (null == wordListIdentifier || wordListIdentifier.isEmpty()) {
+        if (null == wordListIdentifier) {
             dictionary = detectWordList(mnemonicWordList);
             if (null == dictionary) {
                 throw new IllegalArgumentException("Could not detect dictionary for words");

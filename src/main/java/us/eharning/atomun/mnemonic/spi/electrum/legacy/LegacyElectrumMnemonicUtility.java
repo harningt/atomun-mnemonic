@@ -32,9 +32,15 @@ import javax.annotation.Nonnull;
 /**
  * Static utility to handle encoding/decoding details of the legacy Electrum mnemonic format.
  */
-class LegacyElectrumMnemonicUtility {
+final class LegacyElectrumMnemonicUtility {
     private static final Splitter WORD_SPLITTER = Splitter.on(CharMatcher.whitespace()).trimResults().omitEmptyStrings();
     private static final DictionaryIdentifier DICTIONARY_IDENTIFIER = DictionaryIdentifier.getIdentifier("english", "us/eharning/atomun/mnemonic/spi/electrum/legacy/dictionary.txt");
+
+    /**
+     * Private unused constructor to mark as utility class.
+     */
+    private LegacyElectrumMnemonicUtility() {
+    }
 
     /**
      * Simple modular math hack to deal with signed/unsigned integer issues and java.
@@ -78,12 +84,10 @@ class LegacyElectrumMnemonicUtility {
      * @return 32-bit integer stored at buffer[currentIndex]
      */
     private static int getInteger(@Nonnull byte[] buffer, int currentIndex) {
-        int value =
-                (buffer[currentIndex] & 0xFF) << 24
-                        | (buffer[currentIndex + 1] & 0xFF) << 16
-                        | (buffer[currentIndex + 2] & 0xFF) << 8
-                        | buffer[currentIndex + 3] & 0xFF;
-        return value;
+        return (buffer[currentIndex] & 0xFF) << 24
+                | (buffer[currentIndex + 1] & 0xFF) << 16
+                | (buffer[currentIndex + 2] & 0xFF) << 8
+                | buffer[currentIndex + 3] & 0xFF;
     }
 
     /**
@@ -141,9 +145,9 @@ class LegacyElectrumMnemonicUtility {
             Integer w1 = reverseDictionary.convert(word1);
             Integer w2 = reverseDictionary.convert(word2);
             Integer w3 = reverseDictionary.convert(word3);
-            if (null == w1 || null == w2 || null == w3) {
-                throw new IllegalArgumentException("Unknown mnemonic word used");
-            }
+            /* NOTE: Impossible scenario as covert only returns null IFF null is passed in */
+
+            //noinspection ConstantConditions
             int subValue = w1 + N * mn_mod(w2 - w1, N) + N * N * mn_mod(w3 - w2, N);
             /* Convert to 4 bytes */
             putInteger(entropy, entropyIndex, subValue);

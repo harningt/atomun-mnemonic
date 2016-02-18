@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package us.eharning.atomun.mnemonic.spi.bip0039
 
-package us.eharning.atomun.mnemonic.spi.bip0039;
-
-import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
+import net.trajano.commons.testing.UtilityClassTestUtil
+import spock.lang.Specification
 
 /**
- * Enumeration for BIP0039 extension identifiers.
- *
- * @since 0.4.0
+ * Test sequence for the legacy Electrum mnemonic builder
  */
-public enum BIP0039ExtensionIdentifier implements MnemonicExtensionIdentifier {
-    ;
-
-    @Override
-    public boolean canGet() {
-        return false;
-    }
-
-    @Override
-    public boolean canSet() {
-        return false;
+class BIP0039MnemonicIndexGeneratorSpecification extends Specification {
+    def "the index generator is a utility class"() {
+        when:
+        UtilityClassTestUtil.assertUtilityClassWellDefined(BIP0039MnemonicIndexGenerator.class)
+        then:
+        noExceptionThrown()
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package us.eharning.atomun.mnemonic.spi.bip0039
 
-import com.google.common.base.Predicates
+import com.google.common.base.Throwables
+import com.google.common.collect.ImmutableMap
 import com.google.common.collect.ImmutableSet
-import com.google.common.collect.Iterables
+import org.joor.Reflect
 import spock.lang.IgnoreIf
 import spock.lang.Specification
+import us.eharning.atomun.mnemonic.BIPMnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm
 import us.eharning.atomun.mnemonic.MnemonicBuilder
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier
 import us.eharning.atomun.mnemonic.MnemonicUnit
-import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers
+import us.eharning.atomun.mnemonic.spi.BuilderParameter
+import us.eharning.atomun.mnemonic.spi.ExtensionBuilderParameter
 
 import java.text.Normalizer
 
@@ -32,10 +36,11 @@ import java.text.Normalizer
  * Test sequence for the legacy Electrum mnemonic builder
  */
 class BIP0039MnemonicBuilderSpock extends Specification {
-    static final MnemonicAlgorithm ALG = MnemonicAlgorithm.BIP0039
+    static final BIP0039MnemonicBuilderSpi spi = new BIP0039MnemonicBuilderSpi()
+    static final MnemonicAlgorithm ALG = BIPMnemonicAlgorithm.BIP0039
 
-    static final Set<BIP0039ExtensionIdentifier> NON_GETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(BIP0039ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_SET)))
-    static final Set<BIP0039ExtensionIdentifier> NON_SETTABLE_EXTENSIONS = ImmutableSet.copyOf(Iterables.filter(Arrays.asList(BIP0039ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_GET)))
+    static final Set<MnemonicExtensionIdentifier> NON_GETTABLE_EXTENSIONS = ImmutableSet.of() //ImmutableSet.copyOf(Iterables.filter(Arrays.asList(BIP0039ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_SET)))
+    static final Set<MnemonicExtensionIdentifier> NON_SETTABLE_EXTENSIONS = ImmutableSet.of() //ImmutableSet.copyOf(Iterables.filter(Arrays.asList(BIP0039ExtensionIdentifier.values()), Predicates.not(MoreMnemonicExtensionIdentifiers.CAN_GET)))
 
     private static def RW_IDENTIFIER = new MnemonicExtensionIdentifier() {
         @Override
@@ -119,11 +124,15 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         testCase << BIP0039TestData.JP_VECTORS
     }
 
-    def "check encoding paases when no state set with safe defaults"() {
+    def "check encoding passes when no state set with safe defaults"() {
         given:
         def builder = MnemonicBuilder.newBuilder(ALG)
         when:
         builder.build()
+        then:
+        noExceptionThrown()
+        when:
+        builder.buildUnit()
         then:
         noExceptionThrown()
     }
@@ -164,6 +173,10 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         builder.build()
         then:
         thrown(IllegalStateException)
+        when:
+        builder.buildUnit()
+        then:
+        thrown(IllegalStateException)
     }
 
     def "check encoding fails when attempted entropy set fails"() {
@@ -175,6 +188,10 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         } catch (ignored) {
         }
         builder.build()
+        then:
+        thrown(IllegalStateException)
+        when:
+        builder.buildUnit()
         then:
         thrown(IllegalStateException)
     }
@@ -232,6 +249,7 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         builder.setEntropyLength(length)
         then:
         builder.build() != null
+        builder.buildUnit() != null
         where:
         _ | length
         _ | 4 * 1
@@ -257,5 +275,53 @@ class BIP0039MnemonicBuilderSpock extends Specification {
         builder.setEntropyLength(4)
         then:
         noExceptionThrown()
+    }
+
+    def "attempting to generate a mnemonic with #name parameter will fail"(String name, BuilderParameter parameter) {
+        when:
+        spi.generateMnemonic(parameter)
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        name        | parameter
+        "unknown item" | new BuilderParameter() {}
+        "extension invalid" | ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.of())
+    }
+
+    def "attempting to validate a sequence with #name parameter will fail"(String name, BuilderParameter parameter) {
+        when:
+        spi.validate(parameter)
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        name        | parameter
+        "unknown item" | new BuilderParameter() {}
+        "extension invalid" | ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.of())
+    }
+
+    def "attempting to internally get entropy with #name parameter will fail"(String name, BuilderParameter parameter) {
+        when:
+        /* NOTE: Using a null on the end to prevent treating the parameter array as a var-arg */
+        Reflect.on(spi).call("getParameterEntropy", [([ parameter ] as BuilderParameter[])] as Object[])
+        then:
+        def e = thrown(Throwable)
+        Throwables.getRootCause(e) instanceof IllegalArgumentException
+        where:
+        name        | parameter
+        "unknown item" | new BuilderParameter() {}
+        "extension invalid" | ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.of())
+    }
+
+    def "attempting to internally get word list with #name parameter will fail"(String name, BuilderParameter parameter) {
+        when:
+        /* NOTE: Using a null on the end to prevent treating the parameter array as a var-arg */
+        Reflect.on(spi).call("getParameterWordListIdentifier", [([ parameter ] as BuilderParameter[])] as Object[])
+        then:
+        def e = thrown(Throwable)
+        Throwables.getRootCause(e) instanceof IllegalArgumentException
+        where:
+        name        | parameter
+        "unknown item" | new BuilderParameter() {}
+        "extension invalid" | ExtensionBuilderParameter.getExtensionsParameter(ImmutableMap.of())
     }
 }

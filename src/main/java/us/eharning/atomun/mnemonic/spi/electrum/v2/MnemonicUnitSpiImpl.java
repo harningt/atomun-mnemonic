@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.tomgibara.crinch.bits.BitWriter;
 import com.tomgibara.crinch.bits.ByteArrayBitWriter;
-import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.ElectrumMnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
@@ -31,7 +31,6 @@ import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
 
 import java.math.BigInteger;
 import java.text.Normalizer;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.CheckForNull;
@@ -53,7 +52,7 @@ class MnemonicUnitSpiImpl extends MnemonicUnitSpi {
      *         instance to match mnemonic words against.
      */
     public MnemonicUnitSpiImpl(@Nonnull Dictionary dictionary) {
-        super(MnemonicAlgorithm.ElectrumV2);
+        super(ElectrumMnemonicAlgorithm.ElectrumV2);
         this.dictionary = dictionary;
     }
 
@@ -70,11 +69,15 @@ class MnemonicUnitSpiImpl extends MnemonicUnitSpi {
     @Nonnull
     private static byte[] mnemonicToBytes(@Nonnull Dictionary dictionary, @Nonnull List<String> mnemonicWordList) {
         if (fast_is_pow2(dictionary.getSize())) {
+            //noinspection UnnecessaryLocalVariable
             byte[] result = mnemonicToBytesWithBitshift(dictionary, mnemonicWordList);
+            /* If needing to check again, uncomment this and replace */
+            /*
             byte[] checkResult = mnemonicToBytesWithMultiplication(dictionary, mnemonicWordList);
             if (!Arrays.equals(result, checkResult)) {
                 throw new Error("Mismatched results!" + Arrays.toString(result) + " != " + Arrays.toString(checkResult));
             }
+            */
             return result;
         } else {
             return mnemonicToBytesWithMultiplication(dictionary, mnemonicWordList);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,15 @@
 
 package us.eharning.atomun.mnemonic.spi;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
-import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
+import us.eharning.atomun.mnemonic.MnemonicServices;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 
 import javax.annotation.CheckForNull;
@@ -47,7 +49,11 @@ public abstract class MnemonicUnitSpi {
      *
      * @since 0.2.0
      */
-    protected MnemonicUnitSpi(MnemonicAlgorithm algorithm) {
+    protected MnemonicUnitSpi(@Nonnull MnemonicAlgorithm algorithm) {
+        checkNotNull(algorithm);
+        if (!MnemonicServices.getRegisteredAlgorithms().contains(algorithm)) {
+            throw new UnsupportedOperationException("Unregistered algorithm: " + algorithm);
+        }
         this.algorithm = algorithm;
     }
 
@@ -71,8 +77,8 @@ public abstract class MnemonicUnitSpi {
      */
     @Nonnull
     protected MnemonicUnit build(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<MnemonicExtensionIdentifier, Object> extensions) {
-        Verify.verifyNotNull(mnemonicSequence);
-        Verify.verifyNotNull(extensions);
+        checkNotNull(mnemonicSequence);
+        checkNotNull(extensions);
         return builder.build(this, mnemonicSequence, entropy, seed, extensions.keySet(), Functions.forMap(extensions, null));
     }
 
@@ -98,9 +104,9 @@ public abstract class MnemonicUnitSpi {
      */
     @Nonnull
     protected MnemonicUnit build(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableSet<MnemonicExtensionIdentifier> supportedExtensions, @Nonnull Function<MnemonicExtensionIdentifier, Object> extensionLoader) {
-        Verify.verifyNotNull(mnemonicSequence);
-        Verify.verifyNotNull(supportedExtensions);
-        Verify.verifyNotNull(extensionLoader);
+        checkNotNull(mnemonicSequence);
+        checkNotNull(supportedExtensions);
+        checkNotNull(extensionLoader);
         return builder.build(this, mnemonicSequence, entropy, seed, supportedExtensions, extensionLoader);
     }
 

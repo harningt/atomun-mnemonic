@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ import com.google.common.io.BaseEncoding;
 import org.junit.Test;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicBuilder;
+import us.eharning.atomun.mnemonic.MnemonicServices;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 
 /**
@@ -27,7 +28,7 @@ import us.eharning.atomun.mnemonic.MnemonicUnit;
 public class MnemonicSample {
     @Test
     public void generateSamples() {
-        for (MnemonicAlgorithm algorithm: MnemonicAlgorithm.values()) {
+        for (MnemonicAlgorithm algorithm: MnemonicServices.getRegisteredAlgorithms()) {
             /* Obtain a builder for the selected algorithm. */
             MnemonicBuilder builder = MnemonicBuilder.newBuilder(algorithm);
 

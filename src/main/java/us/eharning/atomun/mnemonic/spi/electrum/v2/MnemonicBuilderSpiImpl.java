@@ -17,13 +17,14 @@
 package us.eharning.atomun.mnemonic.spi.electrum.v2;
 
 import com.google.common.base.Predicates;
-import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.math.BigIntegerMath;
-import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.ElectrumMnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
+import us.eharning.atomun.mnemonic.api.electrum.v2.ElectrumV2ExtensionIdentifier;
+import us.eharning.atomun.mnemonic.api.electrum.v2.VersionPrefix;
 import us.eharning.atomun.mnemonic.spi.BuilderParameter;
 import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
 import us.eharning.atomun.mnemonic.spi.ExtensionBuilderParameter;
@@ -32,7 +33,6 @@ import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
 
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -48,13 +48,13 @@ import javax.annotation.concurrent.Immutable;
 class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi {
     private static final EntropyBuilderParameter DEFAULT_ENTROPY_PARAMETER = EntropyBuilderParameter.getRandom(128 / 8);
     private static final WordListBuilderParameter DEFAULT_WORDLIST_PARAMETER = WordListBuilderParameter.getWordList("english");
-    static final Set<? extends MnemonicExtensionIdentifier> KNOWN_EXTENSION_IDENTIFIERS = ImmutableSet.copyOf(EnumSet.allOf(ElectrumV2ExtensionIdentifier.class));
+    private static final Set<? extends MnemonicExtensionIdentifier> KNOWN_EXTENSION_IDENTIFIERS = ImmutableSet.copyOf(EnumSet.allOf(ElectrumV2ExtensionIdentifier.class));
 
     /**
      * Construct a new SPI with the given algorithm.
      */
-    protected MnemonicBuilderSpiImpl() {
-        super(MnemonicAlgorithm.ElectrumV2);
+    MnemonicBuilderSpiImpl() {
+        super(ElectrumMnemonicAlgorithm.ElectrumV2);
     }
 
     /**
@@ -181,7 +181,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
         private BigInteger nonce;
         private BigInteger customGeneratedEntropy;
 
-        public BuilderInstance(BuilderParameter[] parameters) {
+        BuilderInstance(BuilderParameter[] parameters) {
             Map<MnemonicExtensionIdentifier, Object> extensions = null;
             for (BuilderParameter parameter : parameters) {
                 if (null == parameter) {
@@ -207,8 +207,6 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             if (null == extensions) {
                 extensions = Collections.emptyMap();
             }
-            /* DUMMY */
-            Verify.verifyNotNull(extensions);
             versionPrefix = (VersionPrefix) extensions.get(ElectrumV2ExtensionIdentifier.VERSION_PREFIX);
             if (null == versionPrefix) {
                 versionPrefix = DEFAULT_VERSION_PREFIX;
@@ -255,7 +253,7 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             customGeneratedEntropy = customEntropy.multiply(generatedEntropy);
         }
 
-        public String generateMnemonic() {
+        String generateMnemonic() {
             prepareRandomData();
             while (true) {
                 BigInteger value = customGeneratedEntropy.add(nonce);
@@ -274,19 +272,14 @@ class MnemonicBuilderSpiImpl extends us.eharning.atomun.mnemonic.spi.MnemonicBui
             if (MnemonicUtility.isOldSeed(mnemonicSequence)) {
                 return null;
             }
-            byte[] seedVersionData;
-            try {
-                seedVersionData = MnemonicUtility.getSeedVersionBytes(mnemonicSequence);
-            } catch (GeneralSecurityException e) {
-                return null;
-            }
+            byte[] seedVersionData = MnemonicUtility.getSeedVersionBytes(mnemonicSequence);
             if (!versionPrefix.matches(seedVersionData)) {
                 return null;
             }
             return MnemonicDecoderSpiImpl.getMnemonicUnit(builder, mnemonicSequence, dictionary, versionPrefix);
         }
 
-        public MnemonicUnit generateMnemonicUnit(MnemonicUnit.Builder builder) {
+        MnemonicUnit generateMnemonicUnit(MnemonicUnit.Builder builder) {
             prepareRandomData();
             while (true) {
                 BigInteger value = customGeneratedEntropy.add(nonce);

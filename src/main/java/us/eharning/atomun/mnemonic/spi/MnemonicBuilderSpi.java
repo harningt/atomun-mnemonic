@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,11 @@
 
 package us.eharning.atomun.mnemonic.spi;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.annotations.Beta;
 import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.MnemonicServices;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 
 import javax.annotation.Nonnull;
@@ -32,6 +35,7 @@ import javax.annotation.concurrent.Immutable;
 @Beta
 @Immutable
 public abstract class MnemonicBuilderSpi {
+    @Nonnull
     private final MnemonicAlgorithm algorithm;
 
     /**
@@ -40,8 +44,11 @@ public abstract class MnemonicBuilderSpi {
      * @param algorithm
      *         implemented mnemonic algorithm.
      */
-    protected MnemonicBuilderSpi(MnemonicAlgorithm algorithm) {
-        this.algorithm = algorithm;
+    protected MnemonicBuilderSpi(@Nonnull MnemonicAlgorithm algorithm) {
+        this.algorithm = checkNotNull(algorithm);
+        if (!MnemonicServices.getRegisteredAlgorithms().contains(algorithm)) {
+            throw new UnsupportedOperationException("Unregistered algorithm: " + algorithm);
+        }
     }
 
     /**
@@ -49,6 +56,7 @@ public abstract class MnemonicBuilderSpi {
      *
      * @return implemented mnemonic algorithm.
      */
+    @Nonnull
     public MnemonicAlgorithm getAlgorithm() {
         return algorithm;
     }
@@ -68,7 +76,6 @@ public abstract class MnemonicBuilderSpi {
 
     /**
      * Encode this instance to a wrapped mnemonic unit.
-     * The default implementation performs a naive generation without optimisation.
      *
      * @param builder
      *         instance to construct MnemonicUnit with.
@@ -80,17 +87,7 @@ public abstract class MnemonicBuilderSpi {
      * @since 0.2.0
      */
     @Nonnull
-    public MnemonicUnit generateMnemonicUnit(@Nonnull MnemonicUnit.Builder builder, BuilderParameter... parameters) {
-        String mnemonicSequence = generateMnemonic(parameters);
-        /* Check for word list since that can be input. */
-        String wordListIdentifier = null;
-        for (BuilderParameter parameter : parameters) {
-            if (parameter instanceof WordListBuilderParameter) {
-                wordListIdentifier = ((WordListBuilderParameter) parameter).getWordListIdentifier();
-            }
-        }
-        return MnemonicUnit.decodeMnemonic(getAlgorithm(), mnemonicSequence, wordListIdentifier);
-    }
+    public abstract MnemonicUnit generateMnemonicUnit(@Nonnull MnemonicUnit.Builder builder, BuilderParameter... parameters);
 
     /**
      * Validate the builder parameters.

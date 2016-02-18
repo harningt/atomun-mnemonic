@@ -20,10 +20,11 @@ import com.google.common.base.Converter;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.MoreMnemonicExtensionIdentifiers;
+import us.eharning.atomun.mnemonic.api.electrum.v2.ElectrumV2ExtensionIdentifier;
+import us.eharning.atomun.mnemonic.api.electrum.v2.VersionPrefix;
 import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
 import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
 
-import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,8 +41,6 @@ import javax.annotation.concurrent.Immutable;
 class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
     private static final ConcurrentMap<String, MnemonicUnitSpiImpl> WORD_LIST_SPI = new ConcurrentHashMap<>();
 
-    private static final byte[] STANDARD_PREFIX = new byte[] { 0x01 };
-    private static final byte[] STANDARD_PREFIX_MASK = new byte[] { (byte)0xFF };
     private static final Set<MnemonicExtensionIdentifier> SUPPORTED_READABLE_EXTENSIONS;
 
     static {
@@ -116,12 +115,7 @@ class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
         if (MnemonicUtility.isOldSeed(mnemonicSequence)) {
             throw new IllegalArgumentException("Mnemonic does not have the expected seed version");
         }
-        byte[] seedVersionData;
-        try {
-            seedVersionData = MnemonicUtility.getSeedVersionBytes(mnemonicSequence);
-        } catch (GeneralSecurityException e) {
-            throw new RuntimeException("Failed to calculate the seed version data", e);
-        }
+        byte[] seedVersionData = MnemonicUtility.getSeedVersionBytes(mnemonicSequence);
         VersionPrefix versionPrefix = null;
         for (VersionPrefix testVersionPrefix: VersionPrefix.values()) {
             if (testVersionPrefix.matches(seedVersionData)) {
@@ -134,7 +128,7 @@ class MnemonicDecoderSpiImpl extends MnemonicDecoderSpi {
         }
         List<String> mnemonicWordList = MnemonicUtility.getNormalizedWordList(mnemonicSequence);
         Dictionary dictionary;
-        if (null == wordListIdentifier || wordListIdentifier.isEmpty()) {
+        if (null == wordListIdentifier) {
             dictionary = detectWordList(mnemonicWordList);
             if (null == dictionary) {
                 throw new IllegalArgumentException("Could not detect dictionary for words");

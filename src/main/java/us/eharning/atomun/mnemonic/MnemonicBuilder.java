@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 package us.eharning.atomun.mnemonic;
 
-import com.google.common.collect.ImmutableList;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.collect.ImmutableMap;
 import us.eharning.atomun.mnemonic.spi.BuilderParameter;
 import us.eharning.atomun.mnemonic.spi.EntropyBuilderParameter;
@@ -24,9 +25,6 @@ import us.eharning.atomun.mnemonic.spi.ExtensionBuilderParameter;
 import us.eharning.atomun.mnemonic.spi.MnemonicBuilderSpi;
 import us.eharning.atomun.mnemonic.spi.MnemonicServiceProvider;
 import us.eharning.atomun.mnemonic.spi.WordListBuilderParameter;
-import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
-import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
-import us.eharning.atomun.mnemonic.spi.electrum.v2.ElectrumV2MnemonicService;
 
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -39,12 +37,6 @@ import javax.annotation.concurrent.NotThreadSafe;
  */
 @NotThreadSafe
 public final class MnemonicBuilder {
-    private static final ImmutableList<MnemonicServiceProvider> SERVICE_PROVIDERS = ImmutableList.of(
-            new LegacyElectrumMnemonicService(),
-            new BIP0039MnemonicService(),
-            new ElectrumV2MnemonicService()
-    );
-
     /**
      * Implementation instance.
      */
@@ -80,7 +72,11 @@ public final class MnemonicBuilder {
      */
     @Nonnull
     public static MnemonicBuilder newBuilder(@Nonnull MnemonicAlgorithm algorithm) {
-        for (MnemonicServiceProvider provider : SERVICE_PROVIDERS) {
+        checkNotNull(algorithm);
+        if (!MnemonicServices.getRegisteredAlgorithms().contains(algorithm)) {
+            throw new UnsupportedOperationException("Unregistered algorithm: " + algorithm);
+        }
+        for (MnemonicServiceProvider provider : MnemonicServices.getServiceProviders()) {
             MnemonicBuilderSpi spi = provider.getMnemonicBuilder(algorithm);
             if (null != spi) {
                 return new MnemonicBuilder(spi);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,35 @@
  * limitations under the License.
  */
 
-package us.eharning.atomun.mnemonic.spi.electrum.v2;
+package us.eharning.atomun.mnemonic.api.electrum.v2;
 
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 
 /**
  * Enumeration for Electrum V2 extension identifiers.
  *
- * @since 0.4.0
+ * @since 0.7.0
  */
 public enum ElectrumV2ExtensionIdentifier implements MnemonicExtensionIdentifier {
+    /**
+     * Identifier indicating the version prefix in the final output.
+     *
+     * @see VersionPrefix for I/O value type
+     */
     VERSION_PREFIX(true, true),
+    /**
+     * BigInteger indicating the number to use when generating as a factor.
+     * <p>
+     *     This entropy is verifiable after the fact by converting the entropy
+     *     to a BigInteger and verifying that you can divide it with 0 remainder.
+     * </p>
+     *
+     */
     CUSTOM_ENTROPY(false, true)
     ;
 
-    private boolean canGet;
-    private boolean canSet;
+    private final boolean canGet;
+    private final boolean canSet;
 
     ElectrumV2ExtensionIdentifier(boolean canGet, boolean canSet) {
         this.canGet = canGet;

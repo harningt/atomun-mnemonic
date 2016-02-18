@@ -29,7 +29,13 @@ import javax.annotation.Nonnull;
 /**
  * Utility class for electrum v2 wrapping different types of index generators.
  */
-class MnemonicIndexGenerator {
+final class MnemonicIndexGenerator {
+    /**
+     * Private unused constructor to mark as utility class.
+     */
+    private MnemonicIndexGenerator() {
+    }
+
     /**
      * Take the input entropy and output an array of word indices.
      *
@@ -46,12 +52,15 @@ class MnemonicIndexGenerator {
 
         /* If the word list is a power of 2, we can use bit-shifting for the math */
         if (fast_is_pow2(wordList.getSize())) {
+            //noinspection UnnecessaryLocalVariable
             int[] result = generateIndicesWithBitShift(entropy, wordList);
-            /* SANITY CHECK */
+            /* SANITY CHECK - enable in case of errors */
+            /*
             int[] checkResult = generateIndicesWithDivision(entropy, wordList);
             if (!Arrays.equals(result, checkResult)) {
                 throw new Error("Mismatched results!" + Arrays.toString(result) + " != " + Arrays.toString(checkResult));
             }
+            */
             return result;
         } else {
             /* else we have to use manual division using big-integers */
@@ -71,7 +80,7 @@ class MnemonicIndexGenerator {
      * @return array of integer indices into dictionary.
      */
     @Nonnull
-    public static int[] generateIndicesWithDivision(@Nonnull BigInteger entropy, Dictionary wordList) {
+    private static int[] generateIndicesWithDivision(@Nonnull BigInteger entropy, Dictionary wordList) {
         Preconditions.checkNotNull(entropy);
 
         /*
@@ -101,7 +110,7 @@ class MnemonicIndexGenerator {
      * @return array of integer indices into dictionary.
      */
     @Nonnull
-    public static int[] generateIndicesWithBitShift(@Nonnull BigInteger entropy, Dictionary wordList) {
+    private static int[] generateIndicesWithBitShift(@Nonnull BigInteger entropy, Dictionary wordList) {
         Preconditions.checkNotNull(entropy);
 
         final int wordListSize = wordList.getSize();

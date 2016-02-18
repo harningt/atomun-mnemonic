@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.google.common.base.Converter;
 import com.google.common.collect.ImmutableMap;
 import com.tomgibara.crinch.bits.BitWriter;
 import com.tomgibara.crinch.bits.ByteArrayBitWriter;
-import us.eharning.atomun.mnemonic.MnemonicAlgorithm;
+import us.eharning.atomun.mnemonic.BIPMnemonicAlgorithm;
 import us.eharning.atomun.mnemonic.MnemonicExtensionIdentifier;
 import us.eharning.atomun.mnemonic.MnemonicUnit;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
@@ -52,7 +52,7 @@ class BIP0039MnemonicUnitSpi extends MnemonicUnitSpi {
      *         identifier for the dictionary to use.
      */
     public BIP0039MnemonicUnitSpi(@Nonnull DictionaryIdentifier dictionaryIdentifier) {
-        super(MnemonicAlgorithm.BIP0039);
+        super(BIPMnemonicAlgorithm.BIP0039);
         this.dictionaryIdentifier = checkNotNull(dictionaryIdentifier);
     }
 

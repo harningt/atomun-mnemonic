@@ -1,5 +1,5 @@
 /*
- * Copyright 2014, 2015 Thomas Harning Jr. <harningt@gmail.com>
+ * Copyright 2014, 2015, 2016 Thomas Harning Jr. <harningt@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,15 @@
 
 package us.eharning.atomun.mnemonic;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import us.eharning.atomun.mnemonic.spi.MnemonicDecoderSpi;
 import us.eharning.atomun.mnemonic.spi.MnemonicServiceProvider;
 import us.eharning.atomun.mnemonic.spi.MnemonicUnitSpi;
-import us.eharning.atomun.mnemonic.spi.bip0039.BIP0039MnemonicService;
-import us.eharning.atomun.mnemonic.spi.electrum.legacy.LegacyElectrumMnemonicService;
-import us.eharning.atomun.mnemonic.spi.electrum.v2.ElectrumV2MnemonicService;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -44,11 +42,6 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public final class MnemonicUnit {
     static final Builder BUILDER = new Builder();
-    private static final ImmutableList<MnemonicServiceProvider> SERVICE_PROVIDERS = ImmutableList.of(
-            new LegacyElectrumMnemonicService(),
-            new BIP0039MnemonicService(),
-            new ElectrumV2MnemonicService()
-    );
 
     private final MnemonicUnitSpi spi;
     private final CharSequence mnemonicSequence;
@@ -74,16 +67,12 @@ public final class MnemonicUnit {
      *         method to calculate a given extension's value.
      */
     private MnemonicUnit(@Nonnull MnemonicUnitSpi spi, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableSet<MnemonicExtensionIdentifier> supportedExtensions, @Nonnull Function<MnemonicExtensionIdentifier, Object> extensionLoader) {
-        Verify.verifyNotNull(spi);
-        Verify.verifyNotNull(mnemonicSequence);
-        Verify.verifyNotNull(supportedExtensions);
-        Verify.verifyNotNull(extensionLoader);
-        this.spi = spi;
-        this.mnemonicSequence = mnemonicSequence;
+        this.spi = checkNotNull(spi);
+        this.mnemonicSequence = checkNotNull(mnemonicSequence);
         this.entropy = entropy == null ? null : Arrays.copyOf(entropy, entropy.length);
         this.seed = seed == null ? null : Arrays.copyOf(seed, seed.length);
-        this.supportedExtensions = supportedExtensions;
-        this.extensionLoader = extensionLoader;
+        this.supportedExtensions = checkNotNull(supportedExtensions);
+        this.extensionLoader = checkNotNull(extensionLoader);
     }
 
     /**
@@ -115,9 +104,10 @@ public final class MnemonicUnit {
      */
     @Nonnull
     public static Iterable<MnemonicUnit> decodeMnemonic(@Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
+        checkNotNull(mnemonicSequence);
         ImmutableList.Builder<MnemonicUnit> unitListBuilder = ImmutableList.builder();
-        for (MnemonicServiceProvider serviceProvider : SERVICE_PROVIDERS) {
-            for (MnemonicAlgorithm algorithm : MnemonicAlgorithm.values()) {
+        for (MnemonicServiceProvider serviceProvider : MnemonicServices.getServiceProviders()) {
+            for (MnemonicAlgorithm algorithm : MnemonicServices.getRegisteredAlgorithms()) {
                 MnemonicDecoderSpi system = serviceProvider.getMnemonicDecoder(algorithm);
                 if (null == system) {
                     continue;
@@ -169,7 +159,12 @@ public final class MnemonicUnit {
      */
     @Nonnull
     public static MnemonicUnit decodeMnemonic(@Nonnull MnemonicAlgorithm mnemonicAlgorithm, @Nonnull CharSequence mnemonicSequence, @Nullable String wordListIdentifier) {
-        for (MnemonicServiceProvider serviceProvider : SERVICE_PROVIDERS) {
+        checkNotNull(mnemonicAlgorithm);
+        checkNotNull(mnemonicSequence);
+        if (!MnemonicServices.getRegisteredAlgorithms().contains(mnemonicAlgorithm)) {
+            throw new UnsupportedOperationException("Unregistered algorithm: " + mnemonicAlgorithm);
+        }
+        for (MnemonicServiceProvider serviceProvider : MnemonicServices.getServiceProviders()) {
             MnemonicDecoderSpi system = serviceProvider.getMnemonicDecoder(mnemonicAlgorithm);
             if (null == system) {
                 continue;
@@ -230,7 +225,7 @@ public final class MnemonicUnit {
      */
     @CheckForNull
     public Object getExtensionValue(MnemonicExtensionIdentifier extensionIdentifier) {
-        Preconditions.checkArgument(extensionIdentifier.canGet(), "Cannot get extension: %s", extensionIdentifier);
+        checkArgument(extensionIdentifier.canGet(), "Cannot get extension: %s", extensionIdentifier);
         return extensionLoader.apply(extensionIdentifier);
     }
 
