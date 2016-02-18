@@ -38,7 +38,7 @@ release {
 repositories {
     jcenter()
     mavenCentral()
-    // maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url 'http://www.tomgibara.com/maven/repo/' }
 }
 
@@ -47,7 +47,7 @@ dependencies {
 
     compile 'us.eharning.atomun:atomun-core:0.0.2'
 
-    compile group: 'com.google.guava', name: 'guava', version: '19.0'
+    compile group: 'com.google.guava', name: 'guava', version: '20.0-SNAPSHOT'
     compile 'com.google.code.findbugs:annotations:3.0.1'
     compile 'com.google.code.findbugs:jsr305:3.0.1'
     compile 'com.squareup.okio:okio:1.6.0'
