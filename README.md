@@ -59,7 +59,7 @@ Signed release artifacts will be pushed directly to Maven Central.
 Releases will be signed by the following privately held GPG key. It doesn't
 get published to Travis-CI.
 
-    pub   2048R/F8908096 2014-10-29 [expires: 2016-10-28]
+    pub   2048R/F8908096 2014-10-29
           Key fingerprint = B6CC 560D F1C0 991E 08AA  555A ED63 F369 F890 8096
     uid                  Thomas Harning Jr (CODE SIGNING KEY) <harningt@gmail.com>
 
@@ -71,7 +71,7 @@ Snapshots will be signed by a key held by Travis-CI in their encrypted
 data stores. I figured it would be better to sign the snapshots than not
 have them signed at all, even if the specific key is less protected.
 
-    pub   2048R/EF39E8D8 2015-03-10 [expires: 2016-03-09]
+    pub   2048R/EF39E8D8 2015-03-10
           Key fingerprint = FCA2 D4CC 9294 38B7 5B91  8D9E 6BF2 A2D1 EF39 E8D8
     uid                  Thomas Harning Jr (AUTOMATED CI CODESIGNER) <harningt@gmail.com>
 
