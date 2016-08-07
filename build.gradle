@@ -4,11 +4,11 @@ plugins {
     id 'java'
     id 'groovy'
     id 'maven'
-    id 'org.ajoberstar.release-opinion' version '1.1.0'
-    id 'org.ajoberstar.defaults' version '0.5.3'
+    id 'org.ajoberstar.release-opinion' version '1.5.1'
+    id 'org.ajoberstar.defaults' version '0.6.0'
     id 'checkstyle'
     id 'findbugs'
-    id "org.standardout.versioneye" version "1.1.1"
+    id "org.standardout.versioneye" version "1.4.0"
 }
 
 group = 'us.eharning.atomun'
@@ -50,26 +50,26 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '19.0'
     compile 'com.google.code.findbugs:annotations:3.0.1'
     compile 'com.google.code.findbugs:jsr305:3.0.1'
-    compile 'com.squareup.okio:okio:1.6.0'
+    compile 'com.squareup.okio:okio:1.9.0'
 
     compile 'com.tomgibara.crinch:crinch-bits:0.7.2'
 
-    testCompile 'org.codehaus.groovy:groovy:2.4.6'
+    testCompile 'org.codehaus.groovy:groovy:2.4.7'
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     testCompile 'net.trajano.caliper:caliper:1.2.1'
     testCompile 'net.trajano.commons:commons-testing:2.1.0'
     testCompile 'org.yaml:snakeyaml:1.17'
-    testCompile 'org.jooq:joor:0.9.5'
+    testCompile 'org.jooq:joor:0.9.6'
 }
 
 checkstyle {
-    /* Using checkstyle 6.15 as that is the maximum for the IntelliJ extensions */
-    toolVersion = '6.15'
+    /* Using checkstyle 6.19 as that is the last version of Checkstyle to support JDK7 */
+    toolVersion = '6.19'
     configFile = new File(rootDir, 'gradle/checkstyle/checkstyle.xml')
 }
 
 jacoco {
-    toolVersion = '0.7.6.201602180812'
+    toolVersion = '0.7.7.201606060606'
 }
 
 jacocoTestReport {
