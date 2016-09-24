@@ -17,6 +17,7 @@
 package us.eharning.atomun.mnemonic;
 
 import com.google.caliper.Benchmark;
+import com.google.caliper.api.VmOptions;
 import com.google.caliper.runner.CaliperMain;
 import com.tomgibara.bits.BitVector;
 import com.tomgibara.bits.BitWriter;
@@ -29,6 +30,7 @@ import java.util.Random;
 /**
  * Benchmark tool for mnemonic index generation methods (aligned 11-bit reading).
  */
+@VmOptions("-XX:-TieredCompilation")
 @SuppressFBWarnings("PREDICTABLE_RANDOM")
 class IndexReaderBenchmark {
     private static final int DICTIONARY_SIZE = 2048;
