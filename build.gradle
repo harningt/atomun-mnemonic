@@ -52,7 +52,7 @@ dependencies {
     compile 'com.google.code.findbugs:jsr305:3.0.1'
     compile 'com.squareup.okio:okio:1.9.0'
 
-    compile 'com.tomgibara.crinch:crinch-bits:0.7.2'
+    compile 'com.tomgibara.bits:bits:1.0.1'
 
     testCompile 'org.codehaus.groovy:groovy:2.4.7'
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
@@ -105,4 +105,22 @@ apply from: "$rootDir/gradle/maven-publish.gradle"
 
 wrapper {
     gradleVersion = '2.14.1'
+}
+
+/* Sanity check that the minimum class-set is from Java 7 */
+task proguardCheck(type: proguard.gradle.ProGuardTask, dependsOn: assemble) {
+    injars project.jar.archivePath
+    //injars files(configurations.compile)
+    libraryjars files(System.getenv("JAVA7_HOME") + "/jre/lib/rt.jar")
+    libraryjars files(System.getenv("JAVA7_HOME") + "/jre/lib/jce.jar")
+    libraryjars files(configurations.compile)
+    // Don't really try to do anything, we just want this tool for it's bytecode lint
+    dontshrink
+    dontobfuscate
+    dontoptimize
+    // Don't fail if LambdaMetafactory is missing - it would be handled by Retrolambda
+    dontwarn 'java.lang.invoke.LambdaMetafactory'
+    // Don't note that these are duplicately imported, different test tools pull in
+    dontnote 'javax.annotation.**'
+    dontnote 'net.jcip.annotations.**'
 }

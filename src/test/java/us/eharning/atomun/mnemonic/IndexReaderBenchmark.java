@@ -17,25 +17,20 @@
 package us.eharning.atomun.mnemonic;
 
 import com.google.caliper.Benchmark;
+import com.google.caliper.api.VmOptions;
 import com.google.caliper.runner.CaliperMain;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.tomgibara.crinch.bits.BitReader;
-import com.tomgibara.crinch.bits.BitVector;
-import com.tomgibara.crinch.bits.BitWriter;
-import com.tomgibara.crinch.bits.ByteArrayBitReader;
-import com.tomgibara.crinch.bits.ByteArrayBitWriter;
+import com.tomgibara.bits.BitVector;
+import com.tomgibara.bits.BitWriter;
+import com.tomgibara.bits.ByteArrayBitWriter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Random;
-import javax.annotation.Nonnull;
 
 /**
  * Benchmark tool for mnemonic index generation methods (aligned 11-bit reading).
  */
+@VmOptions("-XX:-TieredCompilation")
 @SuppressFBWarnings("PREDICTABLE_RANDOM")
 class IndexReaderBenchmark {
     private static final int DICTIONARY_SIZE = 2048;

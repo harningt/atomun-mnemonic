@@ -1,7 +1,7 @@
 language: java
 cache: true
 jdk:
-    - openjdk7
+    - oraclejdk8
 install:
     - TERM=dumb ./gradlew clean assemble
 script:
