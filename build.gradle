@@ -50,7 +50,7 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '19.0'
     compile 'com.google.code.findbugs:annotations:3.0.1'
     compile 'com.google.code.findbugs:jsr305:3.0.1'
-    compile 'com.squareup.okio:okio:1.9.0'
+    compile 'com.squareup.okio:okio:1.10.0'
 
     compile 'com.tomgibara.bits:bits:1.0.1'
 
@@ -63,8 +63,7 @@ dependencies {
 }
 
 checkstyle {
-    /* Using checkstyle 6.19 as that is the last version of Checkstyle to support JDK7 */
-    toolVersion = '6.19'
+    toolVersion = '7.1.1'
     configFile = new File(rootDir, 'gradle/checkstyle/checkstyle.xml')
 }
 
