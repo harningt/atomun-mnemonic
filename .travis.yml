@@ -8,9 +8,13 @@ jdk:
 env:
     - TERM=dumb JAVA7_HOME=/usr/lib/jvm/java-7-oracle
 
+before_cache:
+    - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+
 cache:
     directories:
         - $HOME/.m2
+        - $HOME/.gradle/caches
         - $HOME/.gradle/wrapper
 
 before_install:
