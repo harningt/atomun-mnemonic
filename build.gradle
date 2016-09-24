@@ -63,8 +63,7 @@ dependencies {
 }
 
 checkstyle {
-    /* Using checkstyle 6.19 as that is the last version of Checkstyle to support JDK7 */
-    toolVersion = '6.19'
+    toolVersion = '7.1.1'
     configFile = new File(rootDir, 'gradle/checkstyle/checkstyle.xml')
 }
 
