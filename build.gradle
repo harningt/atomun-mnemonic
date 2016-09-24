@@ -13,7 +13,7 @@ plugins {
 
 group = 'us.eharning.atomun'
 description = 'Utility library implementing mnemonic <-> bytes conversions.'
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 
 defaults {
     id = 'harningt'
