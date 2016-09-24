@@ -52,7 +52,7 @@ dependencies {
     compile 'com.google.code.findbugs:jsr305:3.0.1'
     compile 'com.squareup.okio:okio:1.9.0'
 
-    compile 'com.tomgibara.crinch:crinch-bits:0.7.2'
+    compile 'com.tomgibara.bits:bits:1.0.1'
 
     testCompile 'org.codehaus.groovy:groovy:2.4.7'
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'

@@ -17,8 +17,8 @@
 package us.eharning.atomun.mnemonic.spi.bip0039;
 
 import com.google.common.base.Preconditions;
-import com.tomgibara.crinch.bits.BitReader;
-import com.tomgibara.crinch.bits.ByteArrayBitReader;
+import com.tomgibara.bits.BitReader;
+import com.tomgibara.bits.ByteArrayBitReader;
 
 import javax.annotation.Nonnull;
 

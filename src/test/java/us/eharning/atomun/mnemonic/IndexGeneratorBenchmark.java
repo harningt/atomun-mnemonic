@@ -19,9 +19,9 @@ package us.eharning.atomun.mnemonic;
 import com.google.caliper.Benchmark;
 import com.google.caliper.runner.CaliperMain;
 import com.google.common.base.Preconditions;
-import com.tomgibara.crinch.bits.BitReader;
-import com.tomgibara.crinch.bits.BitVector;
-import com.tomgibara.crinch.bits.ByteArrayBitReader;
+import com.tomgibara.bits.BitReader;
+import com.tomgibara.bits.BitVector;
+import com.tomgibara.bits.ByteArrayBitReader;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.math.BigInteger;

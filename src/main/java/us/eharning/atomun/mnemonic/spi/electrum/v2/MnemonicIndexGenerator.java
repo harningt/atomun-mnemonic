@@ -18,7 +18,8 @@ package us.eharning.atomun.mnemonic.spi.electrum.v2;
 
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
-import com.tomgibara.crinch.bits.ByteArrayBitReader;
+import com.tomgibara.bits.BitReader;
+import com.tomgibara.bits.ByteArrayBitReader;
 import us.eharning.atomun.mnemonic.utility.dictionary.Dictionary;
 
 import java.math.BigInteger;
@@ -117,7 +118,7 @@ final class MnemonicIndexGenerator {
         final int unitSize = fast_log2(wordListSize);
 
         byte[] entropyByteArray = entropy.toByteArray();
-        ByteArrayBitReader reader = new ByteArrayBitReader(entropyByteArray);
+        BitReader reader = new ByteArrayBitReader(entropyByteArray);
         int totalBytes = entropyByteArray.length;
 
         /* Value is positive, skip the useless 00 positive marker */
