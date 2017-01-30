@@ -1,4 +1,4 @@
-box: harningt/ubuntu14.04-jdk78@0.0.1
+box: harningt/atomun-docker-build:latest
 build:
     steps:
         - script:
