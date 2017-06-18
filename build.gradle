@@ -60,8 +60,13 @@ task runBenchmark(type: JavaExec, dependsOn: test) {
 
 apply from: "$rootDir/gradle/maven-publish.gradle"
 
+versioneye {
+    /* Workaround for Gradle 4 issue */
+    exclude project.configurations.findAll { !it.canBeResolved }*.name as String[]
+}
+
 wrapper {
-    gradleVersion = '2.14.1'
+    gradleVersion = '4.0'
 }
 
 /* Sanity check that the minimum class-set is from Java 7 */
