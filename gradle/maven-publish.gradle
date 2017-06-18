@@ -1,10 +1,5 @@
 apply plugin: 'signing'
 
-/* Drop groovydoc from artifacts */
-configurations.archives.artifacts.removeAll({
-       return (it.classifier == 'groovydoc')
-})
-
 /* All non-snapshots must be signed */
 def isRelease = !version.toString().endsWith("SNAPSHOT")
 def isSigning = isRelease
@@ -40,7 +35,7 @@ uploadArchives {
         pom.project {
             name name
             description description
-            url defaults.siteUrl
+            url 'https://github.com/harningt/atomun-mnemonic'
             inceptionYear '2014'
 
             scm {

@@ -1,34 +1,21 @@
 import org.ajoberstar.gradle.git.release.opinion.Strategies
 
+buildscript {
+    dependencies {
+        classpath "net.sf.proguard:proguard-gradle:5.3.3"
+    }
+}
+
 plugins {
     id 'java'
     id 'groovy'
     id 'maven'
-    id 'org.ajoberstar.release-opinion' version '1.5.1'
-    id 'org.ajoberstar.defaults' version '0.6.0'
-    id 'checkstyle'
-    id 'findbugs'
-    id "org.standardout.versioneye" version "1.4.0"
+    id 'us.eharning.gradle.defaults' version '0.1.2'
 }
 
 group = 'us.eharning.atomun'
 description = 'Utility library implementing mnemonic <-> bytes conversions.'
 sourceCompatibility = 1.8
-
-defaults {
-    id = 'harningt'
-
-    developers = [
-            [id: 'harningt', name: 'Thomas Harning Jr', email: 'harningt@gmail.com']
-    ]
-
-    // used by license plugin
-    copyrightYears = '2016'
-}
-
-license {
-    skipExistingHeaders true
-}
 
 release {
     // Adds SNAPSHOT strategy to allowed list to be used by Travis-CI
@@ -62,37 +49,8 @@ dependencies {
     testCompile 'org.jooq:joor:0.9.6'
 }
 
-checkstyle {
-    toolVersion = '7.1.1'
-    configFile = new File(rootDir, 'gradle/checkstyle/checkstyle.xml')
-}
-
-jacoco {
-    toolVersion = '0.7.7.201606060606'
-}
-
-jacocoTestReport {
-    reports {
-        xml.enabled true
-        html.destination "${buildDir}/jacocoHtml"
-    }
-}
-
-sonarRunner {
-    toolVersion = '2.4'
-}
-
-findbugs {
-    sourceSets = [ sourceSets.main ]
-}
-
 javadoc {
     options.tags "todo:a:TODO:"
-}
-
-license {
-    exclude "**/*.json"
-    exclude "**/*.txt"
 }
 
 task runBenchmark(type: JavaExec, dependsOn: test) {
