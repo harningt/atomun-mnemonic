@@ -10,7 +10,7 @@ plugins {
     id 'java'
     id 'groovy'
     id 'maven'
-    id 'us.eharning.gradle.defaults' version '0.1.2'
+    id 'us.eharning.gradle.defaults' version '0.1.3'
 }
 
 group = 'us.eharning.atomun'
@@ -36,13 +36,16 @@ dependencies {
 
     /* NOTE: Using the android version due to intended use, consider replacable w/ 22.0 */
     compile group: 'com.google.guava', name: 'guava', version: '22.0-android'
-    compile 'com.google.code.findbugs:annotations:3.0.1u2'
+    /* Force this because guava wants an older one */
+    compile ('com.google.code.findbugs:annotations:3.0.1u2') {
+        force = true
+    }
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'com.squareup.okio:okio:1.13.0'
 
     compile 'com.tomgibara.bits:bits:1.0.1'
 
-    testCompile 'org.codehaus.groovy:groovy:2.4.11'
+    testCompile 'org.codehaus.groovy:groovy:2.4.12'
     testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
     testCompile 'net.trajano.caliper:caliper:1.2.1'
     testCompile 'net.trajano.commons:commons-testing:2.1.0'
@@ -60,11 +63,6 @@ task runBenchmark(type: JavaExec, dependsOn: test) {
 }
 
 apply from: "$rootDir/gradle/maven-publish.gradle"
-
-versioneye {
-    /* Workaround for Gradle 4 issue */
-    exclude project.configurations.findAll { !it.canBeResolved }*.name as String[]
-}
 
 wrapper {
     gradleVersion = '4.0'
