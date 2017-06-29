@@ -36,7 +36,10 @@ dependencies {
 
     /* NOTE: Using the android version due to intended use, consider replacable w/ 22.0 */
     compile group: 'com.google.guava', name: 'guava', version: '22.0-android'
-    compile 'com.google.code.findbugs:annotations:3.0.1u2'
+    /* Force this because guava wants an older one */
+    compile ('com.google.code.findbugs:annotations:3.0.1u2') {
+        force = true
+    }
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'com.squareup.okio:okio:1.13.0'
 
