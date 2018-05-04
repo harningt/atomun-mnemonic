@@ -34,8 +34,8 @@ dependencies {
 
     compile 'us.eharning.atomun:atomun-core:0.0.2'
 
-    /* NOTE: Using the android version due to intended use, consider replacable w/ 22.0 */
-    compile group: 'com.google.guava', name: 'guava', version: '22.0-android'
+    /* NOTE: Using the android version due to intended use, consider replacable w/ 25.0 */
+    compile group: 'com.google.guava', name: 'guava', version: '25.0-android'
     /* Force this because guava wants an older one */
     compile ('com.google.code.findbugs:annotations:3.0.1u2') {
         force = true
