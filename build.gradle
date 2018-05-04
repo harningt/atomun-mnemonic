@@ -2,7 +2,7 @@ import org.ajoberstar.gradle.git.release.opinion.Strategies
 
 buildscript {
     dependencies {
-        classpath "net.sf.proguard:proguard-gradle:5.3.3"
+        classpath "net.sf.proguard:proguard-gradle:6.0.2"
     }
 }
 
