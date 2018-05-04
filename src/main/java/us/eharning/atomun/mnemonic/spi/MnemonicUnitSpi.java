@@ -39,6 +39,7 @@ import javax.annotation.concurrent.Immutable;
  * @since 0.1.0
  */
 @Immutable
+@Nonnull
 public abstract class MnemonicUnitSpi {
     private final MnemonicAlgorithm algorithm;
 
@@ -79,7 +80,7 @@ public abstract class MnemonicUnitSpi {
     protected MnemonicUnit build(@Nonnull MnemonicUnit.Builder builder, @Nonnull CharSequence mnemonicSequence, @Nullable byte[] entropy, @Nullable byte[] seed, @Nonnull ImmutableMap<MnemonicExtensionIdentifier, Object> extensions) {
         checkNotNull(mnemonicSequence);
         checkNotNull(extensions);
-        return builder.build(this, mnemonicSequence, entropy, seed, extensions.keySet(), Functions.forMap(extensions, null));
+        return builder.build(this, mnemonicSequence, entropy, seed, extensions.keySet(), Functions.forMap(extensions));
     }
 
     /**

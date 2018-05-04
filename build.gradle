@@ -57,6 +57,10 @@ javadoc {
     options.tags "todo:a:TODO:"
 }
 
+findbugs {
+    excludeFilter file('gradle/findbugs-exclude.xml')
+}
+
 task runBenchmark(type: JavaExec, dependsOn: test) {
     main = 'us.eharning.atomun.mnemonic.IndexGeneratorBenchmark'
     classpath = sourceSets.test.runtimeClasspath

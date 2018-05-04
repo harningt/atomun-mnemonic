@@ -32,6 +32,7 @@ import javax.annotation.concurrent.Immutable;
  */
 @Beta
 @Immutable
+@Nonnull
 public class ExtensionBuilderParameter implements BuilderParameter {
     private final ImmutableMap<MnemonicExtensionIdentifier, Object> extensions;
 

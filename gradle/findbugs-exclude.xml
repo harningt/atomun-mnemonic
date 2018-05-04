@@ -1,0 +1,13 @@
+<FindBugsFilter>
+
+    <!--kotlin related-->
+    <!--nullability-->
+    <Match>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE,RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE,NP_NULL_ON_SOME_PATH,RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE" />
+    </Match>
+    <!--objects with constants-->
+    <Match>
+        <!-- http://findbugs.sourceforge.net/bugDescriptions.html#ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD-->
+        <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
+    </Match>
+</FindBugsFilter>

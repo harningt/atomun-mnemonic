@@ -27,6 +27,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteSource;
 import com.google.common.io.LineProcessor;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.io.IOException;
 import java.text.Normalizer;
@@ -41,6 +42,7 @@ import javax.annotation.concurrent.Immutable;
  */
 @Beta
 @Immutable
+@Nonnull
 public class Dictionary extends Converter<Integer, String> {
     private final ImmutableList<String> indexToWordMap;
     private final ImmutableMap<String, Integer> wordToIndexMap;
@@ -93,6 +95,7 @@ public class Dictionary extends Converter<Integer, String> {
      * @throws IOException
      *         on I/O error reading from the resource.
      */
+    @SuppressFBWarnings("NP_NONNULL_RETURN_VIOLATION")
     @Nonnull
     private static ImmutableList<String> resourceToLines(@Nonnull ByteSource dataSource) {
         LineProcessor<ImmutableList<String>> lineProcess = new LineProcessor<ImmutableList<String>>() {
@@ -151,6 +154,7 @@ public class Dictionary extends Converter<Integer, String> {
      *
      * @return the converted instance; <b>must not</b> be null
      */
+    @SuppressFBWarnings("NP_NONNULL_RETURN_VIOLATION")
     @Nonnull
     @Override
     protected String doForward(@Nonnull Integer integer) {
@@ -173,6 +177,7 @@ public class Dictionary extends Converter<Integer, String> {
      *         unimplement<i>able</i> (for example, consider a {@code Converter<Chicken, ChickenNugget>}),
      *         then this is not logically a {@code Converter} at all, and should just implement {@link com.google.common.base.Function}.
      */
+    @SuppressFBWarnings("NP_NONNULL_RETURN_VIOLATION")
     @Nonnull
     @Override
     protected Integer doBackward(@Nonnull String word) {
