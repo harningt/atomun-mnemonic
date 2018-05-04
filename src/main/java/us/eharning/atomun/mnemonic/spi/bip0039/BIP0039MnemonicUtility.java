@@ -42,6 +42,7 @@ import javax.annotation.Nullable;
 /**
  * Utility class to support BIP0039 mnemonics.
  */
+@Nonnull
 final class BIP0039MnemonicUtility {
     private static final List<String> KNOWN_DICTIONARIES = ImmutableList.of(
             "english",

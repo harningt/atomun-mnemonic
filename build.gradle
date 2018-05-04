@@ -2,7 +2,7 @@ import org.ajoberstar.gradle.git.release.opinion.Strategies
 
 buildscript {
     dependencies {
-        classpath "net.sf.proguard:proguard-gradle:5.3.3"
+        classpath "net.sf.proguard:proguard-gradle:6.0.2"
     }
 }
 
@@ -34,27 +34,31 @@ dependencies {
 
     compile 'us.eharning.atomun:atomun-core:0.0.2'
 
-    /* NOTE: Using the android version due to intended use, consider replacable w/ 22.0 */
-    compile group: 'com.google.guava', name: 'guava', version: '22.0-android'
+    /* NOTE: Using the android version due to intended use, consider replacable w/ 25.0 */
+    compile group: 'com.google.guava', name: 'guava', version: '25.0-android'
     /* Force this because guava wants an older one */
     compile ('com.google.code.findbugs:annotations:3.0.1u2') {
         force = true
     }
     compile 'com.google.code.findbugs:jsr305:3.0.2'
-    compile 'com.squareup.okio:okio:1.13.0'
+    compile 'com.squareup.okio:okio:1.14.1'
 
     compile 'com.tomgibara.bits:bits:1.0.1'
 
-    testCompile 'org.codehaus.groovy:groovy:2.4.12'
+    testCompile 'org.codehaus.groovy:groovy:2.4.14'
     testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
     testCompile 'net.trajano.caliper:caliper:1.2.1'
     testCompile 'net.trajano.commons:commons-testing:2.1.0'
-    testCompile 'org.yaml:snakeyaml:1.18'
-    testCompile 'org.jooq:joor:0.9.6'
+    testCompile 'org.yaml:snakeyaml:1.21'
+    testCompile 'org.jooq:joor-java-8:0.9.8'
 }
 
 javadoc {
     options.tags "todo:a:TODO:"
+}
+
+findbugs {
+    excludeFilter file('gradle/findbugs-exclude.xml')
 }
 
 task runBenchmark(type: JavaExec, dependsOn: test) {

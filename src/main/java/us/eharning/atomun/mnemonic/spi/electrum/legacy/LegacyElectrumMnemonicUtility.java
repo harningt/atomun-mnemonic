@@ -32,6 +32,7 @@ import javax.annotation.Nonnull;
 /**
  * Static utility to handle encoding/decoding details of the legacy Electrum mnemonic format.
  */
+@Nonnull
 final class LegacyElectrumMnemonicUtility {
     private static final Splitter WORD_SPLITTER = Splitter.on(CharMatcher.whitespace()).trimResults().omitEmptyStrings();
     private static final DictionaryIdentifier DICTIONARY_IDENTIFIER = DictionaryIdentifier.getIdentifier("english", "us/eharning/atomun/mnemonic/spi/electrum/legacy/dictionary.txt");

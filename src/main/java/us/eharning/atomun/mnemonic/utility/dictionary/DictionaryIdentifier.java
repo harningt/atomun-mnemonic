@@ -27,6 +27,7 @@ import javax.annotation.concurrent.Immutable;
  * Identifier for use in dictionary lookup.
  */
 @Immutable
+@Nonnull
 public final class DictionaryIdentifier {
     private final String name;
     private final String resourceName;

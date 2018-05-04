@@ -40,6 +40,7 @@ import javax.annotation.concurrent.Immutable;
  * @since 0.0.1
  */
 @Immutable
+@Nonnull
 public final class MnemonicUnit {
     static final Builder BUILDER = new Builder();
 

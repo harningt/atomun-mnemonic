@@ -47,6 +47,7 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Utility class to support electrum v2 mnemonics.
  */
+@Nonnull
 final class MnemonicUtility {
     private static final List<String> KNOWN_DICTIONARIES = ImmutableList.of(
             "english",

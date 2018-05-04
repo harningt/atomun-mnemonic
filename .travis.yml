@@ -6,16 +6,17 @@ jdk:
     - oraclejdk8
 
 env:
-    - TERM=dumb JAVA7_HOME=/usr/lib/jvm/java-7-oracle
+    - TERM=dumb JAVA7_HOME=/usr/lib/jvm/java-7-openjdk-amd64
 
 before_cache:
-    - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+    - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+    - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 
 cache:
     directories:
-        - $HOME/.m2
-        - $HOME/.gradle/caches
-        - $HOME/.gradle/wrapper
+        - $HOME/.m2/
+        - $HOME/.gradle/caches/
+        - $HOME/.gradle/wrapper/
 
 before_install:
     - test ${TRAVIS_SECURE_ENV_VARS} == true && openssl aes-256-cbc -K $encrypted_c48085a6192b_key -iv $encrypted_c48085a6192b_iv -in gradle/private.tar.gz.travis-enc -d | tar -xz -C $HOME || true

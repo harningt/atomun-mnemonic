@@ -35,6 +35,7 @@ import javax.annotation.Nonnull;
  * @since 0.7.0
  */
 @Beta
+@Nonnull
 public final class MnemonicServices {
     /*
      * Uses a CopyOnWriteArraySet due to small element count and infrequent

@@ -28,6 +28,7 @@ import javax.annotation.concurrent.Immutable;
  */
 @Beta
 @Immutable
+@Nonnull
 public class WordListBuilderParameter implements BuilderParameter {
     private final String wordListIdentifier;
 
