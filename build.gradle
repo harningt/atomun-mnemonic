@@ -41,7 +41,7 @@ dependencies {
         force = true
     }
     compile 'com.google.code.findbugs:jsr305:3.0.2'
-    compile 'com.squareup.okio:okio:1.13.0'
+    compile 'com.squareup.okio:okio:1.14.1'
 
     compile 'com.tomgibara.bits:bits:1.0.1'
 
