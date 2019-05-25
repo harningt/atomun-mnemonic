@@ -10,4 +10,8 @@
         <!-- http://findbugs.sourceforge.net/bugDescriptions.html#ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD-->
         <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
     </Match>
+    <!-- Temporary issues due to Java+Guava issues -->
+    <Match>
+        <Bug pattern="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE,NP_METHOD_PARAMETER_TIGHTENS_ANNOTATION,NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
+    </Match>
 </FindBugsFilter>
