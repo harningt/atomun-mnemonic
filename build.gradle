@@ -1,5 +1,3 @@
-import org.ajoberstar.gradle.git.release.opinion.Strategies
-
 buildscript {
     dependencies {
         classpath "net.sf.proguard:proguard-gradle:6.1.0"
@@ -17,48 +15,36 @@ group = 'us.eharning.atomun'
 description = 'Utility library implementing mnemonic <-> bytes conversions.'
 sourceCompatibility = 1.8
 
-release {
-    // Adds SNAPSHOT strategy to allowed list to be used by Travis-CI
-    versionStrategy Strategies.SNAPSHOT
-}
-
 repositories {
     jcenter()
     mavenCentral()
-    // maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url 'http://www.tomgibara.com/maven/repo/' }
 }
 
 dependencies {
-    findbugs 'com.google.code.findbugs:findbugs:3.0.1'
-
     compile 'us.eharning.atomun:atomun-core:0.0.2'
 
     /* NOTE: Using the android version due to intended use, consider replacable w/ 25.0 */
     compile group: 'com.google.guava', name: 'guava', version: '27.1-android'
-    /* Force this because guava wants an older one */
-    compile ('com.google.code.findbugs:annotations:3.0.1u2') {
-        force = true
-    }
+
+    compile 'net.jcip:jcip-annotations:1.0'
+    compile 'com.github.spotbugs:spotbugs-annotations:4.0.0-beta1'
     compile 'com.google.code.findbugs:jsr305:3.0.2'
+
     compile 'com.squareup.okio:okio:1.14.1'
 
     compile 'com.tomgibara.bits:bits:1.0.1'
 
-    testCompile 'org.codehaus.groovy:groovy:2.4.14'
+    testCompile 'org.codehaus.groovy:groovy:2.5.7'
     testCompile 'org.spockframework:spock-core:1.3-groovy-2.5'
     testCompile 'net.trajano.caliper:caliper:1.2.1'
     testCompile 'net.trajano.commons:commons-testing:2.1.0'
-    testCompile 'org.yaml:snakeyaml:1.21'
+    testCompile 'org.yaml:snakeyaml:1.24'
     testCompile 'org.jooq:joor-java-8:0.9.11'
 }
 
 javadoc {
     options.tags "todo:a:TODO:"
-}
-
-findbugs {
-    excludeFilter file('gradle/findbugs-exclude.xml')
 }
 
 task runBenchmark(type: JavaExec, dependsOn: test) {
@@ -69,7 +55,7 @@ task runBenchmark(type: JavaExec, dependsOn: test) {
 apply from: "$rootDir/gradle/maven-publish.gradle"
 
 wrapper {
-    gradleVersion = '4.0'
+    gradleVersion = '5.4.1'
 }
 
 /* Sanity check that the minimum class-set is from Java 7 */
