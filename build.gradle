@@ -10,7 +10,7 @@ plugins {
     id 'java'
     id 'groovy'
     id 'maven'
-    id 'us.eharning.gradle.defaults' version '0.1.3'
+    id 'us.eharning.gradle.defaults' version '2.1.1'
 }
 
 group = 'us.eharning.atomun'
