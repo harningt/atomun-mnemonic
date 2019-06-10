@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath "net.sf.proguard:proguard-gradle:6.1.0"
+        classpath "net.sf.proguard:proguard-gradle:6.1.1"
     }
 }
 
