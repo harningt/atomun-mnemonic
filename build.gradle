@@ -31,7 +31,7 @@ dependencies {
     compile 'com.github.spotbugs:spotbugs-annotations:4.0.0-beta3'
     compile 'com.google.code.findbugs:jsr305:3.0.2'
 
-    compile 'com.squareup.okio:okio:2.2.2'
+    compile 'com.squareup.okio:okio:2.3.0'
 
     compile 'com.tomgibara.bits:bits:1.0.1'
 
