@@ -35,7 +35,7 @@ dependencies {
 
     compile 'com.tomgibara.bits:bits:1.0.1'
 
-    testCompile 'org.codehaus.groovy:groovy:2.5.7'
+    testCompile 'org.codehaus.groovy:groovy:2.5.8'
     testCompile 'org.spockframework:spock-core:1.3-groovy-2.5'
     testCompile 'net.trajano.caliper:caliper:1.2.1'
     testCompile 'net.trajano.commons:commons-testing:2.1.0'
