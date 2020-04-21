@@ -41,7 +41,7 @@ dependencies {
     testCompile 'net.trajano.caliper:caliper:1.2.1'
     testCompile 'net.trajano.commons:commons-testing:2.1.0'
     testCompile 'org.yaml:snakeyaml:1.25'
-    testCompile 'org.jooq:joor-java-8:0.9.12'
+    testCompile 'org.jooq:joor-java-8:0.9.13'
 }
 
 test {
