@@ -26,7 +26,7 @@ dependencies {
     compile 'us.eharning.atomun:atomun-core:0.0.2'
 
     /* NOTE: Using the android version due to intended use, consider replacable w/ 25.0 */
-    compile group: 'com.google.guava', name: 'guava', version: '28.2-android'
+    compile group: 'com.google.guava', name: 'guava', version: '29.0-android'
 
     compile 'net.jcip:jcip-annotations:1.0'
     compile 'com.github.spotbugs:spotbugs-annotations:4.0.0-beta4'
