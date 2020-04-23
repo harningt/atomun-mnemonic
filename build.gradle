@@ -19,7 +19,6 @@ repositories {
     jcenter()
     mavenCentral()
     maven { url 'http://www.tomgibara.com/maven/repo/' }
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 }
 
 dependencies {
