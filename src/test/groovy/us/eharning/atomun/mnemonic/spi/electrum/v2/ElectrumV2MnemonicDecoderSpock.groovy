@@ -42,7 +42,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
             "48"
     ]
 
-    def "check #mnemonic string decodes to matching values for standard vectors"() {
+    def "check #testCase.mnemonic string decodes to matching values for standard vectors"() {
         given:
             MnemonicUnit unit = MnemonicUnit.decodeMnemonic(ALG, testCase.mnemonic, testCase.wordList)
         expect:
@@ -54,7 +54,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
         where:
             testCase << ElectrumV2TestData.STANDARD_VECTORS
     }
-    def "check #mnemonic string decodes to matching values for other-language vectors"() {
+    def "check #testCase.mnemonic string decodes to matching values for other-language vectors"() {
         given:
             MnemonicUnit unit = MnemonicUnit.decodeMnemonic(ALG, testCase.mnemonic, testCase.wordList)
         expect:
@@ -73,7 +73,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
             testCase << Iterables.filter(ElectrumV2TestData.LANGUAGE_VECTORS, { null != it.normalizedMnemonic })
     }
 
-    def "generic check #mnemonic string decodes to #encoded with single valid element with specific wordList"() {
+    def "generic check #testCase.mnemonic string decodes to #testCase.entropy with single valid element with specific wordList"() {
         given:
             Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(testCase.mnemonic, testCase.wordList)
             MnemonicUnit unit = Iterables.getFirst(units, null)
@@ -87,7 +87,7 @@ class ElectrumV2MnemonicDecoderSpock extends Specification {
         where:
             testCase << ElectrumV2TestData.ALL_VECTORS
     }
-    def "generic check #mnemonic string decodes to #encoded with single valid element with unspecified wordList"() {
+    def "generic check #testCase.mnemonic string decodes to #testCase.entropy with single valid element with unspecified wordList"() {
         given:
             Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(testCase.mnemonic)
             MnemonicUnit unit = Iterables.getFirst(units, null)

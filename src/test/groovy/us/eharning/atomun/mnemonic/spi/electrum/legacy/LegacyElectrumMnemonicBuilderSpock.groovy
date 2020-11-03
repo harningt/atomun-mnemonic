@@ -68,7 +68,7 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         thrown IllegalArgumentException
     }
 
-    def "check #encoded encodes to #mnemonic"(String mnemonic, String hex) {
+    def "check #hex encodes to #mnemonic"(String mnemonic, String hex) {
         given:
         def builder = MnemonicBuilder.newBuilder(ALG)
         builder.setEntropy(hex.decodeHex())
@@ -79,7 +79,7 @@ class LegacyElectrumMnemonicBuilderSpock extends Specification {
         [mnemonic, hex] << pairs
     }
 
-    def "check roundtrip unit #encoded <-> #mnemonic"(String mnemonic, String hex) {
+    def "check roundtrip unit #hex <-> #mnemonic"(String mnemonic, String hex) {
         given:
         def builder = MnemonicBuilder.newBuilder(ALG)
         builder.setEntropy(hex.decodeHex())

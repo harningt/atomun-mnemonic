@@ -34,7 +34,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
     static final MnemonicAlgorithm ALG = BIPMnemonicAlgorithm.BIP0039
     static final Set<MnemonicExtensionIdentifier> GETTABLE_EXTENSIONS = ImmutableSet.of() //MoreMnemonicExtensionIdentifiers.canGet(BIP0039ExtensionIdentifier.values())
 
-    def "check #mnemonic string decodes to #seed for standard vector"() {
+    def "check #testCase.mnemonic string decodes to #testCase.seed for standard vector"() {
         given:
         MnemonicUnit unit = MnemonicUnit.decodeMnemonic(ALG, testCase.mnemonic, testCase.wordList)
         expect:
@@ -52,7 +52,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
         testCase << BIP0039TestData.TREZOR_OFFICIAL_VECTORS
     }
 
-    def "check #mnemonic string decodes to #seed for JP vector"() {
+    def "check #testCase.mnemonic string decodes to #testCase.seed for JP vector"() {
         given:
         MnemonicUnit unit = MnemonicUnit.decodeMnemonic(ALG, testCase.mnemonic, testCase.wordList)
         expect:
@@ -70,7 +70,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
         testCase << BIP0039TestData.JP_VECTORS
     }
 
-    def "generic check #mnemonic string decodes to #encoded with single valid element with specific wordList"() {
+    def "generic check #testCase.mnemonic string decodes to #testCase.seed with single valid element with specific wordList"() {
         given:
         Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(testCase.mnemonic, testCase.wordList)
         MnemonicUnit unit = Iterables.getFirst(Iterables.filter(units, { it.algorithm == ALG }), null)
@@ -87,7 +87,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
         testCase << BIP0039TestData.TREZOR_OFFICIAL_VECTORS
     }
 
-    def "generic check #mnemonic string decodes to #encoded with single valid element with unspecified wordList"() {
+    def "generic check #testCase.mnemonic string decodes to #testCase.seed with single valid element with unspecified wordList"() {
         given:
         Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(testCase.mnemonic)
         MnemonicUnit unit = Iterables.getFirst(Iterables.filter(units, { it.algorithm == ALG }), null)
@@ -104,7 +104,7 @@ class BIP0039MnemonicDecoderSpock extends Specification {
         testCase << BIP0039TestData.TREZOR_OFFICIAL_VECTORS
     }
 
-    def "japanese: generic check #mnemonic string decodes to #encoded with single valid element with unspecified wordList"() {
+    def "japanese: generic check #testCase.mnemonic string decodes to #testCase.seed with single valid element with unspecified wordList"() {
         given:
         Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(testCase.mnemonic)
         MnemonicUnit unit = Iterables.getFirst(Iterables.filter(units, { it.algorithm == ALG }), null)
