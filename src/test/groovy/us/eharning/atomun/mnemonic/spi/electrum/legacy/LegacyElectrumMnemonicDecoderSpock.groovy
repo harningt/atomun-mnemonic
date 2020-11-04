@@ -39,7 +39,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
     static final Set<MnemonicExtensionIdentifier> GETTABLE_EXTENSIONS = ImmutableSet.of() //MoreMnemonicExtensionIdentifiers.canGet(LegacyElectrumExtensionIdentifier.values())
 
 
-    def "check #mnemonic string decodes to #encoded"(String mnemonic, String hex) {
+    def "check #mnemonic string decodes to #hex"(String mnemonic, String hex) {
         given:
         MnemonicUnit unit = MnemonicUnit.decodeMnemonic(ALG, mnemonic)
         expect:
@@ -53,7 +53,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
         [mnemonic, hex] << pairs
     }
 
-    def "generic check #mnemonic string decodes to #encoded with single valid element"(String mnemonic, String hex) {
+    def "generic check #mnemonic string decodes to #hex with single valid element"(String mnemonic, String hex) {
         given:
         Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(mnemonic)
         MnemonicUnit unit = Iterables.getFirst(Iterables.filter(units, { it.algorithm == ALG }), null)
@@ -69,7 +69,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
         [mnemonic, hex] << pairs
     }
 
-    def "check #mnemonic string with non-standard case decodes to #encoded"(String mnemonic, String hex) {
+    def "check #mnemonic string with non-standard case decodes to #hex"(String mnemonic, String hex) {
         given:
         MnemonicUnit unit = MnemonicUnit.decodeMnemonic(ALG, mnemonic)
         expect:
@@ -83,7 +83,7 @@ class LegacyElectrumMnemonicDecoderSpock extends Specification {
         [mnemonic, hex] << pairs
     }
 
-    def "generic check #mnemonic string with non-standard case decodes to #encoded with single valid element"(String mnemonic, String hex) {
+    def "generic check #mnemonic string with non-standard case decodes to #hex with single valid element"(String mnemonic, String hex) {
         given:
         Iterable<MnemonicUnit> units = MnemonicUnit.decodeMnemonic(mnemonic.toUpperCase())
         MnemonicUnit unit = Iterables.getFirst(Iterables.filter(units, { it.algorithm == ALG }), null)
