@@ -41,7 +41,7 @@ dependencies {
     testCompile 'org.spockframework:spock-core:2.0-M4-groovy-3.0'
     testCompile 'net.trajano.caliper:caliper:1.2.1'
     testCompile 'net.trajano.commons:commons-testing:2.1.0'
-    testCompile 'org.yaml:snakeyaml:1.27'
+    testCompile 'org.yaml:snakeyaml:1.28'
     testCompile 'org.jooq:joor-java-8:0.9.13'
 }
 
