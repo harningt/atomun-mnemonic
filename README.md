@@ -1,3 +1,9 @@
+# TEMPORARILY ON HOLD
+
+This project is on hold indefinitely, I've been busy with many other things
+and have not put time into this as I'd like. If there's any interest in
+the project, let me know, then I could evaluate reprioritizing it.
+
 # atomun-mnemonic
 
 [![License](http://img.shields.io/badge/license-Apache_2-red.svg)][Apache2.0]
